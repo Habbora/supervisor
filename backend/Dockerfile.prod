@@ -1,0 +1,34 @@
+FROM oven/bun:1 as builder
+
+WORKDIR /app
+
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
+
+COPY . .
+
+RUN bun run build
+RUN bun run compile
+
+# Compilar workers separadamente
+RUN bun build src/services/driver/drivers/modbus.ts --outfile bin/modbus.worker.js
+RUN bun build src/services/driver/drivers/exampleDriver.ts --outfile bin/example.worker.js
+
+FROM oven/bun:1-slim
+
+WORKDIR /app
+
+COPY --from=builder /app/bin ./bin
+COPY --from=builder /app/data ./data
+COPY --from=builder /app/dist ./dist
+
+RUN mkdir -p /app/data && chmod 777 /app/data
+
+EXPOSE 3000
+
+VOLUME ["/app/data"]
+
+ENV NODE_ENV=production
+ENV BUN_ENV=production
+
+CMD ["./bin/supervisor"] 

@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Clima 1",
+    "mode": ["auto"],
+    "setpoint": [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+    "fan": [],
+    "swing": ["off"],
+    "commands": {
+      "off": "power",
+      "auto:16::off": "power",
+      "auto:17::off": "power",
+      "auto:18::off": "power",
+      "auto:19::off": "power",
+      "auto:20::off": "power",
+      "auto:21::off": "power",
+      "auto:22::off": "power",
+      "auto:23::off": "power",
+      "auto:24::off": "power",
+      "auto:25::off": "power",
+      "auto:26::off": "power",
+      "auto:27::off": "power",
+      "auto:28::off": "power",
+      "auto:29::off": "power",
+      "auto:30::off": "power"
+    },
+    "endpoint": {
+      "type": "ir",
+      "deviceName": "7Port",
+      "endpointName": "out1"
+    }
+  }
+]

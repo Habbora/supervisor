@@ -1,0 +1,16 @@
+FROM oven/bun:1.1.0
+
+WORKDIR /app
+
+# Copiar arquivos de dependências
+COPY package.json bun.lock ./
+RUN bun install
+
+# Copiar o resto do código
+COPY . .
+
+# Expor a porta que a aplicação usa
+EXPOSE 3000
+
+# Comando para iniciar a aplicação em modo de desenvolvimento
+CMD ["bun", "run", "--watch", "src/index.ts"] 

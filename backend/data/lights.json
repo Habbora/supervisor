@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Circuito 1 CLP1",
+    "endpoint": {
+      "type": "discrete",
+      "deviceName": "CLP1",
+      "endpointName": "D01",
+      "feedbackName": "D01",
+      "feedbackIsInverted": false
+    }
+  },
+  {
+    "name": "Circuito 2 CLP1",
+    "endpoint": {
+      "type": "discrete",
+      "deviceName": "CLP1",
+      "endpointName": "D02",
+      "feedbackName": "D02",
+      "feedbackIsInverted": false
+    }
+  },
+  {
+    "name": "Circuito 3 CLP1",
+    "endpoint": {
+      "type": "discrete",
+      "deviceName": "CLP1",
+      "endpointName": "D03",
+      "feedbackName": "D03",
+      "feedbackIsInverted": false
+    }
+  },
+  {
+    "name": "Circuito 4 CLP1",
+    "endpoint": {
+      "type": "discrete",
+      "deviceName": "CLP1",
+      "endpointName": "D04",
+      "feedbackName": "D04",
+      "feedbackIsInverted": false
+    }
+  },
+  {
+    "name": "Circuito 5 CLP1",
+    "endpoint": {
+      "type": "discrete",
+      "deviceName": "CLP1",
+      "endpointName": "D05",
+      "feedbackName": "D05",
+      "feedbackIsInverted": false
+    }
+  },
+  {
+    "name": "Circuito 6 CLP1",
+    "endpoint": {
+      "type": "pulse",
+      "deviceName": "CLP1",
+      "endpointName": "D06",
+      "feedbackName": "DI06",
+      "feedbackIsInverted": false
+    }
+  }
+]

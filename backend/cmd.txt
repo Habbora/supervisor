@@ -1,0 +1,13 @@
+docker save supervisor-backend -o supervisor-backend.tar
+
+docker build -t supervisor-backend .
+
+docker run -d \
+  -p 3000:3000 \
+  -v $(pwd)/data:/app/data \
+  --name supervisor-backend-container \
+  supervisor-backend
+
+  docker load -i supervisor-backend.tar
+
+  sudo podman run -p 8080:8080 localhost/supervisor-frontend

@@ -1,0 +1,33 @@
+# Estágio de compilação
+FROM oven/bun:1.1.0 as builder
+
+WORKDIR /app
+
+# Copiar arquivos de dependências
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
+
+# Copiar o resto do código
+COPY . .
+
+# Compilar a aplicação
+RUN bun run build
+
+# Estágio de produção
+FROM oven/bun:1.1.0-slim
+
+WORKDIR /app
+
+# Copiar apenas os arquivos necessários do estágio de compilação
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/bun.lock ./bun.lock
+
+# Instalar apenas as dependências de produção
+RUN bun install --frozen-lockfile --production
+
+# Expor a porta que a aplicação usa
+EXPOSE 3000
+
+# Comando para iniciar a aplicação
+CMD ["bun", "run", "dist/index.js"] 

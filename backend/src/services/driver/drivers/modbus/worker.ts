@@ -7,13 +7,8 @@ declare var self: Worker;
 let client: ModbusWorker | null = null;
 
 self.onmessage = async (event: MessageEvent<WorkerMessageRequestTemplate<ModbusMessageRequest>>) => {
-  console.log("[ModbusWorker] Mensagem recebida:", event.data.type);
-  
   if (event.data.type === "init") {
-    console.log("[ModbusWorker] Inicializando...");
-    
     if (client) {
-      console.log("[ModbusWorker] Cliente já inicializado");
       self.postMessage({
         type: "error",
         error: new Error("Client already initialized"),
@@ -22,13 +17,11 @@ self.onmessage = async (event: MessageEvent<WorkerMessageRequestTemplate<ModbusM
     }
 
     const init = event.data.payload;
-    console.log("[ModbusWorker] Config:", init);
 
     client = new ModbusWorker({
       host: init.network.host,
       port: init.network.port,
       postMessage: (message: any) => {
-        console.log("[ModbusWorker] Enviando mensagem:", message.type);
         self.postMessage(message);
       },
     });

@@ -63,10 +63,12 @@ export class LightService extends BaseService {
         if (!light.lightEndpoint) return;
         let endpoint =
           light.lightEndpoint.feedbackName ?? light.lightEndpoint.endpointName;
+        
         if (data.name === endpoint) {
           light.value = light.lightEndpoint.feedbackIsInverted
             ? !data.value
             : data.value;
+          light.value = data.value > 0 ? 0 : 1;
           this.emit("onChange", light);
         }
       });
@@ -128,7 +130,6 @@ export class LightService extends BaseService {
     }
     return true;
   }
-
   public async setToggle(lightName: string): Promise<boolean> {
     const light = this.lights.get(lightName);
     if (!light) throw new Error(`Light ${lightName} not found`);
@@ -141,9 +142,9 @@ export class LightService extends BaseService {
     } else if (light.lightEndpoint.type === "pulse") {
       device.setPulse(light.lightEndpoint.endpointName);
     }
+    
     return true;
   }
-
   public async setPulse(lightName: string): Promise<boolean> {
     const light = this.lights.get(lightName);
     if (!light) throw new Error(`Light ${lightName} not found`);

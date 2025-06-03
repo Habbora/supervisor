@@ -8,7 +8,7 @@ import type { LightEntityDto } from "../database/types";
 
 export class Light extends EventEmitter {
   private _name: string;
-  private _value?: number;
+  private _value: number = 0;
   private _endpoint?: LightEndpoint;
 
   constructor(dto: CreateLightDto) {
@@ -28,7 +28,7 @@ export class Light extends EventEmitter {
 
   public set value(value: number | boolean | undefined) {
     if (typeof value === "boolean") value = value ? 1 : 0;
-    this._value = value;
+    this._value = value ?? 0;
   }
 
   public get lightEndpoint(): LightEndpoint | undefined {

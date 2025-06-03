@@ -33,4 +33,6 @@ export type WorkerMessageResponseTemplate =
 export type ModbusPayloadUpdateResponse = {
   address: number;
   value: number;
+  timestamp: number;
+  requestId: string;
 };

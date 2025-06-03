@@ -37,7 +37,7 @@ export class Device extends EventEmitter {
 
     if (deviceConfig) {
       this.interface = deviceConfig.interface;
-      this.endpoints = deviceConfig.endpoints_boolean.map((endpoint) => ({
+      this.endpoints = deviceConfig.endpoints_register.map((endpoint) => ({
         name: endpoint.name,
         address: endpoint.address,
         value: 0,
@@ -51,19 +51,15 @@ export class Device extends EventEmitter {
   public async init() {
     // Verifica se a interface está definida
     if (!this.interface) throw new Error("Interface not found");
-    console.log(`[Device ${this.name}] Interface: ${this.interface}`);
 
     // Busca o driver
     const driver = await DriverService.getDriver(this.interface);
     if (!driver) throw new Error("Driver not found");
-    console.log(`[Device ${this.name}] Driver encontrado: ${driver.path}`);
 
     // Cria o worker usando o módulo
     this.worker = new Worker(driver.path, { type: "module" });
-    console.log(`[Device ${this.name}] Worker criado`);
 
     this.initWorker();
-    console.log(`[Device ${this.name}] Worker inicializado`);
 
     this.worker.addEventListener(
       "message",
@@ -71,7 +67,6 @@ export class Device extends EventEmitter {
     );
 
     this.isReady = true;
-    console.log(`[Device ${this.name}] Device pronto`);
   }
 
   async stop() {
@@ -88,7 +83,7 @@ export class Device extends EventEmitter {
       payload.forEach(({ address, value }) => {
         const endpoint = this.endpoints.find((e) => e.address === address);
         if (endpoint) {
-          endpoint.value = value;
+          endpoint.value = value > 0 ? 0 : 1;
           this.emit("onChange", endpoint);
         }
       });
@@ -107,6 +102,18 @@ export class Device extends EventEmitter {
           host: this.startConfig.host,
           port: this.startConfig.port,
         },
+        endpoints: {
+          inputs: this.endpoints.filter((e) => e.type === "input").map((e) => ({
+            name: e.name,
+            type: "discrete",
+            address: e.address,
+          })),
+          outputs: this.endpoints.filter((e) => e.type === "output").map((e) => ({
+            name: e.name,
+            type: "discrete",
+            address: e.address,
+          })),
+        },
       },
     };
 
@@ -118,7 +125,6 @@ export class Device extends EventEmitter {
     if (!this.worker) throw new Error("Worker not found");
 
     const endpoint = this.endpoints.find((e) => e.name === outputName);
-    console.log(this.endpoints);
     if (!endpoint) throw new Error("Endpoint not found");
 
     const data: WorkerMessageRequestTemplate<any> = {

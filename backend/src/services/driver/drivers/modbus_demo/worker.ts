@@ -2,35 +2,56 @@ import type { WorkerMessageRequestTemplate, WorkerMessageResponseTemplate } from
 
 declare var self: Worker;
 
-console.log("✅ Modbus Demo Driver Iniciado Corretamente");
-
 let lastState: Map<number, number> = new Map();
 
 self.onmessage = async (event: MessageEvent<WorkerMessageRequestTemplate<any>>) => {
-  console.log("[ModbusDemo] Mensagem recebida:", event.data.type);
 
   if (event.data.type === "init") {
-    console.log("[ModbusDemo] Inicializando...");
-    self.postMessage({
-      type: "success",
-      payload: { message: "Modbus Demo inicializado" }
-    } as WorkerMessageResponseTemplate);
+    console.log("✅ Modbus Demo Driver Iniciado Corretamente");
+    
+    const { inputs, outputs } = event.data.payload.endpoints ?? { inputs: [], outputs: [] };
+
+    inputs.forEach((input) => {
+      lastState.set(input.address, 0);
+    });
+
+    inputs.forEach((input) => {
+      lastState.set(input.address, 0);
+    });
+
+    outputs.forEach((output) => {
+      lastState.set(output.address, 0);
+    });
+
+    const response = {
+      type: "update",
+      payload: Array.from(lastState.entries()).map(([address, value]) => ({
+        address,
+        value
+      })),
+    };
+
+    self.postMessage(response as WorkerMessageResponseTemplate);
+
     return;
   }
 
   if (event.data.type === "command") {
-    const { address, value } = event.data.payload.payload;
-    console.log(`[ModbusDemo] Comando recebido: address=${address}, value=${value}`);
-    
-    lastState.set(address, value);
-    
-    self.postMessage({
-      type: "update",
-      payload: [{
-        address,
-        value
-      }]
-    } as WorkerMessageResponseTemplate);
+    const data = event.data.payload;
+    if (data.type === "write") {
+      const { type, address, value } = data.payload;
+
+      lastState.set(address, value > 0 ? 0 : 1);
+
+      self.postMessage({
+        type: "update",
+        payload: [{
+          address,
+          value,
+        }]
+      } as WorkerMessageResponseTemplate);
+    }
+
     return;
   }
 

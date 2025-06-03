@@ -4,7 +4,7 @@ import path from "path";
 interface DeviceConfig {
   name: string;
   interface: string;
-  endpoints_boolean: {
+  endpoints_register: {
     name: string;
     address: number;
     endpointType: string;

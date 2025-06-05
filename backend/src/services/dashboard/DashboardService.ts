@@ -74,10 +74,17 @@ export class DashboardService extends BaseService {
   }
 
   private handleLightChange(light: Light) {
-    const data: WebSocketResponse<{ name: string; value: number | undefined }> = {
-      type: "light",
+    const lightGroup = [
+      {
+        id: 0,
+        name: "Grupo 1 (Online)",
+        lights: this.lightsDashboard(),
+      },
+    ];
+    const data: WebSocketResponse<WebSocketDashboard> = {
+      type: "dashboard",
       code: 200,
-      payload: [DashboardService.fromLight(light)],
+      payload: lightGroup,
     };
     this.webService.broadcast(data);
   }

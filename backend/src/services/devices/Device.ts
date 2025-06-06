@@ -1,12 +1,12 @@
 import EventEmitter from "events";
 import type { DeviceEndpoint } from "../../packages/class/device/DeviceEndpoint";
 import type CreateDeviceDto from "./types/CreateDevice.dto";
-import { DriverService } from "../driver";
 import type {
   WorkerMessageRequestTemplate,
   WorkerMessageResponseTemplate,
 } from "../worker/types";
 import { readDevicesConfig } from "./utils.ts/readDeviceConfig";
+import { loadWorker } from "../../utils/WorkerPathLoader";
 
 export * from "../../packages/class/device/DeviceManager";
 
@@ -52,12 +52,10 @@ export class Device extends EventEmitter {
     // Verifica se a interface está definida
     if (!this.interface) throw new Error("Interface not found");
 
-    // Busca o driver
-    const driver = await DriverService.getDriver(this.interface);
-    if (!driver) throw new Error("Driver not found");
-
     // Cria o worker usando o módulo
-    this.worker = new Worker(driver.path, { type: "module" });
+    this.worker = loadWorker(this.interface);
+
+    if (!this.worker) throw new Error("Worker not found");
 
     this.initWorker();
 

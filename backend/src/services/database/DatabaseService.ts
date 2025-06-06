@@ -11,8 +11,9 @@ export class DatabaseService extends BaseService {
         this.ensureDataDirectory();
     }
 
-    async initialize(): Promise<void> {
+    async initialize(): Promise<this> {
         this.ensureDataDirectory();
+        return this;
     }
 
     async destroy(): Promise<void> {

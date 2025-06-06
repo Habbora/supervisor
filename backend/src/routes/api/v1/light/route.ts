@@ -1,6 +1,8 @@
 import { LightService } from "../../../../services/light/LightService";
 
 export const GET = async (req: any) => {
+  const lightService = (global as any).lightService as LightService;
+
   try {
     const url = new URL(req.url);
     const lightName = url.searchParams.get('lightName');
@@ -9,8 +11,6 @@ export const GET = async (req: any) => {
     if (!lightName || !action) {
       return new Response("Parâmetros lightName e action são obrigatórios", { status: 400 });
     }
-    
-    const lightService = (global as any).lightService as LightService;
     
     if (!lightService) {
         return new Response("Serviço de luz não inicializado", { status: 500 });

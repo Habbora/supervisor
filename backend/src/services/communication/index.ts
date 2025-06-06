@@ -148,7 +148,7 @@ export class WebService extends BaseService {
     this._isInitialized = true;
 
     console.log(
-      `WebSocketService inicializado com sucesso! Servidor escutando na porta ${WEBSOCKET_CONFIG.PORT}`
+      `WebSocketService inicializado com sucesso! Servidor escutando http://localhost:${WEBSOCKET_CONFIG.PORT}`
     );
 
     return this;

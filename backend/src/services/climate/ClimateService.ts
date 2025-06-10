@@ -1,6 +1,6 @@
 import { BaseService } from "../abstracts/BaseService";
 import type { DatabaseService } from "../database";
-import type { DeviceService } from "../devices";
+import type { DeviceService } from "../controller";
 
 type ClimateEndpointEntityDto = {
   type: "ir";
@@ -27,7 +27,7 @@ class Climate {
 
   public isPowerOn: boolean = false;
 
-  constructor (
+  constructor(
     public name: string,
     public entityDto?: ClimateEntityDto,
   ) {
@@ -70,7 +70,7 @@ export class ClimateService extends BaseService {
       console.log(
         `ClimateService inicializado com sucesso! ${this.climates.size} climas encontrados.`
       );
-    } catch (error) {}
+    } catch (error) { }
   }
 
   private async loadClimates(): Promise<void> {

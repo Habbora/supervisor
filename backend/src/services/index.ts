@@ -2,7 +2,7 @@
 export { SupervisorService, ConfigService } from "./core";
 
 // Device Services
-export { DeviceService } from "./devices";
+export { DeviceService } from "./controller";
 
 // Communication Services
 export { WebService as WebSocketService } from "./communication";

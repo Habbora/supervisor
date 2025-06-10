@@ -1,5 +1,5 @@
 import { BaseService } from "../abstracts/BaseService";
-import type { DeviceService } from "../devices";
+import type { DeviceService } from "../controller";
 import { HydraulicLevel, type HydraulicLevelDto } from "./hydraulic_level";
 
 export class HydraulicService extends BaseService {
@@ -17,12 +17,12 @@ export class HydraulicService extends BaseService {
         this.hydraulicLevels.set("2", new HydraulicLevel({
             id: "2",
             name: "Nivel 2",
-            value: 0
+            value: 90
         }));
         this.hydraulicLevels.set("3", new HydraulicLevel({
             id: "3",
             name: "Nivel 3",
-            value: 50
+            value: 85
         }));
     }
 

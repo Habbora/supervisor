@@ -1,5 +1,5 @@
 import { DatabaseService } from "../database";
-import { DeviceService } from "../devices";
+import { DeviceService } from "../controller";
 import { BaseService } from "../abstracts/BaseService";
 import { LightService } from "../light";
 import { DashboardService } from "../dashboard";

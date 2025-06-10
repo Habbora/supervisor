@@ -33,6 +33,7 @@ export class DashboardService extends BaseService {
       id: level.id,
       name: level.name,
       value: level.value,
+      isAlert: level.value < level.minValueAlert || level.value > level.maxValueAlert,
     }));
   }
 

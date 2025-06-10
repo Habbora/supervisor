@@ -1,5 +1,5 @@
 import { BaseService } from "../abstracts/BaseService";
-import type { Device } from "../devices/Device";
+import type { Device } from "../controller/Device";
 
 type EndpointType = "digital_input" | "digital_output" | "analog_input" | "analog_output" | "pwm_output";
 
@@ -64,7 +64,7 @@ type EndpointTypes = EnpointDigitalInput | EnpointDigitalOutput | EnpointAnalogI
 
 
 export class EndpointsService extends BaseService {
-  
+
   endpoints: EndpointTypes[] = [];
 
   async initialize(): Promise<void> {

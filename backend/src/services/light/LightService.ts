@@ -1,6 +1,6 @@
 import { Light } from "./Light";
 import { BaseService } from "../abstracts/BaseService";
-import { DeviceService } from "../devices/DeviceService";
+import { DeviceService } from "../controller/DeviceService";
 import { DatabaseService } from "../database/DatabaseService";
 import type { LightEntityDto } from "../database/types/LightEntity.dto";
 import type { CreateLightDto } from "./types/CreateLight.dto";
@@ -23,7 +23,7 @@ export class LightService extends BaseService {
     this.deviceService = config.deviceService;
     this.databaseService = config.databaseService;
   }
-  
+
   async initialize(): Promise<this> {
     try {
       console.log("Inicializando LightService...");
@@ -62,7 +62,7 @@ export class LightService extends BaseService {
         if (!light.lightEndpoint) return;
         let endpoint =
           light.lightEndpoint.feedbackName ?? light.lightEndpoint.endpointName;
-        
+
         if (data.name === endpoint) {
           light.value = light.lightEndpoint.feedbackIsInverted
             ? !data.value
@@ -141,7 +141,7 @@ export class LightService extends BaseService {
     } else if (light.lightEndpoint.type === "pulse") {
       device.setPulse(light.lightEndpoint.endpointName);
     }
-    
+
     return true;
   }
   public async setPulse(lightName: string): Promise<boolean> {

@@ -1,7 +1,7 @@
 import { SupervisorService } from "./src/services/core/SupervisorService";
 import { Command } from "commander/typings/esm.d.mts";
 import readline from "readline";
-import { Device } from "./src/services/devices/Device";
+import { Device } from "./src/services/controller/Device";
 
 const program = new Command();
 

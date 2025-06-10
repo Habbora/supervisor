@@ -1,0 +1,20 @@
+[
+    {
+        "id": "1",
+        "name": "Level 1",
+        "deviceId": "CLP1",
+        "endpointId": "D01"
+    },
+    {
+        "id": "2",
+        "name": "Level 2",
+        "deviceId": "CLP1",
+        "endpointId": "D02"
+    },
+    {
+        "id": "3",
+        "name": "Level 3",
+        "deviceId": "CLP1",
+        "endpointId": "D03"
+    }
+]

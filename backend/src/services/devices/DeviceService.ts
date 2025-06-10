@@ -40,6 +40,10 @@ export class DeviceService extends BaseService {
     return this.devices.get(name);
   }
 
+  getDeviceByName(name: string): Device | undefined {
+    return this.devices.get(name);
+  }
+
   getAllDevices(): Device[] {
     return Array.from(this.devices.values());
   }

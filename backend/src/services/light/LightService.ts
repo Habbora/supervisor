@@ -44,7 +44,6 @@ export class LightService extends BaseService {
       this.lights.set(light.name, light);
     });
   }
-
   // Melhoria futura: Mudar o evento para device service e pegar o valor do device.
   private async loadEndpointsEvents(): Promise<void> {
     let lightsWithEndpoints = [];

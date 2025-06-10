@@ -1,9 +1,6 @@
 import { BaseService } from "../abstracts/BaseService";
 import type { DeviceService } from "../devices";
-import type { HydraulicLevel, HydraulicLevelDto } from "./hydraulic_level";
-
-
-
+import { HydraulicLevel, type HydraulicLevelDto } from "./hydraulic_level";
 
 export class HydraulicService extends BaseService {
     private deviceService: DeviceService = (global as any).deviceService;
@@ -12,12 +9,31 @@ export class HydraulicService extends BaseService {
 
     constructor() {
         super("HydraulicService");
+        this.hydraulicLevels.set("1", new HydraulicLevel({
+            id: "1",
+            name: "Nivel 1",
+            value: 100
+        }));
+        this.hydraulicLevels.set("2", new HydraulicLevel({
+            id: "2",
+            name: "Nivel 2",
+            value: 0
+        }));
+        this.hydraulicLevels.set("3", new HydraulicLevel({
+            id: "3",
+            name: "Nivel 3",
+            value: 50
+        }));
     }
 
     async createHydraulicLevel(dto: HydraulicLevelDto): Promise<HydraulicLevel> {
         const level = new HydraulicLevel(dto);
         this.hydraulicLevels.set(level.id, level);
         return level;
+    }
+
+    getHydraulicLevels(): HydraulicLevel[] {
+        return Array.from(this.hydraulicLevels.values());
     }
 
     async setOpen(deviceName: string): Promise<void> {
@@ -40,7 +56,7 @@ export class HydraulicService extends BaseService {
     }
 
     private loadClass() {
-        
+
     }
 
     async initialize(): Promise<this> {

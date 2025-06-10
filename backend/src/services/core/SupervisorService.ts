@@ -3,6 +3,7 @@ import { DeviceService } from "../devices";
 import { BaseService } from "../abstracts/BaseService";
 import { LightService } from "../light";
 import { DashboardService } from "../dashboard";
+import { HydraulicService } from "../hydraulic";
 
 export class SupervisorService extends BaseService {
   public dbService = new DatabaseService();
@@ -11,7 +12,8 @@ export class SupervisorService extends BaseService {
     databaseService: this.dbService,
     deviceService: this.deviceService,
   });
-  public dashboardService = new DashboardService(this.lightService);
+  public hydraulicService = new HydraulicService();
+  public dashboardService = new DashboardService(this.lightService, this.hydraulicService);
 
   constructor() {
     super("Supervisor");

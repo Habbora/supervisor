@@ -13,4 +13,9 @@ export type WebSocketDashboard = {
         type: "dimmer" | "switch" | "pulse";
         status: number;
     }[];
+    levels: {
+        id: string;
+        name: string;
+        value: number;
+    }[];
 };

@@ -18,14 +18,14 @@ deviceManager.addDevice(new Level({
     id: "2",
     name: "Level2",
     type: "level",
-    value: 0,
+    value: 50,
 }));
 
 deviceManager.addDevice(new Level({
     id: "3",
     name: "Level3",
     type: "level",
-    value: 0,
+    value: 25,
 }));
 
 const controller = supervisor.deviceService.getDeviceByName("CLP1")!;

@@ -5,10 +5,7 @@ export type DeviceDto = {
     name: string;
     type: string;
     controller?: Device;
-    endpoint?: string[];
+    endpoint?: Map<number, string>;
 }
 
-export type DeviceControllerDto = {
-    controller: Device;
-    endpoint: string[];
-}
+export type DeviceControllerDto = Device

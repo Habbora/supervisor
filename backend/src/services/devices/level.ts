@@ -1,6 +1,6 @@
 import EventEmitter from "events";
 import type { Device } from "../controller/Device";
-import type { DeviceControllerDto, DeviceDto } from "./types/dto.type";
+import type { DeviceDto } from "./types/dto.type";
 import { DeviceError, type DeviceEventData, type IDevice } from "./types/device.type";
 
 export type LevelDto = DeviceDto & {
@@ -18,7 +18,7 @@ export class Level extends EventEmitter implements IDevice {
     private readonly _name: string;
     private _value: number;
     private _controller?: Device;
-    private _endpoint?: string[];
+    private _endpoint?: Map<number, string>;
 
     /**
      * Cria uma nova instância de um dispositivo de nível
@@ -35,7 +35,7 @@ export class Level extends EventEmitter implements IDevice {
         this._name = dto.name;
         this._value = dto.value ?? 0;
         this._controller = dto.controller;
-        this._endpoint = dto.endpoint;
+        this._endpoint = dto.endpoint ?? new Map();
     }
 
     /**
@@ -55,20 +55,13 @@ export class Level extends EventEmitter implements IDevice {
 
     /**
      * Configura o controlador do dispositivo
-     * @param config - Configuração do controlador
+     * @param controller - Configuração do controlador
      * @returns O próprio dispositivo para encadeamento
      * @throws {DeviceError} Se o controlador for inválido
      */
-    addController(config: DeviceControllerDto): this {
-        if (!config.controller) throw new DeviceError('Controlador inválido');
-
-        try {
-            this._controller = config.controller;
-            config.endpoint?.forEach(endpoint => this.addEndpoint(endpoint));
-            return this;
-        } catch (error) {
-            throw new DeviceError('Erro ao configurar controlador');
-        }
+    addController(controller: Device): this {
+        this._controller = controller;
+        return this;
     }
 
     /**
@@ -86,18 +79,18 @@ export class Level extends EventEmitter implements IDevice {
         }
     }
 
-    addEndpoint(endpoint: string): this {
+    addEndpoint(endpoint: string, index: number): this {
         if (!this._controller) throw new DeviceError('Controlador não configurado');
-        this._endpoint?.push(endpoint);
+        this._endpoint?.set(index, endpoint);
         this._controller.on(`endpoint:${endpoint}`, this.onControllerEvent.bind(this));
         this.emit('endpointAdded', endpoint);
         return this;
     }
 
-    removeEndpoint(endpoint: string): this {
+    removeEndpoint(endpoint: string, index: number): this {
         if (!this._controller) throw new DeviceError('Controlador não configurado');
         this._controller.off(`endpoint:${endpoint}`, this.onControllerEvent);
-        this._endpoint = this._endpoint?.filter(e => e !== endpoint);
+        this._endpoint?.delete(index);
         this.emit('endpointRemoved', endpoint);
         return this;
     }
@@ -124,7 +117,7 @@ export class Level extends EventEmitter implements IDevice {
     }
 
     /** Obtém o controlador do dispositivo */
-    get getDevice(): Device | undefined {
+    get getController(): Device | undefined {
         return this._controller;
     }
 
@@ -145,5 +138,9 @@ export class Level extends EventEmitter implements IDevice {
 
     get value(): number {
         return this._value;
+    }
+
+    get endpoints(): Map<number, string> {
+        return this._endpoint ?? new Map();
     }
 }

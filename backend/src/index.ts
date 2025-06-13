@@ -28,20 +28,17 @@ deviceManager.addDevice(new Level({
 
 const controller = supervisor.deviceService.getDeviceByName("CLP1")!;
 
-deviceManager.getDevice("1")?.addController({
-    controller,
-    endpoint: ["Teste"],
-});
+deviceManager.getDevice("1")?.addController(controller);
+deviceManager.getDevice("2")?.addController(controller);
+deviceManager.getDevice("3")?.addController(controller);
 
-deviceManager.getDevice("2")?.addController({
-    controller,
-    endpoint: ["Teste2"],
-});
+deviceManager.getDevice("1")?.addEndpoint("Teste", 0);
+deviceManager.getDevice("2")?.addEndpoint("Teste2", 0);
+deviceManager.getDevice("3")?.addEndpoint("Teste3", 0);
 
-deviceManager.getDevice("3")?.addController({
-    controller,
-    endpoint: ["Teste3"],
-});
+console.log("Device 1: ", deviceManager.getDevice("1")?.endpoints);
+console.log("Device 2: ", deviceManager.getDevice("2")?.endpoints);
+console.log("Device 3: ", deviceManager.getDevice("3")?.endpoints);
 
 let value = 100;
 

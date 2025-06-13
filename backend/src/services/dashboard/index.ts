@@ -4,6 +4,8 @@ import type { HydraulicService } from "../hydraulic";
 import type { Light } from "../light/Light";
 import type { LightService } from "../light/LightService";
 import type { WebSocketDashboard, WebSocketResponse } from "./types/websocket";
+import type { DeviceEventData } from "../devices/types/device.type";
+import type { DeviceManager } from "../devices/manager";
 
 export class DashboardService extends BaseService {
   public webService: WebService;
@@ -29,12 +31,16 @@ export class DashboardService extends BaseService {
   }
 
   private levelDashboard() {
-    return this.hydraulicService.getHydraulicLevels().map((level) => ({
-      id: level.id,
-      name: level.name,
-      value: level.value,
-      isAlert: level.value < level.minValueAlert || level.value > level.maxValueAlert,
-    }));
+    const deviceManager: DeviceManager = (global as any).deviceManager;
+    const levels = deviceManager.getDevices().map((device) => {
+      return {
+        id: device.id,
+        name: device.name,
+        value: device.value ?? 0,
+      };
+    });
+
+    return levels;
   }
 
   handleDashboardRegister() {
@@ -62,15 +68,41 @@ export class DashboardService extends BaseService {
 
     // Inicializa o WebService
     await this.webService.initialize();
-    this.webService.on("open", () => this.handleDashboardRegister());
+    this.webService.on("open", () => this.handleDeviceChange());
 
     this.lightService.on("onChange", (light: Light) => {
       this.handleLightChange(light);
     });
 
+    const deviceManager: DeviceManager = (global as any).deviceManager;
+    deviceManager.on("valueChanged", (data: DeviceEventData) => {
+      this.handleDeviceChange();
+    });
+
     console.log("DashboardService inicializado com sucesso!");
     return this;
   }
+
+  private handleDeviceChange() {
+    console.log("Bateu no Dashboard");
+
+    const groups = [
+      {
+        id: 0,
+        name: "Grupo 1 (Online)",
+        lights: this.lightsDashboard(),
+        levels: this.levelDashboard(),
+      },
+    ];
+
+    const data: WebSocketResponse<WebSocketDashboard> = {
+      type: "dashboard",
+      code: 200,
+      payload: groups,
+    };
+    this.webService.broadcast(data);
+  }
+
 
   private handleLightChange(light: Light) {
     const lightGroup = [

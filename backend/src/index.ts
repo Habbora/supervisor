@@ -4,25 +4,21 @@ import { Level } from "./services/devices/level";
 const supervisor = new SupervisorService()
 await supervisor.initialize();
 
-const device = new Level({
+const deviceManager = (global as any).deviceManager;
+deviceManager.addDevice(new Level({
     id: "1",
     name: "Level",
-    value: 0,
-});
+    type: "level",
+    value: 75,
+}));
 
-device.setController({
-    controller: supervisor.deviceService.getDeviceByName("CLP1")!,
+const controller = supervisor.deviceService.getDeviceByName("CLP1")!;
+deviceManager.getDevice("1")?.addController({
+    controller,
     endpoint: "Teste",
 });
 
-supervisor.deviceService.getDeviceByName("CLP1")!.emit("endpoint:Teste", {
-    value: 100,
-    teste: "teste",
-});
-
-device.removeController();
-
-supervisor.deviceService.getDeviceByName("CLP1")!.emit("endpoint:Teste", {
+controller.emit("endpoint:Teste", {
     value: 100,
     teste: "teste",
 });

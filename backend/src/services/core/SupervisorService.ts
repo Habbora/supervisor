@@ -4,8 +4,11 @@ import { BaseService } from "../abstracts/BaseService";
 import { LightService } from "../light";
 import { DashboardService } from "../dashboard";
 import { HydraulicService } from "../hydraulic";
+import { DeviceManager } from "../devices/manager";
 
 export class SupervisorService extends BaseService {
+  public deviceManager: DeviceManager;
+
   public dbService = new DatabaseService();
   public deviceService = new DeviceService(this.dbService);
   public lightService = new LightService({
@@ -17,6 +20,8 @@ export class SupervisorService extends BaseService {
 
   constructor() {
     super("Supervisor");
+    this.deviceManager = new DeviceManager();
+    (global as any).deviceManager = this.deviceManager;
   }
 
   async initialize(): Promise<this> {

@@ -1,94 +1,11 @@
 import EventEmitter from "events";
 import type { Device } from "../controller/Device";
+import type { DeviceControllerDto, DeviceDto } from "./types/dto.type";
+import { DeviceError, type DeviceEventData, type IDevice } from "./types/device.type";
 
-/**
- * Tipo para eventos do dispositivo
- */
-export type DeviceEventData = {
-    value: number;
-    timestamp: number;
-    status: 'active' | 'inactive' | 'error';
-};
-
-/**
- * Erros específicos do dispositivo
- */
-export class DeviceError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = 'DeviceError';
-    }
-}
-
-/**
- * Interface que define o comportamento básico de um dispositivo
- * @interface IDevice
- * @extends EventEmitter
- */
-export interface IDevice extends EventEmitter {
-    /** Identificador único do dispositivo */
-    readonly id: string;
-    /** Nome do dispositivo */
-    readonly name: string;
-    /** Tipo do dispositivo */
-    readonly type: string;
-    /** Controlador associado ao dispositivo */
-    controller?: Device;
-    /** Endpoint do dispositivo */
-    endpoint?: string;
-
-    /**
-     * Método chamado quando um evento do dispositivo ocorre
-     * @param data - Dados do evento
-     */
-    onDeviceEvent(data: DeviceEventData): void;
-
-    /**
-     * Configura o controlador do dispositivo
-     * @param config - Configuração do controlador
-     * @returns O próprio dispositivo para encadeamento
-     * @throws {DeviceError} Se o controlador for inválido
-     */
-    setController(config: ControllerConfig): this;
-
-    /**
-     * Remove o controlador do dispositivo
-     * @returns O próprio dispositivo para encadeamento
-     */
-    removeController(): this;
-
-    /** Obtém o controlador do dispositivo */
-    get getDevice(): Device | undefined;
-}
-
-/**
- * DTO (Data Transfer Object) para criação de um dispositivo de nível
- * @interface LevelDto
- */
-export interface LevelDto {
-    /** Identificador único do dispositivo */
-    id: string;
-    /** Nome do dispositivo */
-    name: string;
-    /** Tipo do dispositivo */
-    type: string;
-    /** Valor atual do nível (0-100) */
-    value: number;
-    /** Controlador associado ao dispositivo */
-    controller?: Device;
-    /** Endpoint do dispositivo */
-    endpoint?: string;
-}
-
-/**
- * Configuração do controlador
- * @interface ControllerConfig
- */
-interface ControllerConfig {
-    /** Instância do controlador */
-    controller: Device;
-    /** Endpoint do dispositivo */
-    endpoint: string;
+export type LevelDto = DeviceDto & {
+    value?: number;
+    type: "level";
 }
 
 /**
@@ -109,10 +26,14 @@ export class Level extends EventEmitter implements IDevice {
      * @throws {DeviceError} Se o valor estiver fora do intervalo válido (0-100)
      */
     constructor(dto: LevelDto) {
+        if (dto.type !== 'level') {
+            throw new DeviceError('Tipo de dispositivo inválido');
+        }
+
         super();
         this._id = dto.id;
         this._name = dto.name;
-        this._value = this.validateValue(dto.value);
+        this._value = dto.value ?? 0;
         this._controller = dto.controller;
         this._endpoint = dto.endpoint;
     }
@@ -136,14 +57,14 @@ export class Level extends EventEmitter implements IDevice {
      * @param data - Dados do evento recebido
      * @throws {DeviceError} Se os dados do evento forem inválidos
      */
-    onDeviceEvent(data: DeviceEventData): void {
+    onDeviceEvent(data: DeviceEventData): this {
         try {
-            this._value = this.validateValue(data.value);
             this.emit('valueChanged', data);
         } catch (error) {
             this.emit('error', new DeviceError('Erro ao processar evento do dispositivo'));
             throw error;
         }
+        return this;
     }
 
     /**
@@ -152,7 +73,7 @@ export class Level extends EventEmitter implements IDevice {
      * @returns O próprio dispositivo para encadeamento
      * @throws {DeviceError} Se o controlador for inválido
      */
-    setController(config: ControllerConfig): this {
+    addController(config: DeviceControllerDto): this {
         if (!config.controller) {
             throw new DeviceError('Controlador inválido');
         }
@@ -205,7 +126,6 @@ export class Level extends EventEmitter implements IDevice {
         return 'level';
     }
 
-    /** Obtém o valor atual do nível */
     get value(): number {
         return this._value;
     }

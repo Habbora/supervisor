@@ -8,8 +8,6 @@ import type {
 import { readDevicesConfig } from "./utils.ts/readDeviceConfig";
 import { loadWorker } from "../../utils/WorkerPathLoader";
 
-export * from "../../packages/class/device/DeviceManager";
-
 export class Device extends EventEmitter {
   public id: string;
   public name: string;

@@ -39,20 +39,6 @@ export class Level extends EventEmitter implements IDevice {
     }
 
     /**
-     * Valida o valor do nível
-     * @private
-     * @param value - Valor a ser validado
-     * @returns Valor validado
-     * @throws {DeviceError} Se o valor estiver fora do intervalo válido
-     */
-    private validateValue(value: number): number {
-        if (value < 0 || value > 100) {
-            throw new DeviceError('O valor do nível deve estar entre 0 e 100');
-        }
-        return value;
-    }
-
-    /**
      * Manipula eventos do dispositivo
      * @param data - Dados do evento recebido
      * @throws {DeviceError} Se os dados do evento forem inválidos

@@ -41,23 +41,3 @@ console.log("Device 2: ", deviceManager.getDevice("2")?.endpoints);
 console.log("Device 3: ", deviceManager.getDevice("3")?.endpoints);
 
 let value = 100;
-
-setInterval(() => {
-    value = value + 25;
-    if (value > 100) value = 0;
-
-    controller.emit("endpoint:Teste", {
-        value: value,
-        teste: "teste",
-    });
-
-    controller.emit("endpoint:Teste2", {
-        value: value,
-        teste: "teste",
-    });
-
-    controller.emit("endpoint:Teste3", {
-        value: value,
-        teste: "teste",
-    });
-}, 3000);

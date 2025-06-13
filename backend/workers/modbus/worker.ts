@@ -1,10 +1,12 @@
-import { ModbusWorker } from "../../../modbus";
-import type { WorkerMessageRequestTemplate, WorkerMessageResponseTemplate } from "../../../worker/types";
-import type { ModbusMessageRequest } from "../../../modbus/types";
+import type { ModbusMessageRequest } from "../../src/services/modbus/types";
+import { ModbusWorker } from "../../src/services/modbus/worker";
+import type { WorkerMessageRequestTemplate, WorkerMessageResponseTemplate } from "../../src/services/worker/types";
 
 declare var self: Worker;
 
 let client: ModbusWorker | null = null;
+
+console.log("😊 ModbusWorker iniciado com sucesso");
 
 self.onmessage = async (event: MessageEvent<WorkerMessageRequestTemplate<ModbusMessageRequest>>) => {
   if (event.data.type === "init") {

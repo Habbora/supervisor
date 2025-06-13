@@ -1,6 +1,6 @@
 {
   "name": "MCP46A",
-  "interface": "modbus_demo",
+  "interface": "modbus",
   "endpoints_register": [
     {
       "name": "D01",

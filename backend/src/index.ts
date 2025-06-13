@@ -4,6 +4,8 @@ import { Level } from "./services/devices/level";
 const supervisor = new SupervisorService()
 await supervisor.initialize();
 
+// Teste de implementação do Modbus
+
 const deviceManager = (global as any).deviceManager;
 deviceManager.addDevice(new Level({
     id: "1",

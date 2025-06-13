@@ -84,8 +84,6 @@ export class DashboardService extends BaseService {
   }
 
   private handleDeviceChange() {
-    console.log("Bateu no Dashboard");
-
     const groups = [
       {
         id: 0,
@@ -100,6 +98,7 @@ export class DashboardService extends BaseService {
       code: 200,
       payload: groups,
     };
+
     this.webService.broadcast(data);
   }
 

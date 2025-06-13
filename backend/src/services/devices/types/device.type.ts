@@ -10,7 +10,7 @@ export interface IDevice extends EventEmitter {
     controller?: Device;
     endpoint?: string;
 
-    onDeviceEvent(data: DeviceEventData): this;
+    onControllerEvent(data: DeviceEventData): this;
     addController(config: DeviceControllerDto): this;
     removeController(): this;
 }

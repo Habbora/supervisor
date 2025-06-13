@@ -18,7 +18,7 @@ export class Level extends EventEmitter implements IDevice {
     private readonly _name: string;
     private _value: number;
     private _controller?: Device;
-    private _endpoint?: string;
+    private _endpoint?: string[];
 
     /**
      * Cria uma nova instância de um dispositivo de nível
@@ -43,9 +43,9 @@ export class Level extends EventEmitter implements IDevice {
      * @param data - Dados do evento recebido
      * @throws {DeviceError} Se os dados do evento forem inválidos
      */
-    onDeviceEvent(data: DeviceEventData): this {
+    onControllerEvent(data: DeviceEventData): this {
         try {
-            this.emit('valueChanged', data);
+            this._updateValue(data.value);
         } catch (error) {
             this.emit('error', new DeviceError('Erro ao processar evento do dispositivo'));
             throw error;
@@ -60,15 +60,11 @@ export class Level extends EventEmitter implements IDevice {
      * @throws {DeviceError} Se o controlador for inválido
      */
     addController(config: DeviceControllerDto): this {
-        if (!config.controller) {
-            throw new DeviceError('Controlador inválido');
-        }
+        if (!config.controller) throw new DeviceError('Controlador inválido');
 
         try {
-            this.removeController();
-            config.controller.on(`endpoint:${config.endpoint}`, this.onDeviceEvent.bind(this));
             this._controller = config.controller;
-            this._endpoint = config.endpoint;
+            config.endpoint?.forEach(endpoint => this.addEndpoint(endpoint));
             return this;
         } catch (error) {
             throw new DeviceError('Erro ao configurar controlador');
@@ -81,15 +77,50 @@ export class Level extends EventEmitter implements IDevice {
      */
     removeController(): this {
         try {
-            if (this._controller && this._endpoint) {
-                this._controller.off(`endpoint:${this._endpoint}`, this.onDeviceEvent);
-            }
+            this.removeAllEndpoints();
             this._controller = undefined;
             this._endpoint = undefined;
             return this;
         } catch (error) {
             throw new DeviceError('Erro ao remover controlador');
         }
+    }
+
+    addEndpoint(endpoint: string): this {
+        if (!this._controller) throw new DeviceError('Controlador não configurado');
+        this._endpoint?.push(endpoint);
+        this._controller.on(`endpoint:${endpoint}`, this.onControllerEvent.bind(this));
+        this.emit('endpointAdded', endpoint);
+        return this;
+    }
+
+    removeEndpoint(endpoint: string): this {
+        if (!this._controller) throw new DeviceError('Controlador não configurado');
+        this._controller.off(`endpoint:${endpoint}`, this.onControllerEvent);
+        this._endpoint = this._endpoint?.filter(e => e !== endpoint);
+        this.emit('endpointRemoved', endpoint);
+        return this;
+    }
+
+    removeAllEndpoints(): this {
+        if (!this._controller) throw new DeviceError('Controlador não configurado');
+        this._endpoint?.forEach(endpoint => {
+            this._controller!.off(`endpoint:${endpoint}`, this.onControllerEvent);
+        });
+        this._endpoint = undefined;
+        return this;
+    }
+
+    private _updateValue(value: number): this {
+        this._value = value;
+        this.emit('valueChanged', { value });
+        return this;
+    }
+
+    forceValue(value: number): this {
+        this._value = value;
+        this.emit('valueChanged', { value });
+        return this;
     }
 
     /** Obtém o controlador do dispositivo */

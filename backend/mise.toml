@@ -1,8 +1,0 @@
-[tools]
-node = { version = "22.13.1" }
-bun = "1.2.8"
-
-[tasks."backend:dev"]
-dir = "{{ config_root }}/apps/backend"
-run = "mise dev"
-env = { MODE = "development" }

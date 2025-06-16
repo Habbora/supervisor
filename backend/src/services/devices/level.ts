@@ -1,5 +1,5 @@
 import EventEmitter from "events";
-import type { Device } from "../controller/Device";
+import type { Device } from "../controller/Controller";
 import type { DeviceDto } from "./types/dto.type";
 import { DeviceError, type DeviceEventData, type IDevice } from "./types/device.type";
 

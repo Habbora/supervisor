@@ -1,5 +1,5 @@
 import { BaseService } from "../abstracts/BaseService";
-import type { Device } from "../controller/Device";
+import type { Device } from "../controller/Controller";
 
 type EndpointType = "digital_input" | "digital_output" | "analog_input" | "analog_output" | "pwm_output";
 

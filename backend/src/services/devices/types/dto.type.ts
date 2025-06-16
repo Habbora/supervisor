@@ -1,4 +1,4 @@
-import type { Device } from "../../controller/Device";
+import type { Device } from "../../controller/Controller";
 
 export type DeviceDto = {
     id: string;

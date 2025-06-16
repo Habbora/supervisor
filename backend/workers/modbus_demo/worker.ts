@@ -4,22 +4,26 @@ declare var self: Worker;
 
 let lastState: Map<number, number> = new Map();
 
+console.log("✅ Modbus Demo Driver Iniciado Corretamente");
+
+type WorkerEndpoint = {
+  name: string;
+  address: number;
+  endpointType: "input" | "output";
+}
+
 self.onmessage = async (event: MessageEvent<WorkerMessageRequestTemplate<any>>) => {
 
   if (event.data.type === "init") {
-    console.log("✅ Modbus Demo Driver Iniciado Corretamente");
-    
+
     const { inputs, outputs } = event.data.payload.endpoints ?? { inputs: [], outputs: [] };
+    console.log(inputs, outputs);
 
-    inputs.forEach((input) => {
+    inputs.forEach((input: WorkerEndpoint) => {
       lastState.set(input.address, 0);
     });
 
-    inputs.forEach((input) => {
-      lastState.set(input.address, 0);
-    });
-
-    outputs.forEach((output) => {
+    outputs.forEach((output: WorkerEndpoint) => {
       lastState.set(output.address, 0);
     });
 
@@ -34,6 +38,13 @@ self.onmessage = async (event: MessageEvent<WorkerMessageRequestTemplate<any>>) 
     self.postMessage(response as WorkerMessageResponseTemplate);
 
     return;
+  }
+
+  if (event.data.type === "test") {
+    const data = event.data.payload;
+    const { type, address } = data;
+
+    console.log("Teste de comunicação com o driver");
   }
 
   if (event.data.type === "command") {

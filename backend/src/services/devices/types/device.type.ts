@@ -1,4 +1,4 @@
-import type { Device } from "../../controller/Device";
+import type { Device } from "../../controller/Controller";
 import type { DeviceControllerDto } from "./dto.type";
 import type { EventEmitter } from "events";
 

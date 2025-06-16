@@ -1,4 +1,4 @@
-import { Device } from "./Device";
+import { Device } from "./Controller";
 import { DatabaseService } from "../database/DatabaseService";
 import { BaseService } from "../abstracts/BaseService";
 import type CreateDeviceDto from "./types/CreateDevice.dto";

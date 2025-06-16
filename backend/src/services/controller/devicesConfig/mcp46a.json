@@ -1,6 +1,6 @@
 {
   "name": "MCP46A",
-  "interface": "modbus",
+  "interface": "modbus_demo",
   "endpoints_register": [
     {
       "name": "D01",
@@ -170,6 +170,111 @@
     {
       "name": "DI18",
       "address": 34,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI01",
+      "address": 35,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI02",
+      "address": 36,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI03",
+      "address": 37,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI04",
+      "address": 38,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI05", 
+      "address": 39,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI06",
+      "address": 40,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI07",
+      "address": 41,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI08",
+      "address": 42,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI09",
+      "address": 43,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI10",
+      "address": 44,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI11",
+      "address": 45,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI12",
+      "address": 46,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI13",
+      "address": 47,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI14",
+      "address": 48,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI15",
+      "address": 49,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI16",
+      "address": 50,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI17",
+      "address": 51,
+      "endpointType": "input"
+    },
+    {
+      "name": "SI18",
+      "address": 52,
+      "endpointType": "input"
+    },
+    {
+      "name": "AI01",
+      "address": 53,
+      "endpointType": "input"
+    },
+    {
+      "name": "AI02",
+      "address": 54,
+      "endpointType": "input"
+    },
+    {
+      "name": "AI03",
+      "address": 55,
       "endpointType": "input"
     }
   ]

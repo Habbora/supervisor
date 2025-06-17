@@ -31,11 +31,10 @@ export class ModbusWorker {
     this.hostname = config.host;
     this.port = config.port ?? 502;
     this.postMessage = config.postMessage;
-    this.modbusService = new ModbusService(
-      this.hostname,
-      this.port,
-      this.postMessage
-    );
+    this.modbusService = new ModbusService({
+      hostname: this.hostname,
+      port: this.port,
+    }, this.postMessage);
   }
 
   async initialize(): Promise<void> {

@@ -129,6 +129,7 @@ export class LightService extends BaseService {
     }
     return true;
   }
+
   public async setToggle(lightName: string): Promise<boolean> {
     const light = this.lights.get(lightName);
     if (!light) throw new Error(`Light ${lightName} not found`);
@@ -137,7 +138,7 @@ export class LightService extends BaseService {
     if (!device)
       throw new Error(`Device ${light.lightEndpoint.deviceName} not found`);
     if (light.lightEndpoint.type === "discrete") {
-      device.setOutput(light.lightEndpoint.endpointName, light.value ? 0 : 1);
+      device.setOutput(light.lightEndpoint.endpointName, light.value ? 1 : 0);
     } else if (light.lightEndpoint.type === "pulse") {
       device.setPulse(light.lightEndpoint.endpointName);
     }

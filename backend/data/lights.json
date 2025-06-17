@@ -2,7 +2,7 @@
   {
     "name": "Circuito 1 CLP1",
     "endpoint": {
-      "type": "discrete",
+      "type": "pulse",
       "deviceName": "CLP1",
       "endpointName": "D01",
       "feedbackName": "D01",

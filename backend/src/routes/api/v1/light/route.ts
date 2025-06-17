@@ -11,30 +11,30 @@ export const GET = async (req: any) => {
     if (!lightName || !action) {
       return new Response("Parâmetros lightName e action são obrigatórios", { status: 400 });
     }
-    
+
     if (!lightService) {
-        return new Response("Serviço de luz não inicializado", { status: 500 });
+      return new Response("Serviço de luz não inicializado", { status: 500 });
     }
 
     const light = lightService.getLightByName(lightName);
 
     if (!light) {
-        return new Response("Lampada não encontrada", { status: 404 });
+      return new Response("Lampada não encontrada", { status: 404 });
     }
 
     switch (action) {
-        case "setOff":
-            await lightService.setOff(lightName);
-            break;
-        case "setOn":
-            await lightService.setOn(lightName);
-            break;
-        case "setToggle":
-            await lightService.setToggle(lightName);
-            break;
+      case "setOff":
+        await lightService.setOff(lightName);
+        break;
+      case "setOn":
+        await lightService.setOn(lightName);
+        break;
+      case "setToggle":
+        await lightService.setToggle(lightName);
+        break;
     }
 
-    console.log("Lampada atualizada com sucesso");
+    console.log("💡 Lampada atualizada com sucesso");
     return new Response(JSON.stringify({
       message: "Lampada atualizada com sucesso"
     }), { status: 200 });

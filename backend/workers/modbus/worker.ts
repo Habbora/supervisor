@@ -10,6 +10,7 @@ console.log("😊 ModbusWorker iniciado com sucesso");
 
 self.onmessage = async (event: MessageEvent<WorkerMessageRequestTemplate<ModbusMessageRequest>>) => {
   if (event.data.type === "init") {
+
     if (client) {
       self.postMessage({
         type: "error",
@@ -29,7 +30,6 @@ self.onmessage = async (event: MessageEvent<WorkerMessageRequestTemplate<ModbusM
     });
 
     await client.initialize();
-    console.log("[ModbusWorker] Inicializado com sucesso");
     return;
   }
 

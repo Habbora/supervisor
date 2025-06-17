@@ -27,28 +27,29 @@ export class ModbusService extends BaseService {
   }
 
   private async initializeService(): Promise<void> {
+
     try {
       // 1. Criar o NetworkService
       this.networkService = new NetworkService(this.networkConfig);
-      
+
       // 2. Configurar os listeners
       this.setupEventListeners();
-      
+
       // 3. Criar o ModbusClient com o socket
       const socket = this.networkService?.getSocket();
       if (!socket) throw new Error("Socket não disponível");
       this.modbusClient = new Modbus.ModbusTCPClient(socket);
-      
+
       // 4. Inicializar o NetworkService
       await this.networkService.initialize();
-      
+
       // Verificar se a conexão foi estabelecida
       if (this.modbusClient?.connectionState === "online") {
         this.isConnected = true;
         this.emit("online");
       }
     } catch (error) {
-      console.error("Erro ao inicializar serviço:", error);
+      console.error("Modbus Service: Erro ao inicializar serviço:", error);
       this.handleError(error);
     }
   }
@@ -57,6 +58,7 @@ export class ModbusService extends BaseService {
     this.networkService?.on("connected", () => {
       this.isConnected = true;
       this.isError = false;
+      console.log("Modbus Service: ❤️Conexão estabelecida");
       this.emit("online");
     });
 
@@ -85,10 +87,6 @@ export class ModbusService extends BaseService {
         this.scheduleReconnect();
       }
     }, 2000);
-  }
-
-  async initialize(): Promise<void> {
-    // O serviço já é inicializado no construtor
   }
 
   private handleError(error: unknown): void {

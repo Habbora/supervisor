@@ -21,7 +21,7 @@ interface DeviceConfig {
 
 export function readDevicesConfig(): DeviceConfig[] {
   // Caminho para a pasta de configuração dos dispositivos
-  const configPath = path.join(__dirname, "../devicesConfig");
+  const configPath = path.join(__dirname, "../controllerConfigs");
 
   // Lê todos os arquivos da pasta
   const files = fs.readdirSync(configPath);

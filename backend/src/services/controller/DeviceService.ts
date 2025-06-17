@@ -16,11 +16,11 @@ export class DeviceService extends BaseService {
     try {
       console.log("Inicializando DeviceService...");
       const devices = await this.databaseService.find<CreateDeviceDto>("devices");
-      devices.forEach(
-        async (deviceConfig: CreateDeviceDto) => {
+      await Promise.all(
+        devices.map(async (deviceConfig: CreateDeviceDto) => {
           const device = new Controller(deviceConfig);
           this.devices.set(device.name, device);
-        }
+        })
       );
       console.log(`DeviceService inicializado com sucesso! ${this.devices.size} devices encontrados.`);
     } catch (error) {

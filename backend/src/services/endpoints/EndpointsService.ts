@@ -1,11 +1,11 @@
 import { BaseService } from "../abstracts/BaseService";
-import type { Device } from "../controller/Controller";
+import type { Controller } from "../controller/Controller";
 
 type EndpointType = "digital_input" | "digital_output" | "analog_input" | "analog_output" | "pwm_output";
 
 type Endpoint = {
   id: string;
-  device: Device
+  device: Controller
   name: string;
   type: EndpointType;
   commands: Function[];

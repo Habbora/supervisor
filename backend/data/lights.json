@@ -85,7 +85,7 @@
       "type": "discrete",
       "deviceName": "CLP1",
       "endpointName": "D01",
-      "feedbackName": "D01",
+      "feedbackName": "DI01",
       "feedbackIsInverted": false
     }
   }

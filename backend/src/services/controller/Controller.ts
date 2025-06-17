@@ -8,7 +8,7 @@ import type {
 import { readDevicesConfig } from "./utils.ts/readDeviceConfig";
 import { loadWorker } from "../../utils/WorkerPathLoader";
 
-export class Device extends EventEmitter {
+export class Controller extends EventEmitter {
   public id: string;
   public name: string;
   public driverName: string;
@@ -79,8 +79,10 @@ export class Device extends EventEmitter {
       payload.forEach(({ address, value }) => {
         const endpoint = this.endpoints.find((e) => e.address === address);
         if (endpoint) {
-          endpoint.value = value > 0 ? 0 : 1;
+          //endpoint.value = value > 0 ? 0 : 1;
+          endpoint.value = value;
           this.emit("onChange", endpoint);
+          this.emit(`endpoint:${endpoint.name}`, endpoint);
         }
       });
     }
@@ -146,6 +148,32 @@ export class Device extends EventEmitter {
     setTimeout(() => {
       this.setOutput(outputName, 0);
     }, timeout);
+
+    return this;
+  }
+
+  public async forceEndpoint(outputName: string, value: number) {
+    if (!this.worker) throw new Error("Worker not found");
+
+    const endpoint = this.endpoints.find((e) => e.name === outputName);
+    if (!endpoint) throw new Error("Endpoint not found");
+
+    const data: WorkerMessageRequestTemplate<any> = {
+      type: "command",
+      payload: {
+        id: crypto.randomUUID(),
+        type: "force",
+        payload: {
+          type: "discrete",
+          address: endpoint.address,
+          value: value,
+        },
+      },
+    };
+
+    this.worker.postMessage(data);
+
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     return this;
   }

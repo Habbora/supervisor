@@ -1,11 +1,11 @@
-import type { Device } from "../../controller/Controller";
+import type { Controller } from "../../controller/Controller";
 
 export type DeviceDto = {
     id: string;
     name: string;
     type: string;
-    controller?: Device;
+    controller?: Controller;
     endpoint?: Map<number, string>;
 }
 
-export type DeviceControllerDto = Device
+export type DeviceControllerDto = Controller

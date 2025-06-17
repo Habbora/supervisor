@@ -1,10 +1,10 @@
-import { Device } from "./Controller";
+import { Controller } from "./Controller";
 import { DatabaseService } from "../database/DatabaseService";
 import { BaseService } from "../abstracts/BaseService";
 import type CreateDeviceDto from "./types/CreateDevice.dto";
 
 export class DeviceService extends BaseService {
-  private devices: Map<string, Device> = new Map();
+  private devices: Map<string, Controller> = new Map();
 
   constructor(
     private databaseService: DatabaseService,
@@ -18,7 +18,7 @@ export class DeviceService extends BaseService {
       const devices = await this.databaseService.find<CreateDeviceDto>("devices");
       devices.forEach(
         async (deviceConfig: CreateDeviceDto) => {
-          const device = new Device(deviceConfig);
+          const device = new Controller(deviceConfig);
           this.devices.set(device.name, device);
         }
       );
@@ -36,19 +36,19 @@ export class DeviceService extends BaseService {
     await super.destroy();
   }
 
-  getDevice(name: string): Device | undefined {
+  getDevice(name: string): Controller | undefined {
     return this.devices.get(name);
   }
 
-  getDeviceByName(name: string): Device | undefined {
+  getDeviceByName(name: string): Controller | undefined {
     return this.devices.get(name);
   }
 
-  getAllDevices(): Device[] {
+  getAllDevices(): Controller[] {
     return Array.from(this.devices.values());
   }
 
-  addDevice(device: Device) {
+  addDevice(device: Controller) {
     const deviceDto: CreateDeviceDto = {
       name: device.name,
       driverName: device.driverName,
@@ -64,8 +64,8 @@ export class DeviceService extends BaseService {
     this.devices.delete(deviceName);
   }
 
-  updateDevice(deviceName: string, device: Partial<Device>) {
+  updateDevice(deviceName: string, device: Partial<Controller>) {
     this.databaseService.update("devices", deviceName, device);
-    this.devices.set(deviceName, { ...this.devices.get(deviceName), ...device } as Device);
+    this.devices.set(deviceName, { ...this.devices.get(deviceName), ...device } as Controller);
   }
 }

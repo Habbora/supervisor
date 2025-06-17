@@ -1,5 +1,5 @@
 import EventEmitter from "events";
-import type { Device } from "../controller/Controller";
+import type { Controller } from "../controller/Controller";
 import type { DeviceDto } from "./types/dto.type";
 import { DeviceError, type DeviceEventData, type IDevice } from "./types/device.type";
 
@@ -17,7 +17,7 @@ export class Level extends EventEmitter implements IDevice {
     private readonly _id: string;
     private readonly _name: string;
     private _value: number;
-    private _controller?: Device;
+    private _controller?: Controller;
     private _endpoint?: Map<number, string>;
 
     /**
@@ -59,7 +59,7 @@ export class Level extends EventEmitter implements IDevice {
      * @returns O próprio dispositivo para encadeamento
      * @throws {DeviceError} Se o controlador for inválido
      */
-    addController(controller: Device): this {
+    addController(controller: Controller): this {
         this._controller = controller;
         return this;
     }
@@ -117,7 +117,7 @@ export class Level extends EventEmitter implements IDevice {
     }
 
     /** Obtém o controlador do dispositivo */
-    get getController(): Device | undefined {
+    get getController(): Controller | undefined {
         return this._controller;
     }
 

@@ -49,6 +49,17 @@ self.onmessage = async (event: MessageEvent<WorkerMessageRequestTemplate<any>>) 
 
   if (event.data.type === "command") {
     const data = event.data.payload;
+
+    if (data.type === "force") {
+      self.postMessage({
+        type: "update",
+        payload: [{
+          address: data.payload.address,
+          value: data.payload.value
+        }]
+      } as WorkerMessageResponseTemplate);
+    }
+
     if (data.type === "write") {
       const { type, address, value } = data.payload;
 

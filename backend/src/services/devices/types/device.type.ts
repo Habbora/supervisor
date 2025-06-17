@@ -1,4 +1,4 @@
-import type { Device } from "../../controller/Controller";
+import type { Controller } from "../../controller/Controller";
 import type { DeviceControllerDto } from "./dto.type";
 import type { EventEmitter } from "events";
 
@@ -7,7 +7,7 @@ export interface IDevice extends EventEmitter {
     readonly name: string;
     readonly type: string;
     value?: number;
-    controller?: Device;
+    controller?: Controller;
     endpoint?: string;
 
     onControllerEvent(data: DeviceEventData): this;

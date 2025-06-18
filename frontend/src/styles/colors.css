@@ -1,0 +1,27 @@
+:root {
+  /* Cores Primárias - Tons de Azul */
+  --color-primary: #1e40af;
+  --color-primary-light: #3b82f6;
+  --color-primary-dark: #1e3a8a;
+  --color-primary-accent: #60a5fa;
+  --color-primary-pastel: #93c5fd;
+
+  /* Cores Secundárias - Tons de Azul Acinzentado */
+  --color-secondary: #334155;
+  --color-secondary-light: #475569;
+  --color-secondary-dark: #1e293b;
+  --color-secondary-accent: #64748b;
+
+  /* Cores de Fundo */
+  --color-background: #ffffff;
+  --color-background-light: #f0f7ff;
+  --color-background-dark: #e6f2ff;
+
+  /* Cores de Texto */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #1e3a8a;
+  --color-text-light: #3b82f6;
+
+  /* Cores de Sombra */
+  --color-shadow: rgba(30, 64, 175, 0.1);
+} 

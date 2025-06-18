@@ -122,6 +122,8 @@ export class Controller extends EventEmitter {
   public setOutput(outputName: string, value: number) {
     if (!this.worker) throw new Error("Worker not found");
 
+    console.log(outputName, value);
+
     const endpoint = this.endpoints.find((e) => e.name === outputName);
     if (!endpoint) throw new Error("Endpoint not found");
 

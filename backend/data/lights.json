@@ -4,8 +4,8 @@
     "endpoint": {
       "type": "pulse",
       "deviceName": "CLP1",
-      "endpointName": "D01",
-      "feedbackName": "D01",
+      "endpointName": "DO1",
+      "feedbackName": "DO1",
       "feedbackIsInverted": false
     }
   },
@@ -14,8 +14,8 @@
     "endpoint": {
       "type": "discrete",
       "deviceName": "CLP1",
-      "endpointName": "D02",
-      "feedbackName": "D02",
+      "endpointName": "DO2",
+      "feedbackName": "DO2",
       "feedbackIsInverted": false
     }
   },
@@ -24,8 +24,8 @@
     "endpoint": {
       "type": "discrete",
       "deviceName": "CLP1",
-      "endpointName": "D03",
-      "feedbackName": "D03",
+      "endpointName": "DO3",
+      "feedbackName": "DO3",
       "feedbackIsInverted": false
     }
   },
@@ -34,8 +34,8 @@
     "endpoint": {
       "type": "discrete",
       "deviceName": "CLP1",
-      "endpointName": "D04",
-      "feedbackName": "D04",
+      "endpointName": "DO4",
+      "feedbackName": "DO4",
       "feedbackIsInverted": false
     }
   },
@@ -44,8 +44,8 @@
     "endpoint": {
       "type": "discrete",
       "deviceName": "CLP1",
-      "endpointName": "D05",
-      "feedbackName": "D05",
+      "endpointName": "DO5",
+      "feedbackName": "DO5",
       "feedbackIsInverted": false
     }
   },
@@ -54,8 +54,8 @@
     "endpoint": {
       "type": "discrete",
       "deviceName": "CLP1",
-      "endpointName": "D06",
-      "feedbackName": "D06",
+      "endpointName": "DO6",
+      "feedbackName": "DO6",
       "feedbackIsInverted": false
     }
   },
@@ -64,8 +64,8 @@
     "endpoint": {
       "type": "discrete",
       "deviceName": "CLP1",
-      "endpointName": "D07",
-      "feedbackName": "D07",
+      "endpointName": "DO7",
+      "feedbackName": "DO7",
       "feedbackIsInverted": false
     }
   },
@@ -74,8 +74,8 @@
     "endpoint": {
       "type": "discrete",
       "deviceName": "CLP1",
-      "endpointName": "D08",
-      "feedbackName": "D08",
+      "endpointName": "DO8",
+      "feedbackName": "DO8",
       "feedbackIsInverted": false
     }
   },
@@ -84,8 +84,8 @@
     "endpoint": {
       "type": "discrete",
       "deviceName": "CLP1",
-      "endpointName": "D01",
-      "feedbackName": "DI01",
+      "endpointName": "DO9",
+      "feedbackName": "DO9",
       "feedbackIsInverted": false
     }
   }

@@ -1,6 +1,4 @@
 # Ignore frontend-* folders
-backend-*/
-frontend-*/
 images/
 
 # Dependencies

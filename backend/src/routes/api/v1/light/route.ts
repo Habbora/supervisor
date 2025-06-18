@@ -39,7 +39,7 @@ export const GET = async (req: any) => {
       message: "Lampada atualizada com sucesso"
     }), { status: 200 });
   } catch (error) {
-    console.error("Error ao atualizar lampada");
+    console.error("Error ao atualizar lampada:", error);
     return new Response("Erro ao atualizar lampada", { status: 500 });
   }
 };

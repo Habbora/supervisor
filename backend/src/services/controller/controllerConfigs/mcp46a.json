@@ -3,278 +3,453 @@
   "interface": "modbus",
   "endpoints_register": [
     {
-      "name": "D01",
+      "name": "DO1",
       "address": 1,
       "endpointType": "output"
     },
     {
-      "name": "D02",
+      "name": "DO2",
       "address": 2,
       "endpointType": "output"
     },
     {
-      "name": "D03",
+      "name": "DO3",
       "address": 3,
       "endpointType": "output"
     },
     {
-      "name": "D04",
+      "name": "DO4",
       "address": 4,
       "endpointType": "output"
     },
     {
-      "name": "D05",
+      "name": "DO5",
       "address": 5,
       "endpointType": "output"
     },
     {
-      "name": "D06",
+      "name": "DO6",
       "address": 6,
       "endpointType": "output"
     },
     {
-      "name": "D07",
+      "name": "DO7",
       "address": 7,
       "endpointType": "output"
     },
     {
-      "name": "D08",
+      "name": "DO8",
       "address": 8,
       "endpointType": "output"
     },
     {
-      "name": "D09",
+      "name": "DO9",
       "address": 9,
       "endpointType": "output"
     },
     {
-      "name": "D10",
+      "name": "DO10",
       "address": 10,
       "endpointType": "output"
     },
     {
-      "name": "D11",
+      "name": "DO11",
       "address": 11,
       "endpointType": "output"
     },
     {
-      "name": "D12",
+      "name": "DO12",
       "address": 12,
       "endpointType": "output"
     },
     {
-      "name": "D13",
+      "name": "DO13",
       "address": 13,
       "endpointType": "output"
     },
     {
-      "name": "D14",
+      "name": "DO14",
       "address": 14,
       "endpointType": "output"
     },
     {
-      "name": "D15",
+      "name": "DO15",
       "address": 15,
       "endpointType": "output"
     },
     {
-      "name": "D16",
+      "name": "DO16",
       "address": 16,
       "endpointType": "output"
     },
     {
-      "name": "DI01",
+      "name": "AO1",
       "address": 17,
-      "endpointType": "input"
+      "endpointType": "output"
     },
     {
-      "name": "DI02",
+      "name": "AO2",
       "address": 18,
-      "endpointType": "input"
+      "endpointType": "output"
     },
     {
-      "name": "DI03",
+      "name": "AO3",
       "address": 19,
-      "endpointType": "input"
+      "endpointType": "output"
     },
     {
-      "name": "DI04",
+      "name": "AO4",
       "address": 20,
-      "endpointType": "input"
+      "endpointType": "output"
     },
     {
-      "name": "DI05",
+      "name": "DI1",
       "address": 21,
       "endpointType": "input"
     },
     {
-      "name": "DI06",
+      "name": "DI2",
       "address": 22,
       "endpointType": "input"
     },
     {
-      "name": "DI07",
+      "name": "DI3",
       "address": 23,
       "endpointType": "input"
     },
     {
-      "name": "DI08",
+      "name": "DI4",
       "address": 24,
       "endpointType": "input"
     },
     {
-      "name": "DI09",
+      "name": "DI5",
       "address": 25,
       "endpointType": "input"
     },
     {
-      "name": "DI10",
+      "name": "DI6",
       "address": 26,
       "endpointType": "input"
     },
     {
-      "name": "DI11",
+      "name": "DI7",
       "address": 27,
       "endpointType": "input"
     },
     {
-      "name": "DI12",
+      "name": "DI8",
       "address": 28,
       "endpointType": "input"
     },
     {
-      "name": "DI13",
+      "name": "DI9",
       "address": 29,
       "endpointType": "input"
     },
     {
-      "name": "DI14",
+      "name": "DI10",
       "address": 30,
       "endpointType": "input"
     },
     {
-      "name": "DI15",
+      "name": "DI11",
       "address": 31,
       "endpointType": "input"
     },
     {
-      "name": "DI16",
+      "name": "DI12",
       "address": 32,
       "endpointType": "input"
     },
     {
-      "name": "DI17",
+      "name": "DI13",
       "address": 33,
       "endpointType": "input"
     },
     {
-      "name": "DI18",
+      "name": "DI14",
       "address": 34,
       "endpointType": "input"
     },
     {
-      "name": "SI01",
+      "name": "DI15",
       "address": 35,
       "endpointType": "input"
     },
     {
-      "name": "SI02",
+      "name": "DI16",
       "address": 36,
       "endpointType": "input"
     },
     {
-      "name": "SI03",
+      "name": "DI17",
       "address": 37,
       "endpointType": "input"
     },
     {
-      "name": "SI04",
+      "name": "DI18",
       "address": 38,
       "endpointType": "input"
     },
     {
-      "name": "SI05", 
+      "name": "NTC1",
       "address": 39,
       "endpointType": "input"
     },
     {
-      "name": "SI06",
+      "name": "NTC2",
       "address": 40,
       "endpointType": "input"
     },
     {
-      "name": "SI07",
+      "name": "NTC3",
       "address": 41,
       "endpointType": "input"
     },
     {
-      "name": "SI08",
+      "name": "NTC4",
       "address": 42,
       "endpointType": "input"
     },
     {
-      "name": "SI09",
+      "name": "NTC5",
       "address": 43,
       "endpointType": "input"
     },
     {
-      "name": "SI10",
+      "name": "NTC6",
       "address": 44,
       "endpointType": "input"
     },
     {
-      "name": "SI11",
+      "name": "NTC7",
       "address": 45,
       "endpointType": "input"
     },
     {
-      "name": "SI12",
+      "name": "NTC8",
       "address": 46,
       "endpointType": "input"
     },
     {
-      "name": "SI13",
+      "name": "NTC9",
       "address": 47,
       "endpointType": "input"
     },
     {
-      "name": "SI14",
+      "name": "NTC10",
       "address": 48,
       "endpointType": "input"
     },
     {
-      "name": "SI15",
+      "name": "NTC11",
       "address": 49,
       "endpointType": "input"
     },
     {
-      "name": "SI16",
+      "name": "NTC12",
       "address": 50,
       "endpointType": "input"
     },
     {
-      "name": "SI17",
+      "name": "NTC13",
       "address": 51,
       "endpointType": "input"
     },
     {
-      "name": "SI18",
+      "name": "NTC14",
       "address": 52,
       "endpointType": "input"
     },
     {
-      "name": "AI01",
+      "name": "NTC15",
       "address": 53,
       "endpointType": "input"
     },
     {
-      "name": "AI02",
+      "name": "NTC16",
       "address": 54,
       "endpointType": "input"
     },
     {
-      "name": "AI03",
+      "name": "NTC17",
       "address": 55,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTC18",
+      "address": 56,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV1",
+      "address": 57,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV2",
+      "address": 58,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV3",
+      "address": 59,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV4",
+      "address": 60,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV5",
+      "address": 61,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV6",
+      "address": 62,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV7",
+      "address": 63,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV8",
+      "address": 64,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV9",
+      "address": 65,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV10",
+      "address": 66,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV11",
+      "address": 67,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV12",
+      "address": 68,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV13",
+      "address": 69,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV14",
+      "address": 70,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV15",
+      "address": 71,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV16",
+      "address": 72,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV17",
+      "address": 73,
+      "endpointType": "input"
+    },
+    {
+      "name": "NTCV18",
+      "address": 74,
+      "endpointType": "input"
+    },
+    {
+      "name": "AI1",
+      "address": 75,
+      "endpointType": "input"
+    },
+    {
+      "name": "AI2",
+      "address": 76,
+      "endpointType": "input"
+    },
+    {
+      "name": "AI3",
+      "address": 77,
+      "endpointType": "input"
+    },
+    {
+      "name": "AI4",
+      "address": 78,
+      "endpointType": "input"
+    },
+    {
+      "name": "AI5",
+      "address": 79,
+      "endpointType": "input"
+    },
+    {
+      "name": "AI6",
+      "address": 80,
+      "endpointType": "input"
+    },
+    {
+      "name": "AI7",
+      "address": 81,
+      "endpointType": "input"
+    },
+    {
+      "name": "AI8",
+      "address": 82,
+      "endpointType": "input"
+    },
+    {
+      "name": "AIV1",
+      "address": 83,
+      "endpointType": "input"
+    },
+    {
+      "name": "AIV2",
+      "address": 84,
+      "endpointType": "input"
+    },
+    {
+      "name": "AIV3",
+      "address": 85,
+      "endpointType": "input"
+    },
+    {
+      "name": "AIV4",
+      "address": 86,
+      "endpointType": "input"
+    },
+    {
+      "name": "AIV5",
+      "address": 87,
+      "endpointType": "input"
+    },
+    {
+      "name": "AIV6",
+      "address": 88,
+      "endpointType": "input"
+    },
+    {
+      "name": "AIV7",
+      "address": 89,
+      "endpointType": "input"
+    },
+    {
+      "name": "AIV8",
+      "address": 90,
       "endpointType": "input"
     }
   ]

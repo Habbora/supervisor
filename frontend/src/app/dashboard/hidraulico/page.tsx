@@ -2,7 +2,7 @@
 
 import { HidraulicoGrupo } from "@/components/hidraulico/HidraulicoGrupo";
 import DashboardTopMenu from "@/components/DashboardTopMenu";
-import { MdWater } from "react-icons/md";
+import { MdWater, MdWaterDrop } from "react-icons/md";
 import { useState } from "react";
 import { useDashboard } from "@/contexts/DashboardContext";
 import { GroupContext } from "@/contexts/DashboardContext/types/light/LightGroup.type";
@@ -28,34 +28,34 @@ export default function HidraulicoPage() {
   }
 
   return (
-      <div className="p-4 space-y-4">
-        <DashboardTopMenu
-          title="Hidráulico"
-          icon={MdWater}
-          menuItems={[]}
+    <div className="p-4 space-y-4">
+      <DashboardTopMenu
+        title="Hidráulico"
+        icon={MdWaterDrop}
+        menuItems={[]}
+      />
+      {/* Sistema Principal */}
+      {lightGroups.map((grupo: GroupContext) => (
+        <HidraulicoGrupo
+          key={grupo.id}
+          title={grupo.name}
+          description={grupo.name}
+          valvulas={[]}
+          bombas={[]}
+          niveis={grupo.levels.map((level: HydraulicLevelContext) => ({
+            id: level.id,
+            name: level.name,
+            level: level.value,
+            isAlert: level.isAlert,
+          }))}
+          pressoes={[]}
+          hidrometros={[]}
+          onToggleValvula={toggleValvula}
+          onToggleBomba={toggleBomba}
+          onLigarTudo={ligarTudo}
+          onDesligarTudo={desligarTudo}
         />
-        {/* Sistema Principal */}
-        {lightGroups.map((grupo: GroupContext) => (
-          <HidraulicoGrupo
-            key={grupo.id}
-            title={grupo.name}
-            description={grupo.name}
-            valvulas={[]}
-            bombas={[]}
-            niveis={grupo.levels.map((level: HydraulicLevelContext) => ({
-              id: level.id,
-              name: level.name,
-              level: level.value,
-              isAlert: level.isAlert,
-            }))}
-            pressoes={[]}
-            hidrometros={[]}
-            onToggleValvula={toggleValvula}
-            onToggleBomba={toggleBomba}
-            onLigarTudo={ligarTudo}
-            onDesligarTudo={desligarTudo}
-          />
-        ))}
-      </div>
+      ))}
+    </div>
   );
 } 

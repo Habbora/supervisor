@@ -40,7 +40,7 @@ export default function DashboardSideBar() {
         { name: 'Acessos', icon: MdDoorFront, href: '/dashboard/acessos' },
         { name: 'Câmeras', icon: MdCamera, href: '/dashboard/cameras' },
         { name: 'Análises', icon: MdAnalytics, href: '/dashboard/analises' },
-        { name: 'Configurações', icon: MdSettings, href: '/dashboard/configuracoes' },
+        { name: 'Configurações', icon: MdSettings, href: '/dashboard/settings' },
         { name: 'Sair', icon: MdLogout, href: '/logout' },
     ];
 

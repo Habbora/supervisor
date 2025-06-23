@@ -48,6 +48,12 @@ export class DeviceService extends BaseService {
     return Array.from(this.devices.values());
   }
 
+  createController(dto: CreateDeviceDto) {
+    const controller = new Controller(dto);
+    this.addDevice(controller);
+    return controller;
+  }
+
   addDevice(device: Controller) {
     const deviceDto: CreateDeviceDto = {
       name: device.name,

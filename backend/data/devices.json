@@ -7,5 +7,21 @@
       "host": "192.168.0.240",
       "port": 502
     }
+  },
+  {
+    "name": "CLP2",
+    "driverName": "CLP2",
+    "startConfig": {
+      "host": "192.168.1.100",
+      "port": 502
+    }
+  },
+  {
+    "name": "CLP2",
+    "driverName": "CLP2",
+    "startConfig": {
+      "host": "192.168.1.100",
+      "port": 502
+    }
   }
 ]

@@ -18,6 +18,11 @@
         }
     ],
     "settings": {
-        "typescript.tsdk": "Frontend\\node_modules\\typescript\\lib"
+        "typescript.tsdk": "Frontend\\node_modules\\typescript\\lib",
+        "piny.project_settings": {
+            "open-pages": [
+                "pinyfakepage.html"
+            ]
+        }
     }
 } 

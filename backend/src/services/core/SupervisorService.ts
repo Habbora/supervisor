@@ -22,6 +22,7 @@ export class SupervisorService extends BaseService {
     super("Supervisor");
     this.deviceManager = new DeviceManager();
     (global as any).deviceManager = this.deviceManager;
+    (global as any).deviceService = this.deviceService;
   }
 
   async initialize(): Promise<this> {

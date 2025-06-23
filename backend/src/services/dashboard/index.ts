@@ -12,7 +12,6 @@ export class DashboardService extends BaseService {
 
   constructor(
     private lightService: LightService,
-    private hydraulicService: HydraulicService
   ) {
     super("DashboardService");
     this.webService = new WebService();
@@ -32,7 +31,7 @@ export class DashboardService extends BaseService {
 
   private levelDashboard() {
     const deviceManager: DeviceManager = (global as any).deviceManager;
-    const levels = deviceManager.getDevices().map((device) => {
+    const levels = Array.from(deviceManager.getDevices().values()).map((device) => {
       return {
         id: device.id,
         name: device.name,

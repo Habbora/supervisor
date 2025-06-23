@@ -1,5 +1,6 @@
 import { EventEmitter } from "events";
 import type { IDevice } from "../types/device.type";
+import { EventBus } from "../../EventBus";
 
 export class DeviceManager extends EventEmitter {
     private devices: Map<string, IDevice> = new Map();
@@ -11,8 +12,10 @@ export class DeviceManager extends EventEmitter {
 
     public addDevice(device: IDevice): IDevice {
         this.devices.set(device.id, device);
+        EventBus.getInstance().publish("device_added", device);
         device.on("valueChanged", (data) => {
             this.emit("valueChanged", data);
+            EventBus.getInstance().publish("device_value_changed", data);
         });
 
         return device;

@@ -30,5 +30,3 @@ deviceManager.addDevice(new Level({
         [0, "DO1"]
     ])
 }));
-
-console.log(deviceManager.getDevices());

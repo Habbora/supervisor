@@ -1,11 +1,11 @@
 import { BaseService } from "../abstracts/BaseService";
 import { WebService } from "../communication";
-import type { HydraulicService } from "../hydraulic";
-import type { Light } from "../light/Light";
 import type { LightService } from "../light/LightService";
 import type { WebSocketDashboard, WebSocketResponse } from "./types/websocket";
-import type { DeviceEventData } from "../devices/types/device.type";
-import type { DeviceManager } from "../devices/manager";
+import { DeviceManager } from "../devices/DeviceManager";
+import { EventBus } from "../EventBus";
+import { Light } from "../devices/light";
+import { Level } from "../devices/Level";
 
 export class DashboardService extends BaseService {
   public webService: WebService;
@@ -18,26 +18,35 @@ export class DashboardService extends BaseService {
   }
 
   private lightsDashboard() {
-    return this.lightService
-      .getAllLights()
-      .map((light) => DashboardService.fromLight(light))
-      .map((light, index) => ({
-        id: index,
-        name: light.name,
-        type: "switch" as const,
-        status: light.value ?? 0,
-      }));
+    const deviceManager: DeviceManager = DeviceManager.getInstance();
+    console.log(deviceManager.getDevices());
+
+    const lights = Array.from(deviceManager.getDevices().values()).map((device) => {
+      if (device instanceof Light) {
+        return {
+          id: parseInt(device.id) || 0,
+          name: device.name,
+          type: "switch" as const,
+          status: device.value ?? 0,
+        };
+      }
+    }).filter((light) => light !== undefined);
+
+    return lights;
   }
 
   private levelDashboard() {
-    const deviceManager: DeviceManager = (global as any).deviceManager;
+    const deviceManager: DeviceManager = DeviceManager.getInstance();
     const levels = Array.from(deviceManager.getDevices().values()).map((device) => {
-      return {
-        id: device.id,
-        name: device.name,
-        value: device.value ?? 0,
-      };
-    });
+      if (device instanceof Level) {
+        return {
+          id: device.id,
+          name: device.name,
+          value: device.value ?? 0,
+          type: "switch",
+        };
+      }
+    }).filter((level) => level !== undefined);
 
     return levels;
   }
@@ -69,14 +78,7 @@ export class DashboardService extends BaseService {
     await this.webService.initialize();
     this.webService.on("open", () => this.handleDeviceChange());
 
-    this.lightService.on("onChange", (light: Light) => {
-      this.handleLightChange(light);
-    });
-
-    const deviceManager: DeviceManager = (global as any).deviceManager;
-    deviceManager.on("valueChanged", (data: DeviceEventData) => {
-      this.handleDeviceChange();
-    });
+    EventBus.getInstance().subscribe("device_value_changed", this.handleDeviceChange);
 
     console.log("DashboardService inicializado com sucesso!");
     return this;

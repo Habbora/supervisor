@@ -27,7 +27,7 @@ export default function Hidrometro({ hidrometro }: HidrometroProps) {
           </div>
 
           <div className="bg-white p-3 rounded-lg">
-            <div className="text-sm text-gray-500">Consumo Total</div>
+            <div className="text-sm text-gray-500">Consumo</div>
             <div className="text-xl font-bold flex items-baseline gap-1">
               {hidrometro.consumoTotal}
               <span className="text-sm font-normal text-gray-500">m³</span>
@@ -35,7 +35,7 @@ export default function Hidrometro({ hidrometro }: HidrometroProps) {
           </div>
 
           <div className="bg-white p-3 rounded-lg">
-            <div className="text-sm text-gray-500">Consumo Diário</div>
+            <div className="text-sm text-gray-500">C. Diário</div>
             <div className="text-xl font-bold flex items-baseline gap-1">
               {hidrometro.consumoDiario}
               <span className="text-sm font-normal text-gray-500">m³</span>
@@ -43,7 +43,7 @@ export default function Hidrometro({ hidrometro }: HidrometroProps) {
           </div>
 
           <div className="bg-white p-3 rounded-lg">
-            <div className="text-sm text-gray-500">Consumo Mensal</div>
+            <div className="text-sm text-gray-500">C. Mensal</div>
             <div className="text-xl font-bold flex items-baseline gap-1">
               {hidrometro.consumoMensal}
               <span className="text-sm font-normal text-gray-500">m³</span>

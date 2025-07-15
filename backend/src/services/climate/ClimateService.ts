@@ -1,6 +1,6 @@
 import { BaseService } from "../abstracts/BaseService";
 import type { DatabaseService } from "../database";
-import type { DeviceService } from "../controller";
+import type { ControllerService } from "../controller";
 
 type ClimateEndpointEntityDto = {
   type: "ir";
@@ -47,12 +47,12 @@ class Climate {
 
 type CreateClimateServiceDto = {
   databaseService: DatabaseService;
-  deviceService: DeviceService;
+  deviceService: ControllerService;
 };
 
 export class ClimateService extends BaseService {
   private databaseService: DatabaseService;
-  private deviceService: DeviceService;
+  private deviceService: ControllerService;
 
   private climates: Map<string, Climate> = new Map();
 

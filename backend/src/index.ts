@@ -1,32 +1,37 @@
 import { SupervisorService } from "./services/core/SupervisorService";
-import { Level } from "./services/devices/level";
-import { DeviceManager } from "./services/devices/manager";
+import { DeviceManager } from "./services/devices/DeviceManager";
+import { Level } from "./services/devices/Level";
+import { Light } from "./services/devices/light";
 
 console.clear();
 
 const supervisor = new SupervisorService()
 await supervisor.initialize();
 
-const deviceManager = (global as any).deviceManager as DeviceManager;
+const deviceManager = DeviceManager.getInstance();
 
-
-
-deviceManager.addDevice(new Level({
-    id: "1",
+const device = new Level({
     name: "Reservatorio Inferior",
     type: "level",
-    controller: supervisor.deviceService.getDeviceByName("CLP1"),
+    value: 0,
+    controller: "CLP1",
     endpoint: new Map([
         [0, "DO1"]
     ])
-}));
+});
 
-deviceManager.addDevice(new Level({
-    id: "2",
-    name: "Reservatorio Superior",
-    type: "level",
-    controller: supervisor.deviceService.getDeviceByName("CLP1"),
+device.addController("CLP1");
+device.addEndpoint("DO1", 0);
+
+deviceManager.addDevice(device);
+
+const device2 = new Light({
+    name: "Luz de Emergencia",
+    type: "light",
+    controller: "CLP1",
     endpoint: new Map([
         [0, "DO1"]
     ])
-}));
+});
+
+deviceManager.addDevice(device2);

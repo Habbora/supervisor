@@ -20,6 +20,6 @@ export class EventBus {
         if (callback) {
             callback(data);
         }
-        console.log(`Event ${event} published with data:`, data);
+        console.log(`🚩 Event ${event} published with data:`, data);
     }
 }

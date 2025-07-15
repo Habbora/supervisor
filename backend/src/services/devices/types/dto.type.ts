@@ -1,10 +1,9 @@
 import type { Controller } from "../../controller/Controller";
 
 export type DeviceDto = {
-    id: string;
     name: string;
     type: string;
-    controller?: Controller;
+    controller?: string;
     endpoint?: Map<number, string>;
 }
 

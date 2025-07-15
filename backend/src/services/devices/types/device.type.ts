@@ -2,16 +2,16 @@ import type { Controller } from "../../controller/Controller";
 import type { DeviceControllerDto } from "./dto.type";
 import type { EventEmitter } from "events";
 
-export interface IDevice extends EventEmitter {
+export type DeviceType = "level" | "light" | "pump" | "valve" | "other";
+
+export interface IDevice {
     readonly id: string;
     readonly name: string;
-    readonly type: string;
+    readonly type: DeviceType;
+    controllerId?: string;
     value?: number;
-    controller?: Controller;
     endpoint?: string;
     onControllerEvent(data: DeviceEventData): this;
-    addController(config: DeviceControllerDto): this;
-    removeController(): this;
 }
 
 export type DeviceEventData = {

@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import DashboardCard from "../DashboardCard";
-import LevelSensor, { LevelSensorType } from "../hidraulico/NivelSensor";
+import LevelSensor, { LevelSensorType } from "./LevelSensor";
 import ControleValvula, { ValvulaType } from "../hidraulico/ControleValvula";
-import ControleBomba, { BombaType } from "../hidraulico/ControleBomba";
+import ControleBomba, { BombaType } from "./PumpControl";
 import PressaoSensor, { PressaoType } from "../hidraulico/PressaoSensor";
 import Hidrometro, { HidrometroType } from "../hidraulico/Hidrometro";
 

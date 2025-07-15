@@ -1,27 +1,20 @@
 import { DatabaseService } from "../database";
-import { DeviceService } from "../controller";
+import { ControllerService } from "../controller";
 import { BaseService } from "../abstracts/BaseService";
 import { LightService } from "../light";
 import { DashboardService } from "../dashboard";
-import { HydraulicService } from "../hydraulic";
-import { DeviceManager } from "../devices/manager";
 
 export class SupervisorService extends BaseService {
-  public deviceManager: DeviceManager;
-
   public dbService = new DatabaseService();
-  public deviceService = new DeviceService(this.dbService);
+  public deviceService = new ControllerService(this.dbService);
   public lightService = new LightService({
     databaseService: this.dbService,
     deviceService: this.deviceService,
   });
-  public hydraulicService = new HydraulicService();
-  public dashboardService = new DashboardService(this.lightService, this.hydraulicService);
+  public dashboardService = new DashboardService(this.lightService);
 
   constructor() {
     super("Supervisor");
-    this.deviceManager = new DeviceManager();
-    (global as any).deviceManager = this.deviceManager;
     (global as any).deviceService = this.deviceService;
   }
 

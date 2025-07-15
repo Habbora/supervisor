@@ -29,7 +29,7 @@ export default function LevelSensor({ sensor }: LevelSensorProps) {
 
   return (
     <div
-      className={`p-4 rounded-lg bg-gray-100 w-[200px] cursor-pointer hover:bg-gray-200 transition-colors ${sensor.isAlert
+      className={`w-[200px] h-[200px] p-4 rounded-lg bg-gray-100 cursor-pointer hover:bg-gray-200 transition-colors ${sensor.isAlert
           ? "bg-red-100 hover:bg-red-200"
           : "bg-green-100 hover:bg-green-200"
 

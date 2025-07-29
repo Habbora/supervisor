@@ -1,77 +1,43 @@
 import { Controller } from "./Controller";
-import { DatabaseService } from "../database/DatabaseService";
 import { BaseService } from "../abstracts/BaseService";
-import type CreateDeviceDto from "./types/CreateDevice.dto";
 
-export class ControllerService extends BaseService {
-  private devices: Map<string, Controller> = new Map();
+export class ControllerManager extends BaseService {
+  private __controllers: Map<string, Controller> = new Map();
 
-  constructor(
-    private databaseService: DatabaseService,
-  ) {
-    super("DeviceService");
+  constructor() {
+    super("ControllerManager");
   }
 
   async initialize(): Promise<this> {
-    try {
-      console.log("Inicializando DeviceService...");
-      const devices = await this.databaseService.find<CreateDeviceDto>("devices");
-      await Promise.all(
-        devices.map(async (deviceConfig: CreateDeviceDto) => {
-          const device = new Controller(deviceConfig);
-          this.devices.set(device.name, device);
-        })
-      );
-      console.log(`DeviceService inicializado com sucesso! ${this.devices.size} devices encontrados.`);
-    } catch (error) {
-      console.error("Erro ao inicializar DeviceService:", error);
-      throw error;
-    }
-
     return this;
   }
 
   async destroy(): Promise<void> {
-    this.devices.clear();
+    this.__controllers.clear();
     await super.destroy();
   }
 
   getDevice(name: string): Controller | undefined {
-    return this.devices.get(name);
+    return this.__controllers.get(name);
   }
 
   getDeviceByName(name: string): Controller | undefined {
-    return this.devices.get(name);
+    return this.__controllers.get(name);
   }
 
   getAllDevices(): Controller[] {
-    return Array.from(this.devices.values());
+    return Array.from(this.__controllers.values());
   }
 
-  createController(dto: CreateDeviceDto) {
-    const controller = new Controller(dto);
-    this.addDevice(controller);
-    return controller;
+  addDevice(controller: Controller) {
+    this.__controllers.set(controller.name, controller);
   }
 
-  addDevice(device: Controller) {
-    const deviceDto: CreateDeviceDto = {
-      name: device.name,
-      driverName: device.driverName,
-      startConfig: device.startConfig
-    };
-
-    this.databaseService.create("devices", deviceDto);
-    this.devices.set(device.name, device);
+  removeDevice(controllerName: string) {
+    this.__controllers.delete(controllerName);
   }
 
-  removeDevice(deviceName: string) {
-    this.databaseService.delete("devices", deviceName);
-    this.devices.delete(deviceName);
-  }
-
-  updateDevice(deviceName: string, device: Partial<Controller>) {
-    this.databaseService.update("devices", deviceName, device);
-    this.devices.set(deviceName, { ...this.devices.get(deviceName), ...device } as Controller);
+  updateDevice(controllerName: string, controller: Partial<Controller>) {
+    this.__controllers.set(controllerName, { ...this.__controllers.get(controllerName), ...controller } as Controller);
   }
 }

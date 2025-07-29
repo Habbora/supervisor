@@ -1,7 +1,7 @@
 export type WebSocketResponse<T> = {
     type: string;
     code: number;
-    payload: T[];
+    payload: any;
 };
 
 export type WebSocketDashboard = {

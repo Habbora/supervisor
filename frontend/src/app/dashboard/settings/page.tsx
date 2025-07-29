@@ -1,9 +1,5 @@
-'use client'
-
-
+import { redirect } from "next/navigation";
 
 export default function SettingsPage() {
-    return <div>
-        <h1>Configurações</h1>
-    </div>
+    return redirect("/dashboard/settings/system");
 }

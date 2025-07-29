@@ -1,6 +1,6 @@
 'use client';
 
-import { DashboardProvider } from "@/contexts/DashboardContext";
+import { WebSocketProvider } from "@/ws/WebSocketProvider";
 import DashboardSideBar from "@/components/DashboardSideBar";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
@@ -11,22 +11,26 @@ export default function RootLayout({
 }>) {
   return (
     <ProtectedRoute>
-      <DashboardProvider>
+      <WebSocketProvider>
+        {/* Top Menu */}
+        <div className="sticky top-0 h-10 bg-red-500 items-center justify-center">
+          <div>Top Menu</div>
+        </div>
+        
+        {/* Main Content */}
         <div
-          className="flex min-h-screen"
+          className="flex"
           style={{ backgroundColor: "var(--color-background)" }}
         >
           {/* Sidebar */}
-          <div className="sticky top-0 h-screen">
-            <DashboardSideBar />
-          </div>
+          <DashboardSideBar />
 
           {/* Main Content */}
-          <div className="flex-1 flex flex-col min-h-screen">
+          <div className="flex flex-col w-full">
             {children}
           </div>
         </div>
-      </DashboardProvider>
+      </WebSocketProvider>
     </ProtectedRoute>
   );
 }

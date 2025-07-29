@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 export interface LevelSensorType {
   id: string;
   name: string;
-  level: number;
+  value: number;
   isAlert: boolean;
 }
 
@@ -14,6 +14,7 @@ interface LevelSensorProps {
 export default function LevelSensor({ sensor }: LevelSensorProps) {
   // Usando useEffect para monitorar mudanças no isAlert
   const [alertaEmitido, setAlertaEmitido] = useState(false);
+  const [value, setValue] = useState(0);
 
   useEffect(() => {
     // Verifica se tem alerta e se ainda não foi emitido
@@ -36,14 +37,14 @@ export default function LevelSensor({ sensor }: LevelSensorProps) {
         }`}
     >
       <div className="flex flex-col items-center gap-2">
-        <span className="font-medium">{sensor.name}</span>
+        <h1 className="font-medium text-center">{sensor.name}</h1>
         <div className="w-full h-32 rounded-lg relative">
           <div
             className="absolute bottom-0 left-0 right-0 bg-blue-500 transition-all duration-500 rounded-lg"
-            style={{ height: `${sensor.level > 100 ? 100 : sensor.level < 0 ? 0 : sensor.level}%` }}
+            style={{ height: `${sensor.value > 100 ? 100 : sensor.value < 0 ? 0 : sensor.value}%` }}
           />
           <div className="absolute inset-0 flex items-center justify-center text-lg font-bold">
-            {sensor.level}%
+            {Math.round(sensor.value)}%
           </div>
         </div>
       </div>

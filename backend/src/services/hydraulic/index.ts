@@ -1,9 +1,9 @@
 import { BaseService } from "../abstracts/BaseService";
-import type { ControllerService } from "../controller";
+import type { ControllerManager } from "../controller";
 import { HydraulicLevel, type HydraulicLevelDto } from "./hydraulic_level";
 
 export class HydraulicService extends BaseService {
-    private deviceService: ControllerService = (global as any).deviceService;
+    private deviceService: ControllerManager = (global as any).deviceService;
 
     private hydraulicLevels: Map<string, HydraulicLevel> = new Map();
 

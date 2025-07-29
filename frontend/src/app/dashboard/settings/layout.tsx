@@ -10,14 +10,19 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
             icon={MdSettings}
             menuItems={[
                 {
-                    name: "Dispositivos",
+                    name: "Sistema",
                     icon: MdSettings,
-                    href: "/dashboard/settings/devices",
+                    href: "/dashboard/settings/system",
                 },
                 {
                     name: "Controladores",
                     icon: MdSettings,
                     href: "/dashboard/settings/controllers",
+                },
+                {
+                    name: "Dispositivos",
+                    icon: MdSettings,
+                    href: "/dashboard/settings/devices",
                 },
 
             ]}

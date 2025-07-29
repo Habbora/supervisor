@@ -30,24 +30,24 @@ export default function DashboardSideBar() {
 
     const menuItems: MenuItem[] = [
         { name: 'Dashboard', icon: MdDashboard, href: '/' },
-        { name: 'Segurança', icon: MdSecurity, href: '/dashboard/seguranca' },
+        //{ name: 'Segurança', icon: MdSecurity, href: '/dashboard/seguranca' },
         { name: 'Energia', icon: MdPower, href: '/dashboard/energia' },
         { name: 'Iluminação', icon: MdLightbulb, href: '/dashboard/iluminacao' },
-        { name: 'Hidráulico', icon: MdWaterDrop, href: '/dashboard/hidraulico' },
-        { name: 'Som', icon: MdVolumeUp, href: '/dashboard/som' },
-        { name: 'Climatização', icon: MdAcUnit, href: '/dashboard/climatizacao' },
-        { name: 'Elevadores', icon: MdElevator, href: '/dashboard/elevadores' },
-        { name: 'Acessos', icon: MdDoorFront, href: '/dashboard/acessos' },
-        { name: 'Câmeras', icon: MdCamera, href: '/dashboard/cameras' },
-        { name: 'Análises', icon: MdAnalytics, href: '/dashboard/analises' },
+        { name: 'Hídrico', icon: MdWaterDrop, href: '/dashboard/water' },
+        { name: 'Som', icon: MdVolumeUp, href: '/dashboard/sound' },
+        { name: 'Climatização', icon: MdAcUnit, href: '/dashboard/climate' },
+        { name: 'Elevadores', icon: MdElevator, href: '/dashboard/elevators' },
+        //{ name: 'Acessos', icon: MdDoorFront, href: '/dashboard/acessos' },
+        //{ name: 'Câmeras', icon: MdCamera, href: '/dashboard/cameras' },
+        //{ name: 'Análises', icon: MdAnalytics, href: '/dashboard/analises' },
         { name: 'Configurações', icon: MdSettings, href: '/dashboard/settings' },
         { name: 'Sair', icon: MdLogout, href: '/logout' },
     ];
 
     return (
-        <div className='h-screen p-4'>
+        <div className='m-4'>
             <aside
-                className={`h-full flex flex-col transition-all duration-300 ease-in-out shadow-lg rounded-lg${isCollapsed ? 'w-16' : 'w-80'}`}
+                className={`flex flex-col transition-all duration-300 ease-in-out shadow-lg rounded-lg${isCollapsed ? 'w-16' : 'w-80'}`}
             >
                 {/* Botão retrátil */}
                 <div className="flex items-center justify-end p-4 border-b border-gray-200">
@@ -61,11 +61,11 @@ export default function DashboardSideBar() {
                 </div>
 
                 {/* Menu centralizado */}
-                <nav className="flex-1 flex flex-col items-center mt-8 space-y-6 overflow-y-auto scrollbar-hide">
+                <nav className="flex-1 flex flex-col items-center space-y-6 overflow-y-auto scrollbar-hide">
                     {menuItems.map((item) => (
                         <div
                             key={item.name}
-                            className="flex items-center justify-center w-full p-2 cursor-pointer hover:bg-gray-200 transition-colors"
+                            className="flex items-center justify-center w-full p-4 m-0 cursor-pointer hover:bg-gray-200 transition-colors"
                             style={{ color: 'var(--color-text-primary)' }}
                             onClick={() => router.push(item.href)}
                         >

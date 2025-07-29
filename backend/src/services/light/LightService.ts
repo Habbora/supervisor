@@ -1,6 +1,6 @@
 import { Light } from "./Light";
 import { BaseService } from "../abstracts/BaseService";
-import { ControllerService } from "../controller/ControllerService";
+import { ControllerManager } from "../controller/ControllerService";
 import { DatabaseService } from "../database/DatabaseService";
 import type { LightEntityDto } from "../database/types/LightEntity.dto";
 import type { CreateLightDto } from "./types/CreateLight.dto";
@@ -9,11 +9,11 @@ import type { DeviceEndpoint } from "../../packages/class/device/DeviceEndpoint"
 
 type CreateLightServiceDto = {
   databaseService: DatabaseService;
-  deviceService: ControllerService;
+  deviceService: ControllerManager;
 };
 
 export class LightService extends BaseService {
-  private deviceService: ControllerService;
+  private deviceService: ControllerManager;
   private databaseService: DatabaseService;
 
   private lights: Map<string, Light> = new Map();

@@ -1,25 +1,29 @@
 export class EventBus {
-    private static instance: EventBus;
-    private subscribers: Map<string, (data: any) => void> = new Map();
+    private static __instance: EventBus;
+    private subscribers: Map<string, ((data: any) => void)[]> = new Map();
 
     private constructor() { }
 
     public static getInstance(): EventBus {
-        if (!EventBus.instance) {
-            EventBus.instance = new EventBus();
-        }
-        return EventBus.instance;
+        if (!EventBus.__instance) EventBus.__instance = new EventBus();
+        return EventBus.__instance;
     }
 
-    public subscribe(event: string, callback: (data: any) => void): void {
-        this.subscribers.set(event, callback);
+    public subscribe(event: string, callback: (data: any) => void): this {
+        if (!this.subscribers.has(event)) this.subscribers.set(event, []);
+        this.subscribers.get(event)?.push(callback);
+        return this;
     }
 
-    public publish(event: string, data: any): void {
-        const callback = this.subscribers.get(event);
-        if (callback) {
-            callback(data);
-        }
-        console.log(`🚩 Event ${event} published with data:`, data);
+    public unsubscribe(event: string, callback: (data: any) => void): this {
+        const callbacks = this.subscribers.get(event);
+        if (callbacks) this.subscribers.set(event, callbacks.filter(cb => cb !== callback));
+        return this;
+    }
+
+    public publish(event: string, data: any): this {
+        const callbacks = this.subscribers.get(event);
+        if (callbacks) callbacks.forEach(cb => cb(data));
+        return this;
     }
 }

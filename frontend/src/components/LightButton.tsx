@@ -6,7 +6,7 @@ interface LightButtonProps {
 }
 
 export function LightButton({ lightId, name }: LightButtonProps) {
-  const { setToggleLight, lightGroups } = useDashboard();
+  const { toggleLight, lightGroups } = useDashboard();
   
   // Encontra o status atual da lâmpada
   const lightStatus = lightGroups
@@ -15,7 +15,7 @@ export function LightButton({ lightId, name }: LightButtonProps) {
 
   return (
     <button 
-      onClick={() => setToggleLight(lightId)}
+      onClick={() => toggleLight(lightId.toString())}
       style={{
         padding: '10px 20px',
         backgroundColor: lightStatus > 0 ? 'yellow' : 'gray',

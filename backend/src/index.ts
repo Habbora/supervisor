@@ -1,37 +1,219 @@
-import { SupervisorService } from "./services/core/SupervisorService";
-import { DeviceManager } from "./services/devices/DeviceManager";
-import { Level } from "./services/devices/Level";
-import { Light } from "./services/devices/light";
+import { Controller } from "./services/controller/Controller";
+import { Supervisor } from "./services/core/SupervisorService";
+import { DeviceLevel } from "./services/devices/Level";
+import { DevicePump } from "./services/devices/pump";
 
 console.clear();
 
-const supervisor = new SupervisorService()
-await supervisor.initialize();
+const supervisor = Supervisor.getInstance();
 
-const deviceManager = DeviceManager.getInstance();
+const controllerManager = supervisor.controllerManager;
 
-const device = new Level({
+const clp1 = new Controller({
+    id: "0",
+    name: "CLP1",
+    driverName: "mcp17",
+    startConfig: {
+        host: "127.0.0.1",
+        port: 502
+    }
+});
+
+const clp2 = new Controller({
+    id: "1",
+    name: "CLP2",
+    driverName: "mcp17",
+    startConfig: {
+        host: "127.0.0.1",
+        port: 502
+    }
+});
+
+controllerManager.addDevice(clp1);
+controllerManager.addDevice(clp2);
+
+supervisor.historyManager.addDeviceHistory("levelInferior", "0");
+supervisor.historyManager.addDeviceHistory("levelSuperior", "1");
+
+const deviceManager = supervisor.deviceManager;
+
+const levelInferior = new DeviceLevel({
+    id: "0",
     name: "Reservatorio Inferior",
     type: "level",
-    value: 0,
-    controller: "CLP1",
     endpoint: new Map([
-        [0, "DO1"]
+        [0, {
+            type: "analog_input",
+            controller: "CLP1",
+            endpoint: "DO1"
+        }]
     ])
 });
 
-device.addController("CLP1");
-device.addEndpoint("DO1", 0);
-
-deviceManager.addDevice(device);
-
-const device2 = new Light({
-    name: "Luz de Emergencia",
-    type: "light",
-    controller: "CLP1",
+const levelSuperior = new DeviceLevel({
+    id: "1",
+    name: "Reservatorio Superior",
+    type: "level",
     endpoint: new Map([
-        [0, "DO1"]
+        [0, {
+            type: "analog_input",
+            controller: "CLP1",
+            endpoint: "DO2"
+        }]
     ])
 });
 
-deviceManager.addDevice(device2);
+const pumpElev1 = new DevicePump({
+    id: "2",
+    name: "Bomba Elevatória 1",
+    type: "pump",
+    endpoint: new Map([
+        [0, {
+            type: "digital_output",
+            controller: "CLP1",
+            endpoint: "DO3"
+        }]
+    ])
+});
+
+const pumpElev2 = new DevicePump({
+    id: "3",
+    name: "Bomba Elevatória 2",
+    type: "pump",
+    endpoint: new Map([
+        [0, {
+            type: "digital_output",
+            controller: "CLP1",
+            endpoint: "DO4"
+        }]
+    ])
+});
+
+const levelPluvial = new DeviceLevel({
+    id: "4",
+    name: "Reservatorio Pluvial",
+    type: "level",
+    endpoint: new Map([
+        [0, {
+            type: "analog_input",
+            controller: "CLP1",
+            endpoint: "DO1"
+        }]
+    ])
+});
+
+const pumpPluvial1 = new DevicePump({
+    id: "5",
+    name: "Bomba Pluvial 1",
+    type: "pump",
+    endpoint: new Map([
+        [0, {
+            type: "digital_output",
+            controller: "CLP1",
+            endpoint: "DO1"
+        }]
+    ])
+});
+
+const pumpPluvial2 = new DevicePump({
+    id: "6",
+    name: "Bomba Pluvial 2",
+    type: "pump",
+    endpoint: new Map([
+        [0, {
+            type: "digital_output",
+            controller: "CLP1",
+            endpoint: "DO1"
+        }]
+    ])
+});
+
+const levelSewage = new DeviceLevel({
+    id: "7",
+    name: "Reservatorio Esgoto",
+    type: "level",
+    endpoint: new Map([
+        [0, {
+            type: "analog_input",
+            controller: "CLP1",
+            endpoint: "DO1"
+        }]
+    ])
+});
+
+const pumpSewage1 = new DevicePump({
+    id: "8",
+    name: "Bomba Esgoto 1",
+    type: "pump",
+    endpoint: new Map([
+        [0, {
+            type: "digital_output",
+            controller: "CLP1",
+            endpoint: "DO1"
+        }]
+    ])
+});
+
+const pumpSewage2 = new DevicePump({
+    id: "9",
+    name: "Bomba Esgoto 2",
+    type: "pump",
+    endpoint: new Map([
+        [0, {
+            type: "digital_output",
+            controller: "CLP1",
+            endpoint: "DO1"
+        }]
+    ])
+});
+
+const pumpSewage3 = new DevicePump({
+    id: "10",
+    name: "Bomba Esgoto 3",
+    type: "pump",
+    endpoint: new Map([
+        [0, {
+            type: "digital_output",
+            controller: "CLP1",
+            endpoint: "DO1"
+        }]
+    ])
+});
+
+
+deviceManager.addDevice(levelPluvial);
+deviceManager.addDevice(pumpPluvial1);
+deviceManager.addDevice(pumpPluvial2);
+deviceManager.addDevice(levelInferior);
+deviceManager.addDevice(levelSuperior);
+deviceManager.addDevice(pumpElev1);
+deviceManager.addDevice(pumpElev2);
+deviceManager.addDevice(levelSewage);
+deviceManager.addDevice(pumpSewage1);
+deviceManager.addDevice(pumpSewage2);
+deviceManager.addDevice(pumpSewage3);
+
+supervisor.eventBus.publish('endpoint_event', {
+    controller: "CLP1",
+    endpoint: "DO3",
+    value: 0
+});
+
+supervisor.eventBus.publish('endpoint_event', {
+    controller: "CLP1",
+    endpoint: "DO4",
+    value: 1
+});
+
+setInterval(() => {
+    supervisor.eventBus.publish('endpoint_event', {
+        controller: "CLP1",
+        endpoint: "DO1",
+        value: Math.random() * 100
+    });
+    supervisor.eventBus.publish('endpoint_event', {
+        controller: "CLP1",
+        endpoint: "DO2",
+        value: Math.random() * 100
+    });
+}, 1000);

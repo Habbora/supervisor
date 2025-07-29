@@ -1,5 +1,4 @@
-import EventEmitter from "events";
-import type { DeviceEndpoint } from "../../packages/class/device/DeviceEndpoint";
+import type { DeviceEndpoint as ControllerEndpoint } from "../../packages/class/device/DeviceEndpoint";
 import type CreateDeviceDto from "./types/CreateDevice.dto";
 import type {
   WorkerMessageRequestTemplate,
@@ -7,23 +6,22 @@ import type {
 } from "../worker/types";
 import { readDevicesConfig } from "./utils.ts/readDeviceConfig";
 import { loadWorker } from "../../utils/WorkerPathLoader";
+import { EventBus } from "../EventBus";
 
-export class Controller extends EventEmitter {
+export class Controller {
   public id: string;
   public name: string;
   public driverName: string;
   public interface: string | undefined;
   public startConfig: any;
 
-  public worker?: Worker;
+  private __worker?: Worker;
 
   isReady: boolean = false;
 
-  endpoints: DeviceEndpoint[] = [];
+  endpoints: ControllerEndpoint[] = [];
 
   constructor(dto: CreateDeviceDto) {
-    super();
-    this.setMaxListeners(50);
     this.id = dto.id ?? crypto.randomUUID();
     this.name = dto.name;
     this.driverName = dto.driverName;
@@ -51,13 +49,13 @@ export class Controller extends EventEmitter {
     if (!this.interface) throw new Error("Interface not found");
 
     // Cria o worker usando o módulo
-    this.worker = loadWorker(this.interface);
+    this.__worker = loadWorker(this.interface);
 
-    if (!this.worker) throw new Error("Worker not found");
+    if (!this.__worker) throw new Error("Worker not found");
 
     this.initWorker();
 
-    this.worker.addEventListener(
+    this.__worker.addEventListener(
       "message",
       this.handleWorkerMessage.bind(this)
     );
@@ -66,9 +64,8 @@ export class Controller extends EventEmitter {
   }
 
   async stop() {
-    this.worker?.terminate();
-    this.worker = undefined;
-    this.removeAllListeners();
+    this.__worker?.terminate();
+    this.__worker = undefined;
   }
 
   private handleWorkerMessage(
@@ -79,17 +76,19 @@ export class Controller extends EventEmitter {
       payload.forEach(({ address, value }) => {
         const endpoint = this.endpoints.find((e) => e.address === address);
         if (endpoint) {
-          //endpoint.value = value > 0 ? 0 : 1;
           endpoint.value = value;
-          this.emit("onChange", endpoint);
-          this.emit(`endpoint:${endpoint.name}`, endpoint);
+          EventBus.getInstance().publish('endpoint_event', {
+            controller: this.name,
+            endpoint: endpoint.name,
+            value: endpoint.value
+          });
         }
       });
     }
   }
 
   private initWorker() {
-    if (!this.worker) throw new Error("Worker not found");
+    if (!this.__worker) throw new Error("Worker not found");
     if (!this.interface) throw new Error("Interface not found");
 
     const data: WorkerMessageRequestTemplate<any> = {
@@ -115,14 +114,12 @@ export class Controller extends EventEmitter {
       },
     };
 
-    this.worker.postMessage(data);
+    this.__worker.postMessage(data);
   }
 
   // Adicionar Validação de Retorno um dia!
   public setOutput(outputName: string, value: number) {
-    if (!this.worker) throw new Error("Worker not found");
-
-    console.log(outputName, value);
+    if (!this.__worker) throw new Error("Worker not found");
 
     const endpoint = this.endpoints.find((e) => e.name === outputName);
     if (!endpoint) throw new Error("Endpoint not found");
@@ -140,7 +137,7 @@ export class Controller extends EventEmitter {
       },
     };
 
-    this.worker.postMessage(data);
+    this.__worker.postMessage(data);
 
     return this;
   }
@@ -155,7 +152,7 @@ export class Controller extends EventEmitter {
   }
 
   public async forceEndpoint(outputName: string, value: number) {
-    if (!this.worker) throw new Error("Worker not found");
+    if (!this.__worker) throw new Error("Worker not found");
 
     const endpoint = this.endpoints.find((e) => e.name === outputName);
     if (!endpoint) throw new Error("Endpoint not found");
@@ -173,14 +170,14 @@ export class Controller extends EventEmitter {
       },
     };
 
-    this.worker.postMessage(data);
+    this.__worker.postMessage(data);
 
     await new Promise(resolve => setTimeout(resolve, 100));
 
     return this;
   }
 
-  public addEndpoint(endpoint: DeviceEndpoint | DeviceEndpoint[]) {
+  public addEndpoint(endpoint: ControllerEndpoint | ControllerEndpoint[]) {
     if (Array.isArray(endpoint)) endpoint.forEach((e) => this.addEndpoint(e));
     else {
       this.endpoints.push(endpoint);
@@ -188,7 +185,7 @@ export class Controller extends EventEmitter {
     }
   }
 
-  public removeEndpoint(endpoint: DeviceEndpoint) {
+  public removeEndpoint(endpoint: ControllerEndpoint) {
     this.endpoints = this.endpoints.filter((e) => e !== endpoint);
     return this;
   }

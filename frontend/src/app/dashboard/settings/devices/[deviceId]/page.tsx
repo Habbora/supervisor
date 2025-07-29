@@ -2,6 +2,7 @@
 
 
 
-export default function DevicePage({ params }: { params: { deviceId: string } }) {
-    return <div>DevicePage {params.deviceId}</div>;
+export default async function DevicePage({ params }: { params: Promise<{ deviceId: string }> }) {
+    const { deviceId } = await params;
+    return <div>DevicePage {deviceId}</div>;
 }

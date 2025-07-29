@@ -54,8 +54,6 @@ export class Dashboard {
       },
     };
 
-    console.log(data.payload.history);
-
     this.__webService.broadcast(data);
   }
 }

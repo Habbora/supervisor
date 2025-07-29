@@ -74,8 +74,9 @@ export class ModbusWorker {
     try {
       // Lê 17 registros a partir do endereço 0
       const startAddress = 1;
-      const endAddress = 34;
+      const endAddress = 90;
       const registers: number[] = await this.modbusService.readRegisters(startAddress, endAddress) ?? [];
+      console.log(registers);
 
       if (registers.length === 0)
         for (let i = startAddress; i <= endAddress; i++) {

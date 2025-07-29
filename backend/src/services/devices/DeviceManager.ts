@@ -1,20 +1,13 @@
-import { EventEmitter } from "events";
-import type { IDevice } from "./types/device.type";
-import { EventBus } from "../EventBus";
 import { Device } from "./Device";
 
-export class DeviceManager extends EventEmitter {
+export class DeviceManager {
     private static __instance: DeviceManager;
     private __devices: Map<string, Device> = new Map();
 
-    private constructor() {
-        super();
-    }
+    private constructor() { }
 
     public static getInstance() {
-        if (!DeviceManager.__instance) {
-            DeviceManager.__instance = new DeviceManager();
-        }
+        if (!DeviceManager.__instance) DeviceManager.__instance = new DeviceManager();
         return DeviceManager.__instance;
     }
 

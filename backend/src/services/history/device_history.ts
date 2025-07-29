@@ -1,4 +1,5 @@
 import { DeviceManager } from "../devices/DeviceManager";
+import { EventBus } from "../EventBus";
 
 export class DeviceHistory {
     private __history: { timestamp: Date, value: any }[] = [];
@@ -36,6 +37,7 @@ export class DeviceHistory {
 
         if (device) {
             this.__updateHistory(device.value);
+            EventBus.getInstance().publish('device_value_changed', undefined);
         }
     }
 

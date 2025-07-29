@@ -12,9 +12,9 @@ const controllerManager = supervisor.controllerManager;
 const clp1 = new Controller({
     id: "0",
     name: "CLP1",
-    driverName: "mcp17",
+    driverName: "mcp46a",
     startConfig: {
-        host: "127.0.0.1",
+        host: "10.1.1.240",
         port: 502
     }
 });
@@ -45,7 +45,7 @@ const levelInferior = new DeviceLevel({
         [0, {
             type: "analog_input",
             controller: "CLP1",
-            endpoint: "DO1"
+            endpoint: "AI1"
         }]
     ])
 });
@@ -58,7 +58,7 @@ const levelSuperior = new DeviceLevel({
         [0, {
             type: "analog_input",
             controller: "CLP1",
-            endpoint: "DO2"
+            endpoint: "AI2"
         }]
     ])
 });
@@ -180,7 +180,6 @@ const pumpSewage3 = new DevicePump({
     ])
 });
 
-
 deviceManager.addDevice(levelPluvial);
 deviceManager.addDevice(pumpPluvial1);
 deviceManager.addDevice(pumpPluvial2);
@@ -193,27 +192,3 @@ deviceManager.addDevice(pumpSewage1);
 deviceManager.addDevice(pumpSewage2);
 deviceManager.addDevice(pumpSewage3);
 
-supervisor.eventBus.publish('endpoint_event', {
-    controller: "CLP1",
-    endpoint: "DO3",
-    value: 0
-});
-
-supervisor.eventBus.publish('endpoint_event', {
-    controller: "CLP1",
-    endpoint: "DO4",
-    value: 1
-});
-
-setInterval(() => {
-    supervisor.eventBus.publish('endpoint_event', {
-        controller: "CLP1",
-        endpoint: "DO1",
-        value: Math.random() * 100
-    });
-    supervisor.eventBus.publish('endpoint_event', {
-        controller: "CLP1",
-        endpoint: "DO2",
-        value: Math.random() * 100
-    });
-}, 1000);

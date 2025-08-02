@@ -1,4 +1,4 @@
-
+import { Database } from "../../database";
 import { ControllerManager } from "../controller";
 import { Dashboard } from "../dashboard";
 import { DeviceManager } from "../devices/DeviceManager";
@@ -7,6 +7,7 @@ import { HistoryManager } from "../history";
 
 export class Supervisor {
   private static __instance: Supervisor;
+  public database = Database.getInstance();
   public eventBus = EventBus.getInstance();
   public historyManager = HistoryManager.getInstance();
   public controllerManager = new ControllerManager();

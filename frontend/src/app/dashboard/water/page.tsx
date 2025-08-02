@@ -177,14 +177,6 @@ export default function HidraulicoPage() {
       <h1 className="text-2xl font-bold p-4">Água Pluviais</h1>
       <div className="p-4">
         <div className="flex flex-wrap gap-4">
-          <LevelSensor
-            sensor={{
-              id: "5",
-              name: "Água Pluviais",
-              value: devices.find((device: any) => device.id === "4")?.value,
-              isAlert: false
-            }}
-          />
           <PumpControl
             pump={{
               id: "6",
@@ -207,14 +199,6 @@ export default function HidraulicoPage() {
       <h1 className="text-2xl font-bold p-4">Água Esgoto</h1>
       <div className="p-4">
         <div className="flex flex-wrap gap-4">
-          <LevelSensor
-            sensor={{
-              id: "8",
-              name: "Água Esgoto",
-              value: devices.find((device: any) => device.id === "7")?.value,
-              isAlert: false
-            }}
-          />
           <PumpControl
             pump={{
               id: "9",

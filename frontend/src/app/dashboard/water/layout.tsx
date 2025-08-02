@@ -1,6 +1,4 @@
-'use client'
-
-import DashboardTopMenu from "@/components/DashboardTopMenu";
+import DashboardTopMenu from "@/components/ui/dashboard/DashboardTopMenu";
 import { MdWaterDrop } from "react-icons/md";
 
 export default function WaterLayout({ children }: { children: React.ReactNode }) {

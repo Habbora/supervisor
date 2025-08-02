@@ -34,7 +34,7 @@ export class Dashboard {
   }
 
   private handleDeviceChange() {
-    const devices = Array.from(this.__deviceManager.devices.values()).map(device => device.toDashboard());
+    const devices = this.__deviceManager.findAll().map(device => device.toDashboard());
 
     const data: WebSocketResponse<any> = {
       type: "dashboard",

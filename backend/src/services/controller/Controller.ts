@@ -1,4 +1,3 @@
-import type { DeviceEndpoint as ControllerEndpoint } from "../../packages/class/device/DeviceEndpoint";
 import type CreateDeviceDto from "./types/CreateDevice.dto";
 import type {
   WorkerMessageRequestTemplate,
@@ -7,6 +6,13 @@ import type {
 import { readDevicesConfig } from "./utils.ts/readDeviceConfig";
 import { loadWorker } from "../../utils/WorkerPathLoader";
 import { EventBus } from "../EventBus";
+
+export interface ControllerEndpoint {
+  name: string;
+  address: number;
+  value: number;
+  type: "input" | "output";
+}
 
 export class Controller {
   public id: string;
@@ -19,7 +25,7 @@ export class Controller {
 
   isReady: boolean = false;
 
-  endpoints: ControllerEndpoint[] = [];
+  private __endpoints: ControllerEndpoint[] = [];
 
   constructor(dto: CreateDeviceDto) {
     this.id = dto.id ?? crypto.randomUUID();
@@ -33,7 +39,7 @@ export class Controller {
 
     if (deviceConfig) {
       this.interface = deviceConfig.interface;
-      this.endpoints = deviceConfig.endpoints_register.map((endpoint) => ({
+      this.__endpoints = deviceConfig.endpoints_register.map((endpoint) => ({
         name: endpoint.name,
         address: endpoint.address,
         value: 0,
@@ -60,12 +66,17 @@ export class Controller {
       this.handleWorkerMessage.bind(this)
     );
 
+    this.__worker.addEventListener("close", () => {
+      console.log("Worker closed");
+      this.isReady = false;
+    });
+
     this.isReady = true;
   }
 
-  async stop() {
+  public stop() {
+    console.log("Stopping worker");
     this.__worker?.terminate();
-    this.__worker = undefined;
   }
 
   private handleWorkerMessage(
@@ -74,7 +85,7 @@ export class Controller {
     if (event.data.type === "update") {
       const payload = event.data.payload;
       payload.forEach(({ address, value }) => {
-        const endpoint = this.endpoints.find((e) => e.address === address);
+        const endpoint = this.__endpoints.find((e) => e.address === address);
         if (endpoint) {
           endpoint.value = value;
           EventBus.getInstance().publish('endpoint_event', {
@@ -100,12 +111,12 @@ export class Controller {
           port: this.startConfig.port,
         },
         endpoints: {
-          inputs: this.endpoints.filter((e) => e.type === "input").map((e) => ({
+          inputs: this.__endpoints.filter((e) => e.type === "input").map((e) => ({
             name: e.name,
             type: "discrete",
             address: e.address,
           })),
-          outputs: this.endpoints.filter((e) => e.type === "output").map((e) => ({
+          outputs: this.__endpoints.filter((e) => e.type === "output").map((e) => ({
             name: e.name,
             type: "discrete",
             address: e.address,
@@ -121,7 +132,7 @@ export class Controller {
   public setOutput(outputName: string, value: number) {
     if (!this.__worker) throw new Error("Worker not found");
 
-    const endpoint = this.endpoints.find((e) => e.name === outputName);
+    const endpoint = this.__endpoints.find((e) => e.name === outputName);
     if (!endpoint) throw new Error("Endpoint not found");
 
     const data: WorkerMessageRequestTemplate<any> = {
@@ -154,7 +165,7 @@ export class Controller {
   public async forceEndpoint(outputName: string, value: number) {
     if (!this.__worker) throw new Error("Worker not found");
 
-    const endpoint = this.endpoints.find((e) => e.name === outputName);
+    const endpoint = this.__endpoints.find((e) => e.name === outputName);
     if (!endpoint) throw new Error("Endpoint not found");
 
     const data: WorkerMessageRequestTemplate<any> = {
@@ -180,13 +191,13 @@ export class Controller {
   public addEndpoint(endpoint: ControllerEndpoint | ControllerEndpoint[]) {
     if (Array.isArray(endpoint)) endpoint.forEach((e) => this.addEndpoint(e));
     else {
-      this.endpoints.push(endpoint);
+      this.__endpoints.push(endpoint);
       return this;
     }
   }
 
   public removeEndpoint(endpoint: ControllerEndpoint) {
-    this.endpoints = this.endpoints.filter((e) => e !== endpoint);
+    this.__endpoints = this.__endpoints.filter((e) => e !== endpoint);
     return this;
   }
 }

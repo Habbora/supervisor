@@ -6,8 +6,6 @@ declare var self: Worker;
 
 let client: ModbusWorker | null = null;
 
-console.log("😊 ModbusWorker iniciado com sucesso");
-
 self.onmessage = async (event: MessageEvent<WorkerMessageRequestTemplate<ModbusMessageRequest>>) => {
   if (event.data.type === "init") {
 
@@ -43,6 +41,11 @@ self.onmessage = async (event: MessageEvent<WorkerMessageRequestTemplate<ModbusM
 
   if (event.data.type === "command") {
     await client.handleMessage(event.data.payload);
+    return;
+  }
+
+  if (event.data.type === "close") {
+    process.exit();
     return;
   }
 

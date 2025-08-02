@@ -23,7 +23,8 @@ export type WorkerEndpointsConfig = {
 
 export type WorkerMessageRequestTemplate<Payload> =
   | { type: "init"; payload: WorkerInit }
-  | { type: "command"; payload: Payload };
+  | { type: "command"; payload: Payload }
+  | { type: "close" };
 
 export type WorkerMessageResponseTemplate =
   | { type: "success"; payload: any }

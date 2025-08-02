@@ -1,33 +1,85 @@
-import { Device } from "./Device";
+import { DeviceDatabase } from "../../database/devices";
+import { Device, type DeviceDTO } from "./Device";
+import { DeviceLevel, type LevelDto } from "./Level";
+import { DevicePump, type PumpDto } from "./pump";
 
 export class DeviceManager {
-    private static __instance: DeviceManager;
-    private __devices: Map<string, Device> = new Map();
+    private static instance: DeviceManager;
+    private devices: Device[] = [];
 
-    private constructor() { }
+    private constructor() {
+        this.initDatabase();
+    }
 
     public static getInstance() {
-        if (!DeviceManager.__instance) DeviceManager.__instance = new DeviceManager();
-        return DeviceManager.__instance;
+        if (!DeviceManager.instance) DeviceManager.instance = new DeviceManager();
+        return DeviceManager.instance;
     }
 
-    public addDevice(device: Device): this {
-        this.__devices.set(device.id, device);
-
-        return this;
+    private initDatabase() {
+        const devices = DeviceDatabase.getInstance().findAll();
+        devices.map((deviceDTO) => {
+            switch (deviceDTO.type) {
+                case "level":
+                    return new DeviceLevel(deviceDTO.id, deviceDTO as LevelDto);
+                case "pump":
+                    return new DevicePump(deviceDTO.id, deviceDTO as PumpDto);
+                default:
+                    return new Device(deviceDTO.id, deviceDTO);
+            }
+        }).forEach((device) => this.create(device));
     }
 
-    public removeDevice(device: Device): this {
-        this.__devices.delete(device.id);
+    public create(deviceDTO: DeviceDTO): Device | undefined {
+        if (!deviceDTO.name || !deviceDTO.type) return undefined;
 
-        return this;
+        const newDeviceDto = DeviceDatabase.getInstance().create({
+            name: deviceDTO.name,
+            type: deviceDTO.type,
+            endpoints: deviceDTO.endpoints,
+        });
+
+        if (!newDeviceDto) return undefined;
+
+        const newDevice = new Device(newDeviceDto.id, newDeviceDto);
+        this.devices.push(newDevice);
+
+        return newDevice;
     }
 
-    public getDevice(id: string): Device | undefined {
-        return this.__devices.get(id);
+    public findAll(): Device[] {
+        return this.devices;
     }
 
-    get devices(): Map<string, Device> {
-        return this.__devices;
+    public findById(id: string): Device | undefined {
+        return this.devices.find((device) => device.id === id);
+    }
+
+    public update(deviceId: string, deviceDTO: DeviceDTO): Device | undefined {
+        const oldDevice = this.findById(deviceId);
+        if (!oldDevice) return undefined;
+
+        DeviceDatabase.getInstance().update({
+            id: oldDevice.id,
+            name: deviceDTO.name,
+            type: deviceDTO.type,
+            endpoints: deviceDTO.endpoints,
+        });
+
+        oldDevice.destroy();
+        this.devices = this.devices.map((device) => device.id === deviceId ? new Device(deviceId, deviceDTO) : device);
+
+        return this.findById(deviceId);
+    }
+
+    public remove(deviceId: string): Device | undefined {
+        const oldDevice = this.findById(deviceId);
+        if (!oldDevice) return undefined;
+
+        oldDevice.destroy();
+        this.devices = this.devices.filter((device) => device.id !== deviceId);
+        DeviceDatabase.getInstance().delete(oldDevice.id);
+
+        return oldDevice;
     }
 }

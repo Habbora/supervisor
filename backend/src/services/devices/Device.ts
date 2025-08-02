@@ -6,31 +6,31 @@ import { EventBus } from "../EventBus";
 type EndpointType = "analog_input" | "digital_input" | "analog_output" | "digital_output";
 
 type Endpoint = {
+    name: string;
     type: EndpointType;
     controller: string;
     endpoint: string;
-    index: number;
+}
+
+export interface DeviceDTO {
+    name: string;
+    type: string;
+    endpoints?: Endpoint[];
 }
 
 export class Device {
-    private readonly __id: string;
-    private readonly __name: string;
-    private readonly __type: string;
+    public readonly id: string;
+    public readonly name: string;
+    public readonly type: string;
+    public value: number;
+    public endpoints: Endpoint[];
 
-    protected __value: number;
-    private __endpoint?: Map<number, Endpoint>;
-
-    constructor(dto: {
-        id?: string;
-        name: string;
-        type: string;
-        endpoint?: Map<number, Endpoint>;
-    }) {
-        this.__id = dto.id ?? crypto.randomUUID();
-        this.__name = dto.name;
-        this.__type = dto.type;
-        this.__value = 50;
-        this.__endpoint = dto.endpoint ?? new Map();
+    constructor(id: string, dto: DeviceDTO) {
+        this.id = id;
+        this.name = dto.name;
+        this.type = dto.type;
+        this.value = -1;
+        this.endpoints = dto.endpoints ?? [];
 
         EventBus.getInstance().subscribe('endpoint_event', (data: any) => {
             this.onEndpointEvent(data);
@@ -38,20 +38,20 @@ export class Device {
     }
 
     onEndpointEvent(data: any): this {
-        this.__endpoint?.forEach((endpoint) => {
+        this.endpoints?.forEach((endpoint) => {
             if (endpoint.controller === data.controller && endpoint.endpoint === data.endpoint) {
-                this.__value = data.value;
+                this.value = data.value;
 
                 EventBus.getInstance().publish('device_value_changed', {
                     id: this.id,
                     name: this.name,
-                    value: this.__value
+                    value: this.value
                 });
 
                 EventBus.getInstance().publish('device_event', {
                     id: this.id,
                     name: this.name,
-                    value: this.__value
+                    value: this.value
                 });
             }
         });
@@ -63,35 +63,41 @@ export class Device {
         throw new Error('Method not implemented.');
     }
 
-    setEndpoint(controller: string, endpoint: string, index: number, type: EndpointType): this {
-        this.__endpoint?.set(index, {
+    createEndpoint(name: string, type: EndpointType, controller: string, endpoint: string): Endpoint | undefined {
+        if (this.endpoints?.find((e) => e.name === name)) return;
+
+        const newEndpoint: Endpoint = {
+            name,
             type,
             controller,
             endpoint,
-            index
-        });
+        };
 
-        return this;
+        this.endpoints.push(newEndpoint);
+
+        return newEndpoint;
     }
 
-    removeEndpoint(index: number): this {
-        if (!this.__endpoint?.has(index)) throw new Error('Endpoint não existe');
-
-        const endpoint = this.__endpoint?.get(index);
-        this.__endpoint?.delete(index);
-
-        return this;
+    readEndpoint(name: string): Endpoint | undefined {
+        return this.endpoints?.find((e) => e.name === name);
     }
 
-    removeAllEndpoints(): this {
-        this.__endpoint?.clear();
+    updateEndpoint(name: string, type: EndpointType, controller: string, endpoint: string): Endpoint | undefined {
+        const oldEndpoint = this.endpoints?.find((e) => e.name === name);
+        if (!oldEndpoint) return;
 
-        EventBus.getInstance().publish('device_endpoint_removed_all', {
-            id: this.id,
-            name: this.name,
-        });
+        this.endpoints = this.endpoints.map((e) => e.name === name ? { ...e, type, controller, endpoint } : e);
 
-        return this;
+        return oldEndpoint;
+    }
+
+    deleteEndpoint(name: string): Endpoint | undefined {
+        const oldEndpoint = this.endpoints?.find((e) => e.name === name);
+        if (!oldEndpoint) return;
+
+        this.endpoints = this.endpoints.filter((e) => e.name !== name);
+
+        return oldEndpoint;
     }
 
     toDashboard() {
@@ -104,23 +110,9 @@ export class Device {
         }
     }
 
-    get id(): string {
-        return this.__id;
-    }
-
-    get name(): string {
-        return this.__name;
-    }
-
-    get type(): string {
-        return this.__type;
-    }
-
-    get value(): number {
-        return this.__value;
-    }
-
-    get endpoints(): Map<number, Endpoint> {
-        return this.__endpoint ?? new Map();
+    destroy(): void {
+        EventBus.getInstance().unsubscribe('endpoint_event', (data: any) => {
+            this.onEndpointEvent(data);
+        });
     }
 }

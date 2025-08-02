@@ -12,11 +12,8 @@ export default function RootLayout({
   return (
     <ProtectedRoute>
       <WebSocketProvider>
-        {/* Top Menu */}
-        <div className="sticky top-0 h-10 bg-red-500 items-center justify-center">
-          <div>Top Menu</div>
+        <div className="h-10">
         </div>
-        
         {/* Main Content */}
         <div
           className="flex"

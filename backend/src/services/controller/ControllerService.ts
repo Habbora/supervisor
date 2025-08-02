@@ -1,43 +1,77 @@
 import { Controller } from "./Controller";
-import { BaseService } from "../abstracts/BaseService";
+import { DatabaseController } from "../../database/controllers";
+import type { ControllerSchema } from "../../database/controllers/schema";
 
-export class ControllerManager extends BaseService {
+export class ControllerManager {
   private __controllers: Map<string, Controller> = new Map();
 
   constructor() {
-    super("ControllerManager");
+    const controllers = DatabaseController.getInstance().findAll();
+
+    controllers.forEach((item: ControllerSchema) => {
+      // Faz que o controller seja iniciado automaticamente
+      const controller = new Controller({
+        name: item.name,
+        driverName: item.driverName,
+        startConfig: item.startConfig
+      });
+
+      // Adiciona o controller ao mapa
+      this.__controllers.set(controller.name, controller);
+    });
   }
 
-  async initialize(): Promise<this> {
-    return this;
-  }
-
-  async destroy(): Promise<void> {
-    this.__controllers.clear();
-    await super.destroy();
-  }
-
-  getDevice(name: string): Controller | undefined {
-    return this.__controllers.get(name);
-  }
-
-  getDeviceByName(name: string): Controller | undefined {
-    return this.__controllers.get(name);
-  }
-
-  getAllDevices(): Controller[] {
+  public findAll(): Controller[] {
     return Array.from(this.__controllers.values());
   }
 
-  addDevice(controller: Controller) {
-    this.__controllers.set(controller.name, controller);
+  public findByName(name: string): Controller | undefined {
+    return this.__controllers.get(name);
   }
 
-  removeDevice(controllerName: string) {
-    this.__controllers.delete(controllerName);
+  create(controller: ControllerSchema): Controller | undefined {
+    // Verifica se o controller já existe
+    const databaseController = DatabaseController.getInstance();
+    const success = databaseController.addController(controller);
+
+    if (!success) return undefined;
+
+    const newController = new Controller({
+      name: controller.name,
+      driverName: controller.driverName,
+      startConfig: controller.startConfig
+    });
+
+    this.__controllers.set(newController.name, newController);
+
+    return newController;
   }
 
-  updateDevice(controllerName: string, controller: Partial<Controller>) {
-    this.__controllers.set(controllerName, { ...this.__controllers.get(controllerName), ...controller } as Controller);
+  remove(name: string): Controller | undefined {
+    const controller = this.__controllers.get(name);
+
+    if (!controller) return undefined;
+
+    controller.stop();
+
+    DatabaseController.getInstance().removeControllerByName(name);
+    this.__controllers.delete(name);
+    return controller;
+  }
+
+  updateByName(name: string, controller: Partial<Controller>): Controller | undefined {
+    const oldController = this.remove(name);
+
+    if (!oldController) return undefined;
+
+    const newController = this.create({
+      name: controller.name ?? oldController.name,
+      driverName: controller.driverName ?? oldController.driverName,
+      startConfig: controller.startConfig ?? oldController.startConfig,
+    });
+
+    if (!newController) return undefined;
+
+    return newController;
   }
 }

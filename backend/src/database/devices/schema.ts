@@ -1,0 +1,23 @@
+
+
+
+
+export interface DeviceSchema {
+    id: string;
+    name: string;
+    type: string;
+    endpoints: any;
+}
+
+export interface DeviceCreateSchema {
+    name: string;
+    type: string;
+    endpoints: any;
+}
+
+export interface DeviceUpdateSchema {
+    id: string;
+    name: string;
+    type: string;
+    endpoints: any;
+}

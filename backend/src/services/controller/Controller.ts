@@ -21,9 +21,25 @@ export class Controller {
   public interface: string | undefined;
   public startConfig: any;
 
-  private __worker?: Worker;
+  public worker: {
+    isRunning: boolean;
+  } = {
+      isRunning: false,
+    }
 
-  isReady: boolean = false;
+  public network: {
+    type: string;
+    host: string;
+    port: number;
+    isConnected?: boolean;
+  } = {
+      type: "",
+      host: "",
+      port: 0,
+      isConnected: false,
+    };
+
+  private __worker?: Worker;
 
   private __endpoints: ControllerEndpoint[] = [];
 
@@ -51,10 +67,8 @@ export class Controller {
   }
 
   public async init() {
-    // Verifica se a interface está definida
     if (!this.interface) throw new Error("Interface not found");
 
-    // Cria o worker usando o módulo
     this.__worker = loadWorker(this.interface);
 
     if (!this.__worker) throw new Error("Worker not found");
@@ -68,10 +82,10 @@ export class Controller {
 
     this.__worker.addEventListener("close", () => {
       console.log("Worker closed");
-      this.isReady = false;
+      this.worker.isRunning = false;
     });
 
-    this.isReady = true;
+    this.worker.isRunning = true;
   }
 
   public stop() {
@@ -82,19 +96,28 @@ export class Controller {
   private handleWorkerMessage(
     event: MessageEvent<WorkerMessageResponseTemplate>
   ) {
-    if (event.data.type === "update") {
-      const payload = event.data.payload;
-      payload.forEach(({ address, value }) => {
-        const endpoint = this.__endpoints.find((e) => e.address === address);
-        if (endpoint) {
-          endpoint.value = value;
-          EventBus.getInstance().publish('endpoint_event', {
-            controller: this.name,
-            endpoint: endpoint.name,
-            value: endpoint.value
-          });
-        }
-      });
+    switch (event.data.type) {
+      case "update":
+        const payload = event.data.payload;
+        payload.forEach(({ address, value }) => {
+          const endpoint = this.__endpoints.find((e) => e.address === address);
+          if (endpoint) {
+            endpoint.value = value;
+            EventBus.getInstance().publish('endpoint_event', {
+              controller: this.name,
+              endpoint: endpoint.name,
+              value: endpoint.value
+            });
+          }
+        });
+        break;
+      case "connected":
+        this.network.isConnected = true;
+        console.log("Connected");
+        break;
+      case "disconnected":
+        this.network.isConnected = false;
+        break;
     }
   }
 

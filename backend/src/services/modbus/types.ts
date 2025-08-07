@@ -13,6 +13,8 @@ export enum ModbusMessageType {
   UPDATE = "update",   // Atualização de valores
   SOCKET = "socket",   // Eventos de socket
   FINISH = "finish",   // Finalização
+  CONNECTED = "connected",   // Conexão estabelecida
+  DISCONNECTED = "disconnected",   // Conexão perdida
 }
 
 /**

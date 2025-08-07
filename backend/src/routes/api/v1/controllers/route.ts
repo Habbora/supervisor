@@ -1,6 +1,7 @@
 import { Supervisor } from "../../../../services/core/SupervisorService";
 
 export const GET = async () => {
+    console.log("GET /api/v1/controllers");
     const supervisor = Supervisor.getInstance();
     const controllers = supervisor.controllerManager.findAll();
 
@@ -53,20 +54,21 @@ export const PUT = async (req: any) => {
 };
 
 export const DELETE = async (req: any) => {
-    const { name } = await req.json();
+    const { id } = await req.json();
 
-    if (!name) {
+    if (!id) {
         return Response.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     const supervisor = Supervisor.getInstance();
-    const controller = supervisor.controllerManager.findByName(name);
+    const controller = supervisor.controllerManager.findById(id);
+    console.log(controller);
 
     if (!controller) {
         return Response.json({ error: "Controller not found" }, { status: 404 });
     }
 
-    supervisor.controllerManager.remove(name);
+    supervisor.controllerManager.remove(controller.name);
 
     return Response.json({ success: true, controller: controller });
 };

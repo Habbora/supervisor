@@ -29,6 +29,8 @@ export type WorkerMessageRequestTemplate<Payload> =
 export type WorkerMessageResponseTemplate =
   | { type: "success"; payload: any }
   | { type: "update"; payload: ModbusPayloadUpdateResponse[] }
+  | { type: "connected" }
+  | { type: "disconnected" }
   | { type: "error"; error: Error };
 
 export type ModbusPayloadUpdateResponse = {

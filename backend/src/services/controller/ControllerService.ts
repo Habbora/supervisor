@@ -29,6 +29,11 @@ export class ControllerManager {
     return this.__controllers.get(name);
   }
 
+  public findById(id: string): Controller | undefined {
+    const controllers = this.findAll();
+    return controllers.find(controller => controller.id === id);
+  }
+
   create(controller: ControllerSchema): Controller | undefined {
     // Verifica se o controller já existe
     const databaseController = DatabaseController.getInstance();

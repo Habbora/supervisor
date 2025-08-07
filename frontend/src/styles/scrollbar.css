@@ -1,0 +1,73 @@
+/* Estilos personalizados para scrollbar */
+
+/* Para navegadores WebKit (Chrome, Safari, Edge) */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Estilo mais moderno e minimalista */
+.modern-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modern-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.modern-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.5);
+    border-radius: 3px;
+}
+
+.modern-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.8);
+}
+
+/* Estilo colorido */
+.colorful-scrollbar::-webkit-scrollbar {
+    width: 10px;
+}
+
+.colorful-scrollbar::-webkit-scrollbar-track {
+    background: #e5e7eb;
+    border-radius: 5px;
+}
+
+.colorful-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+    border-radius: 5px;
+}
+
+.colorful-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #2563eb, #7c3aed);
+}
+
+/* Para Firefox */
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+
+.modern-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.colorful-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #3b82f6 #e5e7eb;
+} 

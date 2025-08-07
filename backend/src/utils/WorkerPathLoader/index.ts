@@ -37,10 +37,10 @@ export function findAllWorkerPaths(directory: string): { folder: string, path: s
 export function loadWorker(workerPath: string): Worker | undefined {
   const finded = findAllWorkerPaths("workers");
   const found = finded.find(worker => worker.folder === workerPath);
+
   if (!found) {
-    console.error(`📍 Worker ${workerPath} not found`);
     return undefined;
   }
-  console.log(`📍 Worker ${workerPath} found in ${found.folder}`);
+
   return new Worker(found.path);
 }

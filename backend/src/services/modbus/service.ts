@@ -60,11 +60,23 @@ export class ModbusService extends BaseService {
       this.isError = false;
       console.log("Modbus Service: ❤️Conexão estabelecida");
       this.emit("online");
+      this.postMessage({
+        type: ModbusMessageType.CONNECTED,
+        payload: [],
+        timestamp: Date.now(),
+        requestId: crypto.randomUUID(),
+      });
     });
 
     this.networkService?.on("close", () => {
       this.isConnected = false;
       this.emit("offline");
+      this.postMessage({
+        type: ModbusMessageType.DISCONNECTED,
+        payload: [],
+        timestamp: Date.now(),
+        requestId: crypto.randomUUID(),
+      });
       this.scheduleReconnect();
     });
 

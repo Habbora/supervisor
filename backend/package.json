@@ -6,7 +6,7 @@
   "scripts": {
     "start": "bun run ./src/index.ts",
     "dev": "bun run --watch src/index.ts",
-    "build": "bun build src/index.ts --outdir dist",
+    "build": "bun run build.ts",
     "test": "bun test",
     "test:watch": "bun test --watch",
     "compile:supervisor": "bun build --compile --target=bun-linux-x64 ./dist/index.js --outfile ./bin/supervisor",
@@ -42,7 +42,8 @@
   },
   "dependencies": {
     "jsmodbus": "^4.0.10",
-    "shiki": "^3.2.1"
+    "shiki": "^3.2.1",
+    "zod": "^4.1.5"
   },
   "files": [
     "./docs",

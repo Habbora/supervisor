@@ -1,36 +1,36 @@
-import { useState } from "react";
-import { ControllerFormDataTypes, ControllerType } from "@/types/forms/controller.types";
+import { useEffect, useState } from "react";
+import { ControllerFormDataTypes } from "@/types/forms/controller.type";
+import { useControllers } from "@/features/controllers/hooks/useControllers";
 
 export interface ControllerFormProps {
-    type: "add" | "edit";
     controller?: ControllerFormDataTypes;
     onClose?: () => void;
     onSubmit?: (formData: ControllerFormDataTypes) => void;
-    onRemove?: (formData: ControllerFormDataTypes) => void;
+    onRemove?: (controllerId: string) => void;
 }
 
-export default function ControllerForm({ onClose, onSubmit, type, controller, onRemove }: ControllerFormProps) {
-    const [formData, setFormData] = useState<ControllerFormDataTypes>(controller ?? {
-        name: "",
-        driverName: "",
-        host: "",
-        port: 0
-    });
+export default function ControllerForm({ onClose, onSubmit }: ControllerFormProps) {
+    const { readControllersConfigs } = useControllers();
 
-    const title = type === "add" ? "Adicionar Controlador" : "Editar Controlador";
+    const [controllersConfigsList, setControllersConfigsList] = useState<any[]>([]);
+    const [controllerName, setControllerName] = useState<string>("");
+    const [selectedDriver, setSelectedDriver] = useState<string>("");
+
+    useEffect(() => {
+        readControllersConfigs()
+            .then((configs) => {
+                console.log(configs);
+                setControllersConfigsList(configs);
+                setSelectedDriver(configs[0].name);
+            })
+    }, []);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit?.(formData);
-        onClose?.();
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: name === 'port' ? parseInt(value) || 0 : value,
-        }));
+        onSubmit?.({
+            name: controllerName,
+            driverName: selectedDriver,
+        });
     };
 
     return (
@@ -45,88 +45,45 @@ export default function ControllerForm({ onClose, onSubmit, type, controller, on
             {/* Form */}
             <div className="bg-white opacity-90 rounded-lg p-6 w-96 max-w-[90vw] z-20 relative">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold">{title}</h2>
-                    {type === "edit" && (
-                        <button
-                            type="button"
-                            onClick={() => onRemove?.(formData)}
-                            className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors"
-                        >
-                            Remover
-                        </button>
-                    )}
+                    <h2 className="text-xl font-semibold">Adicionar Controlador</h2>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                            Nome do Controlador
-                        </label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleInputChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                        Nome do Controlador
+                    </label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={controllerName}
+                        onChange={(e) => setControllerName(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                    />
 
-                    <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                            Nome do Driver
-                        </label>
-                        <input
-                            type="text"
-                            id="driverName"
-                            name="driverName"
-                            value={formData.driverName}
-                            onChange={handleInputChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <span className="text-sm text-gray-500 font-bold mb-2">
-                            Configurações de Rede:
-                        </span>
-                    </div>
-
-
-                    <div>
-                        <label htmlFor="ip" className="block text-sm font-medium text-gray-700">
-                            Endereço IP
-                        </label>
-                        <input
-                            type="text"
-                            id="host"
-                            name="host"
-                            value={formData.host}
-                            onChange={handleInputChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="192.168.1.100"
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label htmlFor="port" className="block text-sm font-medium text-gray-700 mb-1">
-                            Porta
-                        </label>
-                        <input
-                            type="number"
-                            id="port"
-                            name="port"
-                            value={formData.port}
-                            onChange={handleInputChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            min="1"
-                            max="65535"
-                            required
-                        />
-                    </div>
+                    {/* TODO: Adicionar uma lista de drivers para selecionar com circle-ui */}
+                    <label htmlFor="driverName" className="block text-sm font-medium text-gray-700 mb-1">
+                        Configuração do Controlador
+                    </label>
+                    <select
+                        id="driver"
+                        name="driver"
+                        value={selectedDriver}
+                        className="border border-gray-300 rounded-md max-h-40 overflow-y-auto h-max-10 w-full"
+                        onChange={(e) => setSelectedDriver(e.target.value)}
+                        required
+                        size={controllersConfigsList.length}
+                    >
+                        {controllersConfigsList.map((driver) => (
+                            <option
+                                key={driver.name}
+                                value={driver.name.trim().toLowerCase()}
+                                className={`justify-between items-center gap-2 p-2 cursor-pointer text-sm font-medium`}>
+                                {driver.name}
+                            </option>
+                        ))}
+                    </select>
 
                     <div className="flex gap-3 pt-4">
                         <button

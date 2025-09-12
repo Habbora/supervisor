@@ -16,7 +16,7 @@ export default function ModernHeader({
     subtitle,
 }: ModernHeaderProps) {
     return (
-        <div className="flex-col w-full border-2 border-gray-200 bg-gray-100 p-4 rounded-lg">
+        <div className="flex-col w-full border-2 border-gray-200 bg-gray-100 p-4 rounded-lg shadow-lg">
             <div className="flex flex-col items-start">
                 <h1 className="text-2xl font-semibold mb-4">
                     {title}

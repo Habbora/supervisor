@@ -1,5 +1,5 @@
 import { BaseService } from "../abstracts/BaseService";
-import type { ControllerManager } from "../controller";
+import type { ControllerManager } from "../controllers";
 import { HydraulicLevel, type HydraulicLevelDto } from "./hydraulic_level";
 
 export class HydraulicService extends BaseService {

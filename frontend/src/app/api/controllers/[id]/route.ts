@@ -1,34 +1,35 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+const CONTROLLER_API_URL = "http://localhost:4001/api/v1/controllers";
+
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
 
-    const controller = await fetch(`http://localhost:4001/api/v1/controllers/${id}`).then(res => res.json());
+    const controller = await fetch(`${CONTROLLER_API_URL}/${id}`).then(res => res.json());
 
     return NextResponse.json(controller);
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
-    console.log(request.body);
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
+    const controllerData = await req.json();
 
-    const controller = await fetch(`http://localhost:4001/api/v1/controllers`, {
+    const controller = await fetch(`${CONTROLLER_API_URL}/${id}`, {
         method: "PUT",
-        body: request.body,
+        body: JSON.stringify(controllerData),
     });
 
     return NextResponse.json(await controller.json());
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export const DELETE = async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params;
 
-    const data = await fetch(`http://localhost:4001/api/v1/controllers`, {
+    const controller = await fetch(`${CONTROLLER_API_URL}/${id}`, {
         method: "DELETE",
-        body: JSON.stringify({
-            id
-        }),
     });
 
-    return NextResponse.json(data);
+    console.log(await controller.json());
+
+    return NextResponse.json(await controller.json());
 }

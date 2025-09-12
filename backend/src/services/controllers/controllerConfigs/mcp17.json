@@ -1,0 +1,76 @@
+{
+  "name": "MCP17",
+  "protocol": "modbus",
+  "endpoints_register": [
+    {
+      "name": "D01",
+      "address": 1,
+      "endpointType": "output"
+    },
+    {
+      "name": "D02",
+      "address": 2,
+      "endpointType": "output"
+    },
+    {
+      "name": "D03",
+      "address": 3,
+      "endpointType": "output"
+    },
+    {
+      "name": "D04",
+      "address": 4,
+      "endpointType": "output"
+    },
+    {
+      "name": "D05",
+      "address": 5,
+      "endpointType": "output"
+    },
+    {
+      "name": "D06",
+      "address": 6,
+      "endpointType": "output"
+    },
+    {
+      "name": "DI01",
+      "address": 17,
+      "endpointType": "input"
+    },
+    {
+      "name": "DI02",
+      "address": 18,
+      "endpointType": "input"
+    },
+    {
+      "name": "DI03",
+      "address": 19,
+      "endpointType": "input"
+    },
+    {
+      "name": "DI04",
+      "address": 20,
+      "endpointType": "input"
+    },
+    {
+      "name": "DI05",
+      "address": 21,
+      "endpointType": "input"
+    },
+    {
+      "name": "DI06",
+      "address": 22,
+      "endpointType": "input"
+    },
+    {
+      "name": "DI07",
+      "address": 23,
+      "endpointType": "input"
+    },
+    {
+      "name": "DI08",
+      "address": 24,
+      "endpointType": "input"
+    }
+  ]
+}

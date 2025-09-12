@@ -1,5 +1,5 @@
 import { type DeviceEventData, type DeviceType, type IDevice } from "./types/device.type";
-import { EventBus } from "../EventBus";
+import { EventBus } from "../event-bus/index.ts";
 
 // Quero mudar Device para {id: string, name: string, type: string, props: any}
 
@@ -7,9 +7,8 @@ type EndpointType = "analog_input" | "digital_input" | "analog_output" | "digita
 
 type Endpoint = {
     name: string;
-    type: EndpointType;
-    controller: string;
-    endpoint: string;
+    controllerId: string;
+    endpointName: string;
 }
 
 export interface DeviceDTO {
@@ -37,9 +36,9 @@ export class Device {
         });
     }
 
-    onEndpointEvent(data: any): this {
+    private onEndpointEvent(data: any): this {
         this.endpoints?.forEach((endpoint) => {
-            if (endpoint.controller === data.controller && endpoint.endpoint === data.endpoint) {
+            if (endpoint.controllerId === data.controllerId && endpoint.endpointName === data.endpointId) {
                 this.value = data.value;
 
                 EventBus.getInstance().publish('device_value_changed', {
@@ -68,9 +67,8 @@ export class Device {
 
         const newEndpoint: Endpoint = {
             name,
-            type,
-            controller,
-            endpoint,
+            controllerId: controller,
+            endpointName: endpoint,
         };
 
         this.endpoints.push(newEndpoint);

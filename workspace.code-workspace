@@ -9,10 +9,6 @@
             "path": "backend"
         },
         {
-            "name": "Backend V2",
-            "path": "backend_v2"
-        },
-        {
             "name": "Frontend",
             "path": "frontend"
         }

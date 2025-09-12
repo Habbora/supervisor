@@ -1,18 +1,21 @@
-# Usando a imagem oficial do Bun slim
 FROM oven/bun:1-slim
 
-# Definindo o diretório de trabalho
 WORKDIR /app
 
-# Copiando todos os arquivos
 COPY . .
 
-# Instalando dependências
-RUN bun install --frozen-lockfile
-RUN chmod 777 /app/data
+RUN rm -rf node_modules
+RUN bun install
 
-EXPOSE 3000
+RUN mkdir -p /app/data && chmod 777 /app/database
 
-VOLUME ["/app/data"]
+RUN addgroup --system --gid 1001 supervisor
+RUN adduser --system --uid 1001 supervisor
+RUN chown -R supervisor:supervisor /app
+USER supervisor
 
-CMD ["bun", "start"]  
+EXPOSE 4001
+
+VOLUME ["/app/database"]
+
+CMD ["bun", "start"]

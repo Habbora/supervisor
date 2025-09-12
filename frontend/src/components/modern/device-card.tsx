@@ -15,19 +15,19 @@ const mock: DeviceType = {
     value: 0,
 }
 
-export default function DeviceCard({ device = mock }: { device?: DeviceType }) {
+export default function DeviceCard({ device = mock, className }: { device?: DeviceType, className?: string }) {
     switch (device.type) {
         case "pump":
             return (
-                <PumpControl device={device} />
+                <PumpControl device={device} className={className} />
             )
         case "level":
             return (
-                <LevelSensor device={device} />
+                <LevelSensor device={device} className={className} />
             )
         default:
             return (
-                <div>
+                <div className={className}>
                     <h1>Device Card</h1>
                 </div>
             )

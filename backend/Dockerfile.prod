@@ -1,34 +1,43 @@
-FROM oven/bun:1 as builder
+# Estágio de build
+FROM oven/bun:1-slim AS builder
 
 WORKDIR /app
 
-COPY package.json bun.lock ./
+# Copiando arquivos de dependências
+COPY package.json bun.lock* ./
 RUN bun install --frozen-lockfile
 
+# Copiando código fonte
 COPY . .
 
+# Build da aplicação
 RUN bun run build
-RUN bun run compile
 
-# Compilar workers separadamente
-RUN bun build src/services/driver/drivers/modbus.ts --outfile bin/modbus.worker.js
-RUN bun build src/services/driver/drivers/exampleDriver.ts --outfile bin/example.worker.js
-
-FROM oven/bun:1-slim
+# Estágio de produção
+FROM oven/bun:1-slim AS runner
 
 WORKDIR /app
 
-COPY --from=builder /app/bin ./bin
-COPY --from=builder /app/data ./data
-COPY --from=builder /app/dist ./dist
+# Instalando apenas dependências de produção
+COPY package.json bun.lock* ./
+RUN bun install --frozen-lockfile --production
 
+# Copiando arquivos compilados
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/database ./database
+
+# Criando diretório de dados
 RUN mkdir -p /app/data && chmod 777 /app/data
+
+# Criando usuário não-root
+RUN addgroup --system --gid 1001 supervisor
+RUN adduser --system --uid 1001 supervisor
+RUN chown -R supervisor:supervisor /app
+USER supervisor
 
 EXPOSE 3000
 
 VOLUME ["/app/data"]
 
-ENV NODE_ENV=production
-ENV BUN_ENV=production
-
-CMD ["./bin/supervisor"] 
+CMD ["bun", "start"]

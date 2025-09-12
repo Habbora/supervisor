@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # Backend - API do Supervisor (Desenvolvimento)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: supervisor-backend-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - ./backend/data:/app/data
+      - ./backend/database:/app/database
+    environment:
+      - NODE_ENV=development
+      - BUN_ENV=development
+    restart: unless-stopped
+    privileged: true
+    networks:
+      - supervisor-network
+    command: bun run dev
+
+  # Frontend - Interface Web (Desenvolvimento)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: supervisor-frontend-dev
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:3000
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - supervisor-network
+    command: npm run dev
+
+networks:
+  supervisor-network:
+    driver: bridge
+

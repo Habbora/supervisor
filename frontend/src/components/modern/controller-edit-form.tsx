@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ControllerFormDataTypes } from "@/types/forms/controller.types";
+import { ControllerFormDataTypes } from "@/types/forms/controller.type";
 
 export interface ControllerEditFormProps {  
     controller: ControllerFormDataTypes;
@@ -104,7 +104,7 @@ export default function ControllerEditForm({ controller, onClose, onSubmit, onRe
                             type="text"
                             id="host"
                             name="host"
-                            value={formData.host}
+                            value={"Error"}
                             onChange={handleInputChange}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="192.168.1.100"
@@ -121,7 +121,7 @@ export default function ControllerEditForm({ controller, onClose, onSubmit, onRe
                             type="number"
                             id="port"
                             name="port"
-                            value={formData.port}
+                            value={-1}
                             onChange={handleInputChange}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             min="1"

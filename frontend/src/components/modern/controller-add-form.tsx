@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ControllerFormDataTypes } from "@/types/forms/controller.types";
+import { ControllerFormDataTypes } from "@/types/forms/controller.type";
 
 export interface ControllerAddFormProps {
     onClose?: () => void;
@@ -10,8 +10,6 @@ export default function ControllerAddForm({ onClose, onSubmit }: ControllerAddFo
     const [formData, setFormData] = useState<ControllerFormDataTypes>({
         name: "",
         driverName: "",
-        host: "",
-        port: 0
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -87,7 +85,7 @@ export default function ControllerAddForm({ onClose, onSubmit }: ControllerAddFo
                             type="text"
                             id="host"
                             name="host"
-                            value={formData.host}
+                            value={""}
                             onChange={handleInputChange}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="192.168.1.100"
@@ -103,7 +101,7 @@ export default function ControllerAddForm({ onClose, onSubmit }: ControllerAddFo
                             type="number"
                             id="port"
                             name="port"
-                            value={formData.port}
+                            value={0}
                             onChange={handleInputChange}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             min="1"

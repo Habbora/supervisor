@@ -1,16 +1,22 @@
-FROM oven/bun:1.1.0
+# Usando a imagem oficial do Bun slim para desenvolvimento
+FROM oven/bun:1-slim
 
+# Definindo o diretório de trabalho
 WORKDIR /app
 
-# Copiar arquivos de dependências
-COPY package.json bun.lock ./
-RUN bun install
-
-# Copiar o resto do código
+# Copiando o código fonte
 COPY . .
 
-# Expor a porta que a aplicação usa
+# Instalando dependências
+COPY package.json bun.lock* ./
+RUN bun install
+
+# Criando diretório de dados
+RUN mkdir -p /app/data && chmod 777 /app/data
+
 EXPOSE 3000
 
-# Comando para iniciar a aplicação em modo de desenvolvimento
-CMD ["bun", "run", "--watch", "src/index.ts"] 
+VOLUME ["/app/data"]
+
+# Comando para desenvolvimento com hot reload
+CMD ["bun", "run", "dev"]

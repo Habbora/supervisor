@@ -1,17 +1,17 @@
-import { Supervisor } from "../../../../services/core/SupervisorService";
+import { DeviceService } from "@services/devices/DeviceService";
 
 export const GET = async (req: any) => {
-    const supervisor = Supervisor.getInstance();
-    const devices = supervisor.deviceManager.findAll();
-
-    return Response.json({
-        devices: devices.map((device) => ({
+    const devices = DeviceService.getInstance()
+        .findAll()
+        .map((device) => ({
             id: device.id,
             name: device.name,
             type: device.type,
+            value: device.value,
             endpoints: device.endpoints,
-        }))
-    });
+        }));
+
+    return Response.json(devices);
 };
 
 export const POST = async (req: any) => {
@@ -21,7 +21,7 @@ export const POST = async (req: any) => {
         return Response.json({ error: "Name and type are required" }, { status: 400 });
     }
 
-    const device = Supervisor.getInstance().deviceManager.create({
+    const device = DeviceService.getInstance().create({
         name,
         type,
         endpoints: endpoints ?? [],
@@ -31,7 +31,7 @@ export const POST = async (req: any) => {
         return Response.json({ error: "Failed to create device" }, { status: 500 });
     }
 
-    return Response.json({ device });
+    return Response.json({ device }, { status: 201 });
 };
 
 export const PUT = async (req: any) => {
@@ -41,8 +41,7 @@ export const PUT = async (req: any) => {
         return Response.json({ error: "ID, name, type and endpoints are required" }, { status: 400 });
     }
 
-    const supervisor = Supervisor.getInstance();
-    const device = supervisor.deviceManager.update(id, {
+    const device = DeviceService.getInstance().update(id, {
         name,
         type,
         endpoints,
@@ -62,8 +61,7 @@ export const DELETE = async (req: any) => {
         return Response.json({ error: "Device ID is required" }, { status: 400 });
     }
 
-    const supervisor = Supervisor.getInstance();
-    const device = supervisor.deviceManager.remove(id);
+    const device = DeviceService.getInstance().remove(id);
 
     if (!device) {
         return Response.json({ error: "Device not found" }, { status: 404 });

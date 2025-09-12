@@ -1,11 +1,12 @@
-'use client';
-
+import { useDevices } from "@/features/device/hooks/useDevices";
 import { useWebSocket } from "@/ws/useWebSocket";
+import { useState, useEffect } from "react";
 
 export interface PumpType {
   id: string;
   name: string;
-  value: number;
+  value?: number;
+  isOnline?: boolean;
   isAlert?: boolean;
   specs?: {
     power?: number;
@@ -15,12 +16,27 @@ export interface PumpType {
 
 interface PumpControlProps {
   device: PumpType;
+  className?: string;
 }
 
-export default function PumpControl({ device: device }: PumpControlProps) {
+export default function PumpControl({ device: device, className }: PumpControlProps) {
   const { sendMessage } = useWebSocket();
 
+  const [messageError, setMessageError] = useState<string>("Dispositivo offline");
+
+  useEffect(() => {
+    if (device.isOnline === true) setMessageError("");
+    if (device.isOnline === false) setMessageError("Dispositivo offline");
+  }, [device.isOnline]);
+
+  useEffect(() => {
+    if (device.isOnline === false) return;
+    if (device.isAlert === false) setMessageError("");
+    if (device.isAlert === true) setMessageError("Dispositivo com falha");
+  }, [device.isAlert]);
+
   const handleToggle = () => {
+    if (messageError) return;
     sendMessage(JSON.stringify({
       type: "pump",
       action: "toggle",
@@ -30,8 +46,8 @@ export default function PumpControl({ device: device }: PumpControlProps) {
 
   return (
     <div
-      className={`w-[200px] h-[200px] p-4 rounded-lg cursor-pointer select-none transition-colors duration-200 ${
-        device.isAlert
+      className={`w-[200px] h-[200px] p-4 rounded-lg cursor-pointer select-none transition-colors duration-200 ${className} ${
+        messageError
           ? "bg-red-100 hover:bg-red-200"
           : device.value
             ? "bg-green-100 hover:bg-green-200"
@@ -46,11 +62,11 @@ export default function PumpControl({ device: device }: PumpControlProps) {
         <div className="flex items-center gap-2">
           <div
             className={`w-3 h-3 rounded-full ${
-              device.isAlert ? "bg-red-500" : device.value ? "bg-green-500" : "bg-gray-500"
+              messageError ? "bg-red-500" : device.value ? "bg-green-500" : "bg-gray-500"
             }`}
           />
           <span className="text-sm text-gray-600">
-            {device.isAlert ? "Falha" : device.value ? "Ligada" : "Desligada"}
+            {messageError ? messageError : device.value ? "Ligada" : "Desligada"}
           </span>
         </div>
         <div className="text-xs text-gray-500 flex flex-col gap-1">

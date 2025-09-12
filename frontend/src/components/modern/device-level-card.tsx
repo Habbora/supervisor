@@ -6,15 +6,17 @@ export interface LevelSensorType {
   id: string;
   type: string;
   name: string;
-  value: number;
+  value?: number;
+  isOnline?: boolean;
   isAlert?: boolean;
 }
 
 interface LevelSensorProps {
   device: LevelSensorType;
+  className?: string;
 }
 
-export default function LevelSensor({ device }: LevelSensorProps) {
+export default function LevelSensor({ device, className }: LevelSensorProps) {
   // Usando useEffect para monitorar mudanças no isAlert
   const [alertaEmitido, setAlertaEmitido] = useState(false);
   const [value, setValue] = useState(0);
@@ -33,9 +35,9 @@ export default function LevelSensor({ device }: LevelSensorProps) {
 
   return (
     <div
-      className={`w-[200px] h-[200px] p-4 rounded-lg bg-gray-100 cursor-pointer hover:bg-gray-200 transition-colors ${device.isAlert
-          ? "bg-red-100 hover:bg-red-200"
-          : "bg-green-100 hover:bg-green-200"
+      className={`w-[200px] h-[200px] p-4 rounded-lg bg-gray-100 cursor-pointer hover:bg-gray-200 transition-colors ${className} ${device.value && device.value < 0
+        ? "bg-red-100 hover:bg-red-200"
+        : "bg-green-100 hover:bg-green-200"
 
         }`}
     >
@@ -44,10 +46,10 @@ export default function LevelSensor({ device }: LevelSensorProps) {
         <div className="w-full h-32 rounded-lg relative">
           <div
             className="absolute bottom-0 left-0 right-0 bg-blue-500 transition-all duration-500 rounded-lg"
-            style={{ height: `${device.value > 100 ? 100 : device.value < 0 ? 0 : device.value}%` }}
+            style={{ height: `${device.value && device.value > 100 ? 100 : device.value && device.value >= 0 ? device.value ?? 0 : 0}%` }}
           />
           <div className="absolute inset-0 flex items-center justify-center text-lg font-bold">
-            {Math.round(device.value)}%
+            {Math.round(device.value ?? 0)}%
           </div>
         </div>
       </div>

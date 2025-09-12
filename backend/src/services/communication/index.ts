@@ -1,4 +1,3 @@
-import { BaseService } from "../abstracts/BaseService";
 import type { Server, ServerWebSocket } from "bun";
 import type {
   WebSocketMessage,
@@ -12,8 +11,9 @@ import {
 } from "./constants/websocket.constants";
 import { readdirSync, statSync, watch } from "fs";
 import { join } from "path";
+import { EventEmitter } from "events";
 
-export class WebService extends BaseService {
+export class WebService extends EventEmitter {
   // Servidor WebSocket
   private server: Server | undefined;
   // Mapa de conexões
@@ -23,10 +23,6 @@ export class WebService extends BaseService {
   private routes: Map<string, any> = new Map();
   private routesWatcher: any;
 
-  constructor() {
-    super("WebSocketService");
-  }
-
   private async loadRoutes(directory: string, basePath: string = "") {
     const files = readdirSync(directory);
 
@@ -35,7 +31,15 @@ export class WebService extends BaseService {
       const stat = statSync(fullPath);
 
       if (stat.isDirectory()) {
-        await this.loadRoutes(fullPath, `${basePath}/${file}`);
+        // Verifica se é um parâmetro dinâmico (ex: [id], [userId])
+        if (file.startsWith('[') && file.endsWith(']')) {
+          // Converte [id] em regex pattern para capturar qualquer valor
+          const paramName = file.slice(1, -1); // Remove os colchetes
+          const dynamicPath = `${basePath}/:${paramName}`;
+          await this.loadRoutes(fullPath, dynamicPath);
+        } else {
+          await this.loadRoutes(fullPath, `${basePath}/${file}`);
+        }
       } else if (file === "route.ts") {
         const routeModule = await import(fullPath);
         const routePath = basePath || "/";
@@ -69,17 +73,70 @@ export class WebService extends BaseService {
     const path = url.pathname;
     const method = req.method;
 
-    const routeModule = this.routes.get(path);
+    console.log('req', req);
+
+    console.log(`🔍 Procurando rota: ${method} ${path}`);
+
+    // Primeiro tenta encontrar uma rota exata
+    let routeModule = this.routes.get(path);
+    let params: Record<string, string> = {};
+
+    if (routeModule) {
+      console.log(`✅ Rota exata encontrada: ${path}`);
+    } else {
+      console.log(`🔍 Procurando rota dinâmica para: ${path}`);
+
+      // Se não encontrar rota exata, procura por rotas dinâmicas
+      for (const [routePath, module] of this.routes.entries()) {
+        if (routePath.includes(':')) {
+          console.log(`🔍 Testando rota dinâmica: ${routePath}`);
+
+          // Converte rota dinâmica em regex
+          const regexPattern = routePath.replace(/:[^/]+/g, '([^/]+)');
+          const regex = new RegExp(`^${regexPattern}$`);
+
+          if (regex.test(path)) {
+            console.log(`✅ Rota dinâmica encontrada: ${routePath} → ${path}`);
+
+            // Extrai os parâmetros
+            const matches = path.match(regex);
+            if (matches) {
+              const paramNames = routePath.match(/:[^/]+/g) || [];
+              params = {};
+
+              paramNames.forEach((paramName, index) => {
+                const key = paramName.slice(1); // Remove o ':'
+                params[key] = matches[index + 1]; // +1 porque matches[0] é a string completa
+              });
+
+              console.log(`📝 Parâmetros extraídos:`, params);
+
+              routeModule = module;
+              break;
+            }
+          }
+        }
+      }
+    }
+
     if (!routeModule) {
+      console.log(`❌ Rota não encontrada: ${path}`);
+      console.log(`📋 Rotas disponíveis:`, Array.from(this.routes.keys()));
       return new Response("Rota não encontrada", { status: 404 });
     }
 
     const handler = routeModule[method];
     if (!handler) {
+      console.log(`❌ Método ${method} não permitido para rota: ${path}`);
       return new Response("Método não permitido", { status: 405 });
     }
 
-    return handler(req);
+    console.log(`✅ Executando handler: ${method} ${path}`);
+
+    // Cria um objeto com os parâmetros extraídos para passar para o handler
+    const enhancedReq = Object.assign(req, { params });
+
+    return handler(enhancedReq);
   }
 
   public registerWebsocketHandler(handler: WebSocketHandler) {
@@ -89,7 +146,6 @@ export class WebService extends BaseService {
   }
 
   public async initialize(): Promise<this> {
-    if (this._isInitialized) return this;
     console.log("Iniciando WebSocketService...");
 
     const routesDir = join(process.cwd(), "src/routes");
@@ -104,6 +160,7 @@ export class WebService extends BaseService {
       hostname: WEBSOCKET_CONFIG.HOST,
       port: WEBSOCKET_CONFIG.PORT,
       fetch: async (req, server) => {
+
         if (req.method === "OPTIONS") {
           return new Response(null, {
             headers: {
@@ -116,14 +173,14 @@ export class WebService extends BaseService {
         }
 
         if (server.upgrade(req)) return new Response();
-        
+
         // Adiciona headers CORS para todas as respostas
         const response = await this.handleRoute(req);
         const headers = new Headers(response.headers);
         headers.set("Access-Control-Allow-Origin", "*");
         headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-        
+
         return new Response(response.body, {
           status: response.status,
           statusText: response.statusText,
@@ -144,8 +201,6 @@ export class WebService extends BaseService {
         },
       },
     });
-
-    this._isInitialized = true;
 
     console.log(
       `WebSocketService inicializado com sucesso! Servidor escutando http://localhost:${WEBSOCKET_CONFIG.PORT}`
@@ -173,6 +228,5 @@ export class WebService extends BaseService {
       this.server.stop();
       this.connections.clear();
     }
-    await super.destroy();
   }
 }

@@ -1,17 +1,15 @@
 import { WebService } from "../communication";
 import type { WebSocketResponse } from "./types/websocket";
-import { EventBus } from "../EventBus";
-import { DeviceManager } from "../devices/DeviceManager";
+import { EventBus } from "../event-bus/index.ts";
+import { DeviceService } from "../devices/DeviceService";
 import { HistoryManager } from "../history";
 
 export class Dashboard {
   private __webService = new WebService();
-  private __eventBus: EventBus;
-  private __deviceManager: DeviceManager;
+  private __eventBus = EventBus.getInstance();
+  private __deviceManager = DeviceService.getInstance();
 
-  constructor(eventBus: EventBus, deviceManager: DeviceManager) {
-    this.__eventBus = eventBus;
-    this.__deviceManager = deviceManager;
+  constructor() {
     this.initialize();
   }
 

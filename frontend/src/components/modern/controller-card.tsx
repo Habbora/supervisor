@@ -1,27 +1,13 @@
-'use client';
-
-export interface ControlerType {
-    id: string;
-    name: string;
-    worker: {
-        isRunning: boolean;
-    };
-    network: {
-        type: string;
-        host: string;
-        port: number;
-        isConnected?: boolean;
-    };
-}
+import type { ControllerType } from "@/features/controllers/types";
 
 interface ControllerCardProps {
-    device: ControlerType;
+    device: ControllerType;
     onClick?: () => void;
 }
 
 export default function ControllerCard({ device: device, onClick }: ControllerCardProps) {
-    const isConnected = device.network.isConnected;
-    const isRunning = device.worker.isRunning;
+    const isConnected = device.status?.isConnected;
+    const isRunning = device.status?.isRunning;
 
     return (
         <>
@@ -34,11 +20,11 @@ export default function ControllerCard({ device: device, onClick }: ControllerCa
                     }`}
                 onClick={onClick}
             >
-                <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between">
-                        <span className="font-medium">{device.name}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
+                <div className="flex flex-col gap-1">
+                    <p className="font-medium text-lg">{device.name}</p>
+                    <p className="font-semibold text-sm text-gray-500">{"Erro"}</p>
+
+                    <div className="flex items-center gap-2 mt-2">
                         <div
                             className={`w-3 h-3 rounded-full ${!isRunning ? "bg-red-500" : isConnected ? "bg-green-500" : "bg-gray-500"}`}
                         />
@@ -46,9 +32,10 @@ export default function ControllerCard({ device: device, onClick }: ControllerCa
                             {!isRunning ? "Falha" : isConnected ? "Conectado" : "Desconectado"}
                         </span>
                     </div>
-                    <div className="text-xs text-gray-500 flex flex-col gap-1">
-                        <div>IP: {device.network.host || ""}</div>
-                        <div>Porta: {device.network.port || ""}</div>
+
+                    <div className="text-xs text-gray-500 flex flex-col gap-2">
+                        <div>IP: {device.configs.network.host || ""}</div>
+                        <div>Porta: {device.configs.network.port || ""}</div>
                     </div>
                 </div>
             </div>

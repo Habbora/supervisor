@@ -1,79 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest } from 'next/server';
+import { proxyToBackend } from '@/lib/apiProxy';
 
-interface FetchedController {
-    id: string;
-    name: string;
-    driverName: string;
-    interface: string;
-    startConfig: {
-        host: string;
-        port: number;
-    },
-    isReady: boolean;
-    worker: {
-        isRunning: boolean;
-    },
-    network: {
-        type: string;
-        host: string;
-        port: number;
-        isConnected: boolean;
-    }
+const CONTROLLER_API_URL = '/api/v1/controllers';
+
+// GET - Listar controllers
+export async function GET(request: NextRequest) {
+  return proxyToBackend(request, CONTROLLER_API_URL);
 }
 
-interface ResponseController {
-    id: string;
-    name: string;
-    driverName: string;
-    interface: string;
-    isReady: boolean;
-    worker: {
-        isRunning: boolean;
-    }
-    network: {
-        type: string;
-        host: string;
-        port: number;
-    };
-}
-
-export async function GET(request: Request) {
-    const data = await fetch('http://localhost:4001/api/v1/controllers').then(res => res.json());
-
-    const controllers: ResponseController[] = data.controllers.map((controller: FetchedController) => ({
-        id: controller.id,
-        name: controller.name,
-        driverName: controller.driverName,
-        interface: controller.interface,
-        isReady: controller.isReady,
-        worker: {
-            isRunning: controller.worker.isRunning,
-        },
-        network: {
-            type: "tcp",
-            host: controller.startConfig.host,
-            port: controller.startConfig.port,
-            isConnected: controller.network.isConnected,
-        },
-    }));
-
-    return NextResponse.json(controllers);
-}
-
-export async function POST(request: Request) {
-    const { name, driverName, network } = await request.json();
-
-    const data = await fetch(`http://localhost:4001/api/v1/controllers`, {
-        method: "POST",
-        body: JSON.stringify({
-            name,
-            driverName,
-            startConfig: {
-                host: network.host,
-                port: network.port,
-            },
-        }),
-    });
-
-    return NextResponse.json(data);
+// POST - Criar novo controller
+export async function POST(request: NextRequest) {
+  return proxyToBackend(request, CONTROLLER_API_URL);
 }   

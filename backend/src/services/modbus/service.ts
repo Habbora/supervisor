@@ -26,6 +26,10 @@ export class ModbusService extends BaseService {
     this.initializeService();
   }
 
+  async initialize(): Promise<void> {
+    await this.initializeService();
+  }
+
   private async initializeService(): Promise<void> {
 
     try {

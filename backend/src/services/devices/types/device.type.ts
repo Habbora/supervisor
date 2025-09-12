@@ -1,7 +1,3 @@
-import type { Controller } from "../../controller/Controller";
-import type { DeviceControllerDto } from "./dto.type";
-import type { EventEmitter } from "events";
-
 export type DeviceType = "level" | "light" | "pump" | "valve" | "other";
 
 export interface IDevice {

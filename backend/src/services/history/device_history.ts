@@ -1,5 +1,5 @@
-import { DeviceManager } from "../devices/DeviceManager";
-import { EventBus } from "../EventBus";
+import { DeviceService } from "../devices/DeviceService";
+import { EventBus } from "../event-bus/index.ts";
 
 export class DeviceHistory {
     private __history: { timestamp: Date, value: any }[] = [];
@@ -33,7 +33,7 @@ export class DeviceHistory {
     }
 
     private __onIntervalEvent() {
-        const device = DeviceManager.getInstance().findById(this.__deviceId);
+        const device = DeviceService.getInstance().findById(this.__deviceId);
 
         if (device) {
             this.__updateHistory(device.value);
@@ -42,7 +42,7 @@ export class DeviceHistory {
     }
 
     public getHistory() {
-        const device = DeviceManager.getInstance().findById(this.__deviceId);
+        const device = DeviceService.getInstance().findById(this.__deviceId);
 
         if (device) {
             this.__history[this.__history.length - 1] = {

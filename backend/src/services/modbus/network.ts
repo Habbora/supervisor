@@ -48,17 +48,21 @@ export class NetworkService extends BaseService {
 
   async initialize(): Promise<void> {
     if (this.isInitialized || this.isInitializing) return;
-    
+
     this.isInitializing = true;
-    
+
+    console.log(`🔌 Tentando conectar ao ${this.hostname}:${this.port}`);
+
     return new Promise((resolve, reject) => {
       this.socket?.connect(this.port, this.hostname, () => {
+        console.log(`🔌 Conectado com sucesso ao ${this.hostname}:${this.port}`);
         this._isInitialized = true;
         this.isInitializing = false;
         resolve();
       });
 
       this.socket?.on("error", (error) => {
+        console.error(`🔌 Erro ao conectar ao ${this.hostname}:${this.port}:`, error);
         this.isInitializing = false;
         reject(error);
       });

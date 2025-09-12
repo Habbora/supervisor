@@ -1,27 +1,56 @@
 import ModernSidebar from '@/components/modern/modern-sidebar';
 import '../../styles/scrollbar.css'
 
-// Função para buscar dados no server-side
-async function fetchNavigationData() {
-    try {
-        const response = await fetch('http://localhost:3000/api/navigation', {
-            // Cache por 60 segundos
-            next: { revalidate: 60 }
-        });
-
-        if (!response.ok) {
-            throw new Error('Falha ao buscar dados');
-        }
-
-        console.log(response);
-
-        return await response.json();
-    } catch (error) {
-        console.error('Erro ao buscar dados:', error);
-        // Retorna dados mock em caso de erro
-        return [];
-    }
-}
+const mock = [
+    {
+        id: 0,
+        name: 'Navegação',
+        href: '/',
+        items: [
+            {
+                id: 0,
+                name: '🏠 Início',
+                href: '/',
+                items: [
+                ]
+            },
+            {
+                id: 1,
+                name: '⏰ Agendamentos',
+                href: '/schedules',
+                items: [
+                ]
+            },
+            {
+                id: 4,
+                name: '⚙️ Configurações',
+                href: '/settings',
+                items: [
+                    {
+                        id: 0,
+                        name: 'Geral',
+                        href: '/',
+                    },
+                    {
+                        id: 1,
+                        name: 'Controladores',
+                        href: '/controllers',
+                    },
+                    {
+                        id: 2,
+                        name: 'Dispositivos',
+                        href: '/devices',
+                    },
+                    {
+                        id: 3,
+                        name: 'Usuários',
+                        href: '/users',
+                    },
+                ]
+            }
+        ]
+    },
+]
 
 export default async function DashboardLayout({
     children,
@@ -30,12 +59,14 @@ export default async function DashboardLayout({
 }) {
 
     // Buscar dados no server-side
-    const navigationData = await fetchNavigationData();
+    const navigationData = mock;
 
     return (
         <div className="h-dvh w-dvw p-2 flex flex-row">
-            <ModernSidebar navMain={navigationData} />
-            <main className="flex-1 ml-4">
+            <aside className="w-max-60 h-full">
+                <ModernSidebar navMain={navigationData} />
+            </aside>
+            <main className="w-full h-full ml-4 flex flex-col gap-2">
                 {children}
             </main>
         </div>

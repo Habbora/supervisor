@@ -15,24 +15,6 @@ export async function GET(request: NextRequest) {
                     ]
                 },
                 {
-                    id: 1,
-                    name: '💡 Iluminação',
-                    href: '/light',
-                    items: []
-                },
-                {
-                    id: 2,
-                    name: '🚿 Hidráulica',
-                    href: '/water',
-                    items: []
-                },
-                {
-                    id: 3,
-                    name: '🔌 Energia',
-                    href: '/energy',
-                    items: []
-                },
-                {
                     id: 4,
                     name: '⚙️ Configurações',
                     href: '/settings',
@@ -48,7 +30,7 @@ export async function GET(request: NextRequest) {
                             href: '/controllers',
                         },
                         {
-                            id: 1,
+                            id: 2,
                             name: 'Dispositivos',
                             href: '/devices',
                         },

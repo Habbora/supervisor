@@ -22,17 +22,17 @@ interface PumpControlProps {
 export default function PumpControl({ device: device, className }: PumpControlProps) {
   const { sendMessage } = useWebSocket();
 
-  const [messageError, setMessageError] = useState<string>("Dispositivo offline");
+  const [messageError, setMessageError] = useState<string>("");
 
   useEffect(() => {
-    if (device.isOnline === true) setMessageError("");
-    if (device.isOnline === false) setMessageError("Dispositivo offline");
+    //if (device.isOnline === true) setMessageError("");
+    //if (device.isOnline === false) setMessageError("Dispositivo offline");
   }, [device.isOnline]);
 
   useEffect(() => {
-    if (device.isOnline === false) return;
-    if (device.isAlert === false) setMessageError("");
-    if (device.isAlert === true) setMessageError("Dispositivo com falha");
+    //if (device.isOnline === false) return;
+    //if (device.isAlert === false) setMessageError("");
+    //if (device.isAlert === true) setMessageError("Dispositivo com falha");
   }, [device.isAlert]);
 
   const handleToggle = () => {

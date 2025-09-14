@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useDevices } from "@/features/device/hooks/useDevices";
 
 import DeviceDisplayCard from "@/components/devices/display/DeviceDisplayCard";
@@ -7,8 +8,13 @@ import ModernHeader from "@/components/modern/modern-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 
+
 export default function DashboardPage() {
     const { devices } = useDevices();
+
+    useEffect(() => {
+        console.log(devices);
+    }, [devices]);
 
     return (
         <>

@@ -19,17 +19,17 @@ interface SwitchCardProps {
 export default function SwitchCard({ device: device, className }: SwitchCardProps) {
     const { sendMessage } = useWebSocket();
 
-    const [messageError, setMessageError] = useState<string>("Dispositivo offline");
+    const [messageError, setMessageError] = useState<string>("");
 
     useEffect(() => {
-        if (device.isOnline === true) setMessageError("");
-        if (device.isOnline === false) setMessageError("Dispositivo offline");
+        //if (device.isOnline === true) setMessageError("");
+        //if (device.isOnline === false) setMessageError("Dispositivo offline");
     }, [device.isOnline]);
 
     useEffect(() => {
-        if (device.isOnline === false) return;
-        if (device.isAlert === false) setMessageError("");
-        if (device.isAlert === true) setMessageError("Dispositivo com falha");
+        //if (device.isOnline === false) return;
+        //if (device.isAlert === false) setMessageError("");
+        //if (device.isAlert === true) setMessageError("Dispositivo com falha");
     }, [device.isAlert]);
 
     const handleToggle = () => {
@@ -45,7 +45,7 @@ export default function SwitchCard({ device: device, className }: SwitchCardProp
 
     return (
         <div
-            className={`w-[200px] h-[200px] p-4 rounded-lg cursor-pointer select-none transition-colors duration-200 ${className} ${messageError
+            className={`w-[200px] h-[200px] p-4 rounded-lg cursor-pointer select-none transition-colors duration-200 ${className} ${messageError.length > 0
                     ? "bg-red-100 hover:bg-red-200"
                     : device.value
                         ? "bg-green-100 hover:bg-green-200"
@@ -59,7 +59,7 @@ export default function SwitchCard({ device: device, className }: SwitchCardProp
                 </div>
                 <div className="flex items-center gap-2">
                     <div
-                        className={`w-3 h-3 rounded-full ${messageError ? "bg-red-500" : device.value ? "bg-green-500" : "bg-gray-500"
+                        className={`w-3 h-3 rounded-full ${messageError.length > 0 ? "bg-red-500" : device.value ? "bg-green-500" : "bg-gray-500"
                             }`}
                     />
                     <span className="text-sm text-gray-600">

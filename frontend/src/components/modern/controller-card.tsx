@@ -34,8 +34,8 @@ export default function ControllerCard({ device: device, onClick }: ControllerCa
                     </div>
 
                     <div className="text-xs text-gray-500 flex flex-col gap-2">
-                        <div>IP: {device.configs.network.host || ""}</div>
-                        <div>Porta: {device.configs.network.port || ""}</div>
+                        <div>IP: {device.configs?.network?.host || "Não configurado"}</div>
+                        <div>Porta: {device.configs?.network?.port || "Não configurado"}</div>
                     </div>
                 </div>
             </div>

@@ -1,25 +1,30 @@
 "use client";
 
-import { useEffect } from "react";
-import { useDevices } from "@/features/device/hooks/useDevices";
+import { useEffect, useState } from "react";
+import { useDashboard } from "@/features/dashboard/provider/dashboardProvider";
 
 import DeviceDisplayCard from "@/components/devices/display/DeviceDisplayCard";
 import ModernHeader from "@/components/modern/modern-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-
-
 export default function DashboardPage() {
-    const { devices } = useDevices();
+    const { dashboard } = useDashboard();
+    const [ devices, setDevices ] = useState<any[]>([]);
+    const [ controllers, setControllers ] = useState<any[]>([]);
+    
+    useEffect(() => {
+        setDevices(dashboard.devices);
+        setControllers(dashboard.controllers);
+    }, [dashboard]);
 
     useEffect(() => {
-        console.log(devices);
-    }, [devices]);
+        console.log(dashboard);
+    }, [dashboard]);
 
     return (
         <>
             <ModernHeader title="Dashboard" />
-            <Card>
+            <Card className="h-full overflow-y-auto">
                 <CardHeader>
                     <CardTitle>Dashboard</CardTitle>
                 </CardHeader>

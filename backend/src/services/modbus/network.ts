@@ -29,19 +29,16 @@ export class NetworkService extends BaseService {
     if (!this.socket) return;
 
     this.socket.on("connect", () => {
-      //console.log("NetworkService: connected to", this.hostname, this.port);
       this.emit("connected", {
         socket: this.socket,
       });
     });
 
     this.socket.on("error", (error) => {
-      //console.log("NetworkService: error to", this.hostname, this.port, error);
       this.emit("error", error);
     });
 
     this.socket.on("close", () => {
-      //console.log("NetworkService: close to", this.hostname, this.port);
       this.emit("close");
     });
   }
@@ -51,18 +48,14 @@ export class NetworkService extends BaseService {
 
     this.isInitializing = true;
 
-    console.log(`🔌 Tentando conectar ao ${this.hostname}:${this.port}`);
-
     return new Promise((resolve, reject) => {
       this.socket?.connect(this.port, this.hostname, () => {
-        console.log(`🔌 Conectado com sucesso ao ${this.hostname}:${this.port}`);
         this._isInitialized = true;
         this.isInitializing = false;
         resolve();
       });
 
       this.socket?.on("error", (error) => {
-        console.error(`🔌 Erro ao conectar ao ${this.hostname}:${this.port}:`, error);
         this.isInitializing = false;
         reject(error);
       });

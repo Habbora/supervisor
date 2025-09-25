@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CreateDeviceDTO, DeviceType } from "../types";
 
-const API_URL = 'http://localhost:4001/api/v1/devices';
+const API_URL = '/api/devices';
 
 export const useDevices = () => {
     const [devices, setDevices] = useState<DeviceType[]>([]);
@@ -18,14 +18,9 @@ export const useDevices = () => {
         });
 
         if (response.ok) {
-            console.log('Device created successfully');
-
             readDevices();
-
-            return
+            return await response.json();
         }
-
-        console.error('Failed to create device');
     }
 
     const readDevices = async () => {
@@ -36,35 +31,38 @@ export const useDevices = () => {
         console.log(data);
     }
 
-    const updateDevice = async (device: DeviceType) => {
-        const response = await fetch(API_URL, {
-            method: 'PUT',
+    const updateDevice = async (id: string, device: DeviceType) => {
+        const response = await fetch(API_URL + `/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify(device),
         });
 
         if (response.ok) {
-            console.log('useDevices: Device updated successfully');
             readDevices();
-            return
+            const deviceUpdated = await response.json();
+            return deviceUpdated;
         }
-
-        console.error('Failed to update device');
     }
 
     const deleteDevice = async (device: DeviceType) => {
-        const response = await fetch(API_URL, {
+        const response = await fetch(API_URL + `/${device.id}`, {
             method: 'DELETE',
-            body: JSON.stringify(device),
         });
 
         if (response.ok) {
-            console.log('Device deleted successfully');
-
             readDevices();
-
-            return
+            return response.json();
         }
     }
 
-    return { devices, isDevicesLoaded, setDevices, createDevice, getDevices: readDevices, updateDevice, deleteDevice };
+    const getDeviceById = async (id: string) => {
+        const response = await fetch(API_URL + `/${id}`);
+        const data = await response.json() as DeviceType;
+        return data;
+    }
+
+    return { devices, isDevicesLoaded, setDevices, createDevice, readDevices, updateDevice, deleteDevice, getDeviceById };
 }

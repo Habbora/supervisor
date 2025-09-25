@@ -44,7 +44,7 @@ export default function ScheduleIdPage() {
     const [hora, setHora] = useState("");
     const [devicesWithAction, setDeviceWithAction] = useState<DeviceType[]>([]);
     const [dispositivos, setDispositivos] = useState<
-        { deviceId: string; action: string; value: number }[]
+        { deviceId: string; action: string; value: number, nome: string, acao: string, valor: string }[]
     >([]);
     const [novoDispositivo, setNovoDispositivo] = useState({
         nome: "",
@@ -55,7 +55,7 @@ export default function ScheduleIdPage() {
     // Função para adicionar um dispositivo na lista
     function handleAdicionarDispositivo() {
         if (novoDispositivo.nome && novoDispositivo.acao) {
-            setDispositivos([...dispositivos, novoDispositivo]);
+            setDispositivos([...dispositivos, novoDispositivo as any]);
             setNovoDispositivo({ nome: "", acao: "", valor: "" });
         }
     }

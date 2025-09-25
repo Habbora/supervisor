@@ -1,9 +1,6 @@
 import { type DeviceEventData, type DeviceType, type IDevice } from "./types/device.type";
 import { EventBus } from "../event-bus/index.ts";
-
-// Quero mudar Device para {id: string, name: string, type: string, props: any}
-
-type EndpointType = "analog_input" | "digital_input" | "analog_output" | "digital_output";
+import type { Variable } from "@/types/api/device.types";
 
 type Endpoint = {
     name: string;
@@ -15,14 +12,27 @@ export interface DeviceDTO {
     name: string;
     type: string;
     endpoints?: Endpoint[];
+    inputs?: Variable[];
+    outputs?: Variable[];
+}
+
+export type DeviceUpdateDTO = {
+    name?: string;
+    type?: string;
+    endpoints?: Endpoint[];
+    inputs?: Variable[];
+    outputs?: Variable[];
 }
 
 export class Device {
     public readonly id: string;
     public readonly name: string;
     public readonly type: string;
-    public value: number;
+    public value: number | boolean;
     public endpoints: Endpoint[];
+    public actions: any;
+    public inputs: Variable[] = [];
+    public outputs: Variable[] = [];
 
     constructor(id: string, dto: DeviceDTO) {
         this.id = id;
@@ -30,15 +40,23 @@ export class Device {
         this.type = dto.type;
         this.value = -1;
         this.endpoints = dto.endpoints ?? [];
+        this.inputs = dto.inputs ?? [];
+        this.outputs = dto.outputs ?? [];
 
         EventBus.getInstance().subscribe('endpoint_event', (data: any) => {
             this.onEndpointEvent(data);
         });
+
+        this.forceReadEndpoints();
     }
 
-    private onEndpointEvent(data: any): this {
+    protected onEndpointEvent(data: {
+        controllerId: string;
+        endpointName: string;
+        value: number;
+    }): this {
         this.endpoints?.forEach((endpoint) => {
-            if (endpoint.controllerId === data.controllerId && endpoint.endpointName === data.endpointId) {
+            if (endpoint.controllerId === data.controllerId && endpoint.endpointName === data.endpointName) {
                 this.value = data.value;
 
                 EventBus.getInstance().publish('device_value_changed', {
@@ -52,50 +70,23 @@ export class Device {
                     name: this.name,
                     value: this.value
                 });
-            }
+            };
         });
 
         return this;
     }
 
+    public forceReadEndpoints() {
+        this.endpoints.forEach((endpoint) => {
+            EventBus.getInstance().publish('force_read_endpoint', {
+                controllerId: endpoint.controllerId,
+                endpointName: endpoint.endpointName,
+            });
+        });
+    }
+
     onControllerEvent(data: DeviceEventData): this {
         throw new Error('Method not implemented.');
-    }
-
-    createEndpoint(name: string, type: EndpointType, controller: string, endpoint: string): Endpoint | undefined {
-        if (this.endpoints?.find((e) => e.name === name)) return;
-
-        const newEndpoint: Endpoint = {
-            name,
-            controllerId: controller,
-            endpointName: endpoint,
-        };
-
-        this.endpoints.push(newEndpoint);
-
-        return newEndpoint;
-    }
-
-    readEndpoint(name: string): Endpoint | undefined {
-        return this.endpoints?.find((e) => e.name === name);
-    }
-
-    updateEndpoint(name: string, type: EndpointType, controller: string, endpoint: string): Endpoint | undefined {
-        const oldEndpoint = this.endpoints?.find((e) => e.name === name);
-        if (!oldEndpoint) return;
-
-        this.endpoints = this.endpoints.map((e) => e.name === name ? { ...e, type, controller, endpoint } : e);
-
-        return oldEndpoint;
-    }
-
-    deleteEndpoint(name: string): Endpoint | undefined {
-        const oldEndpoint = this.endpoints?.find((e) => e.name === name);
-        if (!oldEndpoint) return;
-
-        this.endpoints = this.endpoints.filter((e) => e.name !== name);
-
-        return oldEndpoint;
     }
 
     toDashboard() {

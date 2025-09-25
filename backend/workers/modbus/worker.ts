@@ -4,8 +4,6 @@ import type { WorkerMessageRequestTemplate, WorkerMessageResponseTemplate } from
 
 declare var self: Worker;
 
-console.log("🚩 Modbus worker loaded");
-
 let client: ModbusWorker | null = null;
 
 self.onmessage = async (event: MessageEvent<WorkerMessageRequestTemplate<ModbusMessageRequest>>) => {

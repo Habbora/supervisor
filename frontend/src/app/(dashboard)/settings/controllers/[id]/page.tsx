@@ -1,12 +1,20 @@
 "use client"
 
+// Uses
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useControllers } from "@/features/controllers/hooks/useControllers";
+
+// Icons
+import { Trash2 } from "lucide-react";
+
+// Components
 import ModernHeader from "@/components/modern/modern-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useControllers } from "@/features/controllers/hooks/useControllers";
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import InputText from "@/components/ui/form-v1/InputText";
+import InputSelect from "@/components/ui/form-v1/InputSelect";
+import InputNumber from "@/components/ui/form-v1/InputNumber";
 
 const border = "border border-gray-300 rounded-md p-2 w-full"
 
@@ -57,11 +65,11 @@ export default function ControllerIdPage() {
         setDriver(controllerTemp.type);
         setNewDriver(controllerTemp.type);
 
-        setHost(controllerTemp.configs.network.host);
-        setNewHost(controllerTemp.configs.network.host);
+        setHost(controllerTemp.configs?.network?.host || "");
+        setNewHost(controllerTemp.configs?.network?.host || "");
 
-        setPort(controllerTemp.configs.network.port);
-        setNewPort(controllerTemp.configs.network.port);
+        setPort(controllerTemp.configs?.network?.port || 0);
+        setNewPort(controllerTemp.configs?.network?.port || 0);
     }, [controllers, id]);
 
     useEffect(() => {
@@ -79,22 +87,16 @@ export default function ControllerIdPage() {
         }
 
         if (isNewController) {
-            console.log(newName, newDriver, newHost, newPort);
+            console.log(newName, newDriver);
 
-            if (!newName || !newDriver || !newHost || !newPort) {
+            if (!newName || !newDriver) {
                 alert("Preencha todos os campos");
                 return;
             }
 
             const response = await createController({
                 name: newName,
-                type: newDriver,
-                configs: {
-                    network: {
-                        host: newHost,
-                        port: newPort
-                    }
-                }
+                type: newDriver
             });
 
             if (response) {
@@ -106,7 +108,6 @@ export default function ControllerIdPage() {
 
             return;
         }
-
 
         const response = await updateController(id, {
             name: newName,
@@ -167,66 +168,42 @@ export default function ControllerIdPage() {
                             </div>
                         )}
 
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="name">Nome</label>
-                            <div className="flex flex-row gap-2 items-center justify-between">
-                                <input
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    className={border}
-                                    value={newName}
-                                    onChange={(e) => setNewName(e.target.value)}
-                                />
-                            </div>
-                        </div>
+                        <InputText
+                            id="name"
+                            label="Nome"
+                            placeholder="Digite o nome do controlador"
+                            value={newName}
+                            onChange={(e) => setNewName(e)}
+                        />
 
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="driver">Driver</label>
-                            <div className="flex flex-row gap-2 items-center justify-between">
-                                <select
-                                    id="driver"
-                                    name="driver"
-                                    className={border}
-                                    value={newDriver}
-                                    onChange={(e) => setNewDriver(e.target.value)}
-                                    disabled={!isNewController}
-                                >
-                                    <option value="mcp17">MCP17</option>
-                                    <option value="mcp46a">MCP46A</option>
-                                </select>
-                            </div>
-                        </div>
+                        <InputSelect
+                            id="driver"
+                            label="Driver"
+                            value={newDriver}
+                            options={[{ name: "Selecione um driver", value: "" }, { name: "MCP17", value: "mcp17" }, { name: "MCP46A", value: "mcp46a" }]}
+                            onChange={(e) => setNewDriver(e)}
+                            disabled={!isNewController}
+                        />
 
-
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="host">Host</label>
-                            <div className="flex flex-row gap-2 items-center justify-between">
-                                <input
-                                    type="text"
+                        {!isNewController && (
+                            <>
+                                <InputText
                                     id="host"
-                                    name="host"
-                                    className={border}
+                                    label="Host"
+                                    placeholder="Digite o host do controlador"
                                     value={newHost}
-                                    onChange={(e) => setNewHost(e.target.value)}
+                                    onChange={(e) => setNewHost(e)}
                                 />
-                            </div>
-                        </div>
 
-
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="port">Porta</label>
-                            <div className="flex flex-row gap-2 items-center justify-between">
-                                <input
-                                    type="number"
+                                <InputNumber
                                     id="port"
-                                    name="port"
-                                    className={border}
+                                    label="Porta"
+                                    placeholder="Digite a porta do controlador"
                                     value={newPort}
-                                    onChange={(e) => setNewPort(parseInt(e.target.value))}
+                                    onChange={(e) => setNewPort(parseInt(e))}
                                 />
-                            </div>
-                        </div>
+                            </>
+                        )}
 
                         <Button
                             variant="outline"

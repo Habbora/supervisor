@@ -1,26 +1,34 @@
 "use client"
 
-import ModernHeader from "@/components/modern/modern-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// Uses
 import { useControllers } from "@/features/controllers/hooks/useControllers";
 import { useDevices } from "@/features/device/hooks/useDevices";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
 
-const border = "border border-gray-300 rounded-md p-2 w-full"
+import ModernHeader from "@/components/modern/modern-header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import DeviceInputTable, { DeviceInput } from "@/components/devices/DeviceInputTable";
+
+// Icons
+import { Trash2 } from "lucide-react";
+import InputText from "@/components/ui/form-v1/InputText";
+import InputSelect from "@/components/ui/form-v1/InputSelect";
+import Loading from "@/components/Loading";
 
 export default function DeviceIdPage() {
+    const { id } = useParams<{ id: string }>();
+
     const router = useRouter();
 
-    const { id } = useParams<{ id: string }>();
-    const { controllers, isControllersLoaded } = useControllers();
-    const { devices, createDevice, updateDevice, deleteDevice } = useDevices();
+    const { controllers } = useControllers();
+    const { createDevice, updateDevice, deleteDevice, getDeviceById } = useDevices();
 
     const [device, setDevice] = useState<any | null>(null);
-    const [isDevicesLoaded, setIsDevicesLoaded] = useState<boolean>(false);
+    const [isDeviceLoaded, setIsDeviceLoaded] = useState<boolean>(false);
 
+    // Estados para Formulário;
     const [name, setName] = useState<string>("");
     const [newName, setNewName] = useState<string>("");
 
@@ -36,79 +44,115 @@ export default function DeviceIdPage() {
     const [isNewDevice, setIsNewDevice] = useState<boolean>(false);
     const [isChanged, setIsChanged] = useState<boolean>(false);
 
-    useEffect(() => {
-        console.log('Rodando useEffect!');
+    const [deviceInputs, setDeviceInputs] = useState<DeviceInput[]>([]);
+    const [originalInputs, setOriginalInputs] = useState<DeviceInput[]>([]);
 
+    useEffect(() => {
+        if (id === "new") {
+            setIsNewDevice(true);
+            setIsDeviceLoaded(true);
+            return;
+        }
+        else {
+            getDeviceById(id).then((device) => {
+                setDevice(device);
+                setIsDeviceLoaded(true);
+            });
+        }
+    }, [id]);
+
+    useEffect(() => {
         if (id === "new") {
             setIsNewDevice(true);
             return;
         }
 
-        console.log('Controllers Loaded: ', isControllersLoaded);
-
-        if (!isControllersLoaded) {
+        if (!isDeviceLoaded) {
             return;
         }
 
-        const deviceTemp = devices.find((device) => device.id === id);
-        if (!deviceTemp) {
+        if (!device) {
             router.push("/settings/devices");
             return;
         }
 
-        console.log('Device Temp: ', deviceTemp);
+        setName(device.name);
+        setNewName(device.name);
+        setType(device.type);
+        setNewType(device.type);
 
-        setDevice(deviceTemp);
-
-        setName(deviceTemp.name);
-        setNewName(deviceTemp.name);
-
-        setType(deviceTemp.type);
-        setNewType(deviceTemp.type);
-
-        if (deviceTemp.endpoints.some((endpoint) => endpoint.name === 'default')) {
-            setControllerId(deviceTemp.endpoints.find((endpoint) => endpoint.name === 'default')?.controllerId ?? "");
-            setNewControllerId(deviceTemp.endpoints.find((endpoint) => endpoint.name === 'default')?.controllerId ?? "");
-            setEndpointName(deviceTemp.endpoints.find((endpoint) => endpoint.name === 'default')?.endpointName ?? "");
-            setNewEndpointName(deviceTemp.endpoints.find((endpoint) => endpoint.name === 'default')?.endpointName ?? "");
+        // Carregar inputs do device se existirem
+        if (device.inputs && Array.isArray(device.inputs)) {
+            setDeviceInputs(device.inputs);
+            setOriginalInputs(device.inputs);
+        } else {
+            setDeviceInputs([]);
+            setOriginalInputs([]);
         }
 
-    }, [isDevicesLoaded, isControllersLoaded]);
+        if (device.endpoints.some((endpoint: any) => endpoint.name === 'default')) {
+            setControllerId(device.endpoints.find((endpoint: any) => endpoint.name === 'default')?.controllerId ?? "");
+            setNewControllerId(device.endpoints.find((endpoint: any) => endpoint.name === 'default')?.controllerId ?? "");
+            setEndpointName(device.endpoints.find((endpoint: any) => endpoint.name === 'default')?.endpointName ?? "");
+            setNewEndpointName(device.endpoints.find((endpoint: any) => endpoint.name === 'default')?.endpointName ?? "");
+        }
+
+    }, [isDeviceLoaded]);
 
     useEffect(() => {
-        if (newName !== name || newType !== type || newControllerId !== controllerId || newEndpointName !== endpointName) {
+        // Verificar se os inputs mudaram
+        const inputsChanged = JSON.stringify(deviceInputs) !== JSON.stringify(originalInputs);
+
+        if (newName !== name || newType !== type || newControllerId !== controllerId || newEndpointName !== endpointName || inputsChanged) {
             setIsChanged(true);
         }
         else {
             setIsChanged(false);
         }
-    }, [newName, newType, newControllerId, newEndpointName]);
+    }, [newName, newType, newControllerId, newEndpointName, deviceInputs, originalInputs]);
+
+    // Função para lidar com mudanças nos inputs do device
+    const handleDeviceInputChange = (name: string, value: string | number | boolean) => {
+        setDeviceInputs(prev =>
+            prev.map(input =>
+                input.name === name
+                    ? { ...input, value }
+                    : input
+            )
+        );
+    };
 
     const handleCreateOrUpdateDevice = async () => {
         // Criando um dispositivo
         if (isNewDevice) {
-            if (!newName || !newType || !newControllerId || !newEndpointName) {
+            if (!newName || !newType) {
                 alert("Preencha todos os campos");
                 return;
             }
 
-            await createDevice({
+            const device = await createDevice({
                 name: newName,
                 type: newType,
                 endpoints: [{
                     name: 'default',
-                    controllerId: newControllerId,
-                    endpointName: newEndpointName
-                }]
+                    controllerId: "",
+                    endpointName: ""
+                }],
+                inputs: deviceInputs
             });
 
-            router.push("/settings/devices");
+            if (device) {
+                router.push(`/settings/devices/${device.id}`);
+            }
+            else {
+                alert("Erro ao criar dispositivo");
+            }
+
             return;
         }
 
-        // Atualizando um dispositivo
         if (device) {
-            await updateDevice({
+            const payload = {
                 ...device,
                 name: newName,
                 type: newType,
@@ -116,13 +160,16 @@ export default function DeviceIdPage() {
                     name: 'default',
                     controllerId: newControllerId,
                     endpointName: newEndpointName
-                }]
-            });
+                }],
+                inputs: deviceInputs
+            }
 
-            setName(newName);
-            setType(newType);
-            setControllerId(newControllerId);
-            setEndpointName(newEndpointName);
+            const deviceUpdated = await updateDevice(device.id, payload);
+            setName(deviceUpdated.name);
+            setType(deviceUpdated.type);
+            setControllerId(deviceUpdated.endpoints.find((endpoint: any) => endpoint.name === 'default')?.controllerId ?? "");
+            setEndpointName(deviceUpdated.endpoints.find((endpoint: any) => endpoint.name === 'default')?.endpointName ?? "");
+            setOriginalInputs(deviceUpdated.inputs);
             setIsChanged(false);
         }
     }
@@ -134,6 +181,17 @@ export default function DeviceIdPage() {
             await deleteDevice(device);
             router.push("/settings/devices");
         }
+    }
+
+    if (!isDeviceLoaded) {
+        return (
+            <>
+                <div className="flex flex-col gap-2">
+                    <ModernHeader title="⚙️ Configurações" subtitle="Dispositivos" />
+                </div>
+                <Loading />
+            </>
+        )
     }
 
     return (
@@ -153,89 +211,53 @@ export default function DeviceIdPage() {
 
                 <CardContent>
                     <div className="flex flex-col gap-2">
-
                         {/* Nome do Dispositivo */}
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="name">Nome do Dispositivo</label>
-                            <div className="flex flex-row gap-2 items-center justify-between">
-                                <input
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    className={border}
-                                    value={newName}
-                                    onChange={(e) => setNewName(e.target.value)}
-                                    placeholder="Digite o nome do dispositivo"
-                                />
-                            </div>
-                        </div>
+                        <InputText
+                            id="name"
+                            label="Nome do Dispositivo"
+                            placeholder="Digite o nome do dispositivo"
+                            value={newName}
+                            onChange={(value) => setNewName(value)}
+                        />
 
                         {/* Tipo do Dispositivo */}
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="type">Tipo do Dispositivo</label>
-                            <div className="flex flex-row gap-2 items-center justify-between">
-                                <select
-                                    id="type"
-                                    name="type"
-                                    className={border}
-                                    value={newType}
-                                    onChange={(e) => setNewType(e.target.value)}
-                                >
-                                    <option value="">Selecione o tipo</option>
-                                    <option value="level">Sensor de Nível</option>
-                                    <option value="pump">Bomba</option>
-                                    <option value="light">Luz</option>
-                                    <option value="valve">Válvula</option>
-                                    <option value="sensor">Sensor</option>
-                                    <option value="actuator">Atuador</option>
-                                </select>
-                            </div>
-                        </div>
+                        <InputSelect
+                            id="type"
+                            label="Tipo do Dispositivo"
+                            value={newType}
+                            options={[{ name: "Selecione um tipo", value: "" }, { name: "Sensor de Nível", value: "level" }, { name: "Bomba", value: "pump" }, { name: "Luz", value: "light" }, { name: "Válvula", value: "valve" }, { name: "Sensor", value: "sensor" }, { name: "Atuador", value: "actuator" }]}
+                            onChange={(value) => setNewType(value)}
+                            disabled={!isNewDevice}
+                        />
 
-                        {/* Controlador Associado */}
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="controller">Controlador Associado</label>
-                            <div className="flex flex-row gap-2 items-center justify-between">
-                                <select
+                        {!isNewDevice && (
+                            <>
+                                {/* Controlador Associado */}
+                                <InputSelect
                                     id="controller"
-                                    name="controller"
-                                    className={border}
+                                    label="Controlador Associado"
                                     value={newControllerId}
-                                    onChange={(e) => setNewControllerId(e.target.value)}
-                                    disabled={!isControllersLoaded}
-                                >
-                                    <option value="">Selecione um controlador</option>
-                                    {controllers.length > 0 && controllers.map((controller) => (
-                                        <option key={controller.id} value={controller.id}>
-                                            {controller.name} ({controller.type})
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
+                                    options={[{ name: "Selecione um controlador", value: "" }, ...controllers.map((controller) => ({ name: `${controller.name} (${controller.type})`, value: controller.id }))]}
+                                    onChange={(value) => setNewControllerId(value)}
+                                />
 
-                        {/* Nome do Endpoint */}
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="endpoint">Nome do Endpoint</label>
-                            <div className="flex flex-row gap-2 items-center justify-between">
-                                <select
+                                {/* Nome do Endpoint */}
+                                <InputSelect
                                     id="endpoint"
-                                    name="endpoint"
-                                    className={border}
+                                    label="Nome do Endpoint"
                                     value={newEndpointName}
-                                    onChange={(e) => setNewEndpointName(e.target.value)}
-                                >
-                                    <option value="">Selecione um endpoint</option>
-                                    {controllers.find((controller) => controller.id === newControllerId)
-                                        ?.endpoints
-                                        ?.map((endpoint) => (
-                                            <option key={endpoint.name} value={endpoint.name}>
-                                                {endpoint.name.toUpperCase()}
-                                            </option>
-                                        ))}
-                                </select>
-                            </div>
-                        </div>
+                                    options={[{ name: "Selecione um endpoint", value: "" }, ...(controllers.find((controller) => controller.id === newControllerId)?.endpoints?.map((endpoint) => ({ name: endpoint.name, value: endpoint.name })) || [])]}
+                                    onChange={(value) => setNewEndpointName(value)}
+                                />
+
+                                {/* Tabela de inputs dinâmicos do device */}
+                                <DeviceInputTable
+                                    inputs={deviceInputs}
+                                    onChange={handleDeviceInputChange}
+                                    title="Configurações Avançadas do Dispositivo"
+                                />
+                            </>
+                        )}
 
                         {/* Botão de Salvar */}
                         <Button

@@ -8,7 +8,7 @@ export const GET = async () => {
 };
 
 export const POST = async (req: any) => {
-    const { name, type, configs } = await req.json();
+    const { name, type } = await req.json();
 
     if (!name || !type) {
         return Response.json({
@@ -21,7 +21,6 @@ export const POST = async (req: any) => {
         const newController = ControllerManager.getInstance().create({
             name,
             type,
-            configs,
         });
 
         console.log(newController);

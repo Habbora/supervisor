@@ -7,6 +7,8 @@ export interface DeviceSchema {
     name: string;
     type: string;
     endpoints: any;
+    inputs: any;
+    outputs: any;
 }
 
 export interface DeviceCreateSchema {
@@ -20,4 +22,6 @@ export interface DeviceUpdateSchema {
     name: string;
     type: string;
     endpoints: any;
+    inputs: any;
+    outputs: any;
 }

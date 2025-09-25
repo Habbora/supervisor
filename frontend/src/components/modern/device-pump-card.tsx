@@ -1,5 +1,3 @@
-import { useDevices } from "@/features/device/hooks/useDevices";
-import { useWebSocket } from "@/ws/useWebSocket";
 import { useState, useEffect } from "react";
 
 export interface PumpType {
@@ -20,7 +18,10 @@ interface PumpControlProps {
 }
 
 export default function PumpControl({ device: device, className }: PumpControlProps) {
-  const { sendMessage } = useWebSocket();
+  
+  function sendMessage(message: string) {
+    console.log(message);
+  }
 
   const [messageError, setMessageError] = useState<string>("");
 

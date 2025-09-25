@@ -1,6 +1,9 @@
 import { DeviceDatabase } from "../database/devices";
-import { Device, type DeviceDTO } from "./Device";
+import type { DeviceSchema } from "../database/devices/schema";
+import { EventBus } from "../event-bus";
+import { Device, type DeviceDTO, type DeviceUpdateDTO } from "./Device";
 import { DeviceLevel, type LevelDto } from "./Level";
+import { Light } from "./Light";
 import { DevicePump, type PumpDto } from "./pump";
 
 export class DeviceService {
@@ -17,20 +20,26 @@ export class DeviceService {
     }
 
     private initDatabase() {
-        // Carrega os dispositivos do banco de dados
-        const devices = DeviceDatabase.getInstance().findAll();
+        DeviceDatabase
+            .getInstance()
+            .findAll()
+            .forEach((deviceDTO) => {
+                const device = this.createDevice(deviceDTO);
+                if (device) this.devices.set(device.id, device);
+            });
+    }
 
-        // Cria os dispositivos
-        devices.map((deviceDTO) => {
-            switch (deviceDTO.type) {
-                case "level":
-                    return new DeviceLevel(deviceDTO.id, deviceDTO as LevelDto);
-                case "pump":
-                    return new DevicePump(deviceDTO.id, deviceDTO as PumpDto);
-                default:
-                    return new Device(deviceDTO.id, deviceDTO);
-            }
-        }).forEach((device) => this.devices.set(device.id, device));
+    private createDevice(deviceDTO: DeviceSchema): Device {
+        switch (deviceDTO.type) {
+            case "light":
+                return new Light(deviceDTO.id, deviceDTO as any);
+            case "level":
+                return new DeviceLevel(deviceDTO.id, deviceDTO as LevelDto);
+            case "pump":
+                return new DevicePump(deviceDTO.id, deviceDTO as PumpDto);
+            default:
+                return new Device(deviceDTO.id, deviceDTO);
+        }
     }
 
     public findAll(): Device[] {
@@ -58,21 +67,16 @@ export class DeviceService {
         return newDevice;
     }
 
-    public update(deviceId: string, deviceDTO: DeviceDTO): Device | undefined {
-        const oldDevice = this.findById(deviceId);
+    public update(id: string, deviceDTO: DeviceUpdateDTO): Device | undefined {
+        const oldDevice = this.findById(id);
         if (!oldDevice) return undefined;
-
-        DeviceDatabase.getInstance().update({
-            id: oldDevice.id,
-            name: deviceDTO.name,
-            type: deviceDTO.type,
-            endpoints: deviceDTO.endpoints,
-        });
-
+        const newDeviceDto = DeviceDatabase.getInstance().update(id, deviceDTO);
+        if (!newDeviceDto) return undefined;
+        const newDevice = this.createDevice(newDeviceDto);
+        newDevice.value = oldDevice.value;
+        this.devices.set(id, newDevice);
         oldDevice.destroy();
-        this.devices.set(deviceId, new Device(deviceId, deviceDTO));
-
-        return this.findById(deviceId);
+        return newDevice;
     }
 
     public remove(deviceId: string): Device | undefined {

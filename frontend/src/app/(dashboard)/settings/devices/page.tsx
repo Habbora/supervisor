@@ -1,17 +1,18 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useDashboard } from "@/features/dashboard/provider/dashboardProvider";
+
 import ModernHeader from "@/components/modern/modern-header";
-import { useDevices } from "@/features/device/hooks/useDevices";
 import { AddCard } from "@/components/AddCard";
 import DeviceDisplayCard from "@/components/devices/display/DeviceDisplayCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRouter } from "next/navigation";
 import { DeviceType } from "@/features/device/types";
 
 export default function DevicesPage() {
     const router = useRouter();
 
-    const { devices } = useDevices();
+    const { devices } = useDashboard();
 
     function handleDeviceClick(device: DeviceType) {
         router.push(`/settings/devices/${device.id}`);
@@ -25,14 +26,14 @@ export default function DevicesPage() {
         <>
             <ModernHeader title="⚙️ Configurações" subtitle="Dispositivos" />
 
-            <Card>
+            <Card className="h-full overflow-y-auto">
                 <CardHeader>
                     <CardTitle>Lista de Dispositivos ( {devices.length} )</CardTitle>
                 </CardHeader>
 
                 <CardContent>
                     <div className="flex flex-wrap gap-4">
-                        {devices.map((device) => (
+                        {devices.map((device: DeviceType) => (
                             <DeviceDisplayCard key={`device-${device.id}`} device={device}
                                 onClick={() => handleDeviceClick(device)} />
                         ))}

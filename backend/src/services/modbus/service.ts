@@ -53,7 +53,6 @@ export class ModbusService extends BaseService {
         this.emit("online");
       }
     } catch (error) {
-      console.error("Modbus Service: Erro ao inicializar serviço:", error);
       this.handleError(error);
     }
   }
@@ -62,7 +61,6 @@ export class ModbusService extends BaseService {
     this.networkService?.on("connected", () => {
       this.isConnected = true;
       this.isError = false;
-      console.log("Modbus Service: ❤️Conexão estabelecida");
       this.emit("online");
       this.postMessage({
         type: ModbusMessageType.CONNECTED,
@@ -99,7 +97,6 @@ export class ModbusService extends BaseService {
       try {
         await this.initializeService();
       } catch (error) {
-        console.error("Erro na reconexão:", error);
         this.scheduleReconnect();
       }
     }, 2000);

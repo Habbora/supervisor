@@ -1,5 +1,8 @@
+import ValidateAuth from '@/components/auth/ValidateAuth';
+
 import ModernSidebar from '@/components/modern/modern-sidebar';
 import '../../styles/scrollbar.css'
+import { DashboardProvider } from '@/features/dashboard/provider/dashboardProvider';
 
 const mock = [
     {
@@ -62,13 +65,17 @@ export default async function DashboardLayout({
     const navigationData = mock;
 
     return (
-        <div className="h-dvh w-dvw p-2 flex flex-row">
-            <aside className="w-max-60 h-full">
-                <ModernSidebar navMain={navigationData} />
-            </aside>
-            <main className="w-full h-full ml-4 flex flex-col gap-2">
-                {children}
-            </main>
-        </div>
+        <ValidateAuth>
+            <DashboardProvider>
+                <div className="h-dvh w-dvw p-2 flex flex-row">
+                    <aside className="w-max-60 h-full">
+                        <ModernSidebar navMain={navigationData} />
+                    </aside>
+                    <main className="w-full h-full ml-4 flex flex-col gap-2">
+                        {children}
+                    </main>
+                </div>
+            </DashboardProvider>
+        </ValidateAuth>
     )
 }

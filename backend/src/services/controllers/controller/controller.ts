@@ -97,6 +97,27 @@ export class Controller {
     this.worker.addEventListener("error", (error) => {
       this.status.isRunning = false;
     });
+
+    EventBus.getInstance().subscribe('controller_action', this.handlerActionEvent.bind(this));
+
+    EventBus.getInstance().subscribe('force_read_endpoint',
+      this.handlerForceReadEndpoint.bind(this));
+  }
+
+  private handlerForceReadEndpoint(data: { controllerId: string, endpointName: string }) {
+    if (!data.controllerId || !data.endpointName) return;
+    if (data.controllerId !== this.id) return;
+
+    const endpoint = this.endpoints?.find((e) => e.name === data.endpointName);
+    if (!endpoint) return;
+
+    const payload = {
+      controllerId: this.id,
+      endpointName: endpoint.name,
+      value: endpoint.value ?? -1
+    } as any;
+
+    EventBus.getInstance().publish('endpoint_event', payload);
   }
 
   public stop() {
@@ -114,12 +135,14 @@ export class Controller {
           if (endpoint) {
             endpoint.value = value;
 
-            // Evento enviado para os dispositivos.
-            EventBus.getInstance().publish('endpoint_event', {
+            const payload = {
               controllerId: this.id,
-              endpointId: endpoint.name,
+              endpointName: endpoint.name,
               value: endpoint.value
-            });
+            } as any;
+
+            // Evento enviado para os dispositivos.
+            EventBus.getInstance().publish('endpoint_event', payload);
           }
         });
         break;
@@ -136,12 +159,26 @@ export class Controller {
     }
   }
 
+  private handlerActionEvent(data: { id: string, endpointName: string, type: string }) {
+    if (!data.id || !data.endpointName || !data.type || !this.worker) return;
+
+    switch (data.type) {
+      case "setToggle": {
+        this.setOutput(data.endpointName, 1);
+        setTimeout(() => {
+          this.setOutput(data.endpointName, 0);
+        }, 250);
+        break;
+      }
+    }
+  }
+
   private initWorker() {
     if (!this.worker) throw new Error("Worker not found");
     if (!this.type) throw new Error("Interface not found");
 
     if (!this.configs?.network?.host || !this.configs?.network?.port) {
-      throw new Error("Network config not found");
+      return;
     }
 
     if (!this.endpoints) throw new Error("Endpoints not found");
@@ -177,6 +214,8 @@ export class Controller {
   // Adicionar Validação de Retorno um dia!
   public setOutput(outputName: string, value: number) {
     if (!this.worker) throw new Error("Worker not found");
+
+    console.log('outputName', outputName);
 
     const endpoint = this.endpoints?.find((e) => e.name === outputName);
     if (!endpoint) throw new Error("Endpoint not found");
@@ -232,5 +271,14 @@ export class Controller {
     await new Promise(resolve => setTimeout(resolve, 100));
 
     return this;
+  }
+
+  public toDashboard() {
+    return {
+      id: this.id,
+      name: this.name,
+      type: this.type,
+      status: this.status,
+    };
   }
 }

@@ -3,15 +3,8 @@
 import '../../styles/scrollbar.css'
 import UserSideBar from '@/features/authentication/components/UserSideBar';
 
-interface menuItem {
-    id: number;
-    name: string;
-    href: string;
-    items: menuItem[];
-}
-
 export interface ModernSidebarProps {
-    navMain: menuItem[];
+    navMain: any[];
 }
 
 function NavButton({ name, href }: { name: string, href: string }) {
@@ -31,12 +24,12 @@ export default function ModernSidebar({ navMain }: ModernSidebarProps) {
                 {navMain.map((item) => (
                     <div className="flex flex-col gap-2" key={`sidebar-${item.id}`}>
                         <span className="text-sm text-gray-500 p-2">{item.name}</span>
-                        {item.items.map((subItem) => (
+                        {item.items.map((subItem: any) => (
                             <div key={`sidebar-${item.id}-${subItem.id}`}>
                                 <NavButton name={subItem.name} href={subItem.href} />
                                 {subItem.items.length > 0 && (
                                     <div className="flex flex-col gap-2">
-                                        {subItem.items.map((subSubItem) => (
+                                        {subItem.items.map((subSubItem: any) => (
                                             <a href={subItem.href + subSubItem.href} className="block hover:bg-white p-2 rounded text-sm text-gray-500" key={`sidebar-${item.id}-${subItem.id}-${subSubItem.id}`}>
                                                 <span className="pl-4">{subSubItem.name}</span>
                                             </a>

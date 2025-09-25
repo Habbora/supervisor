@@ -1,45 +1,20 @@
-# Usando a imagem oficial do Node.js
-FROM node:18-alpine AS base
+FROM oven/bun:1-slim
 
-# Instalando dependências necessárias
-RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copiando arquivos de dependências
-COPY package*.json ./
-RUN npm ci --only=production
-
-# Estágio de build
-FROM node:18-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
 COPY . .
 
-# Build da aplicação
-RUN npm run build
+ENV NODE_ENV=production
+ENV API_URL=http://backend:4001
 
-# Estágio de produção
-FROM node:18-alpine AS runner
-WORKDIR /app
+RUN bun install
+RUN bun run build
 
-ENV NODE_ENV production
-
-# Criando usuário não-root
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# Copiando arquivos necessários
-COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-USER nextjs
+RUN addgroup --system --gid 1001 supervisor
+RUN adduser --system --uid 1001 supervisor
+RUN chown -R supervisor:supervisor /app
+USER supervisor
 
 EXPOSE 3000
 
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
-
-CMD ["node", "server.js"]
-
+CMD ["bun", "start"]

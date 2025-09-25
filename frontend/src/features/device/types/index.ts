@@ -1,3 +1,11 @@
+// Tipo para definir os inputs do device
+export interface DeviceInput {
+    name: string;
+    description: string;
+    type: "string" | "number" | "boolean";
+    value: string | number | boolean;
+}
+
 export type DeviceType = {
     id: string;
     name: string;
@@ -6,6 +14,7 @@ export type DeviceType = {
     endpoints: any[];
     value: number;
     actions?: any[];
+    inputs?: DeviceInput[];
 }
 
 export type CreateDeviceDTO = {
@@ -16,4 +25,5 @@ export type CreateDeviceDTO = {
         controllerId: string;
         endpointName: string;
     }[];
+    inputs?: DeviceInput[];
 }

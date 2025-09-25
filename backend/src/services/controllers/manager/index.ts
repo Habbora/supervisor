@@ -38,23 +38,23 @@ export class ControllerManager {
   }
 
   public create(controller: CreateControllerDTO): Controller | undefined {
-    // Verifica se o driverName existe;
+    // Etapa 1: Verifica se o driverName existe;
     const driverNameList = readControllerConfigs().map(config => config.name);
     if (!driverNameList.includes(controller.type)) {
       throw new Error("Driver name not found");
     }
 
-    // Adiciona o controller ao banco de dados;
+    // Etapa 2: Adiciona o controller ao banco de dados;
     const databaseController = DatabaseController.getInstance();
     const newControllerDatabase: ControllerSchema | undefined = databaseController.addController(controller);
 
-    // Verifica se o controller foi adicionado ao banco de dados;
+    // Etapa 3: Verifica se o controller foi adicionado ao banco de dados;
     if (!newControllerDatabase) throw new Error("Failed to create controller");
 
-    // Cria o controller;
+    // Etapa 4: Cria o controller;
     const newController = new Controller(newControllerDatabase);
 
-    // Adiciona o controller ao mapa;
+    // Etapa 5: Adiciona o controller ao mapa;
     this.controllers.set(newController.id, newController);
 
     // TODO: Retornar apenas informações necessárias para o frontend;

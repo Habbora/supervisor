@@ -37,22 +37,24 @@ export class DeviceDatabase {
         const id = crypto.randomUUID();
 
         const database = Database.getInstance().readDatabase();
-        database.devices.push({ ...device, id });
+        database.devices.push({ ...device, id, inputs: [], outputs: [] });
         Database.getInstance().writeDatabase(database);
 
-        return { ...device, id };
+        return { ...device, id, inputs: [], outputs: [] };
     }
 
-    public update(device: DeviceSchema): DeviceSchema | undefined {
-        if (!device.id || !device.name || !device.type || !device.endpoints) return undefined;
-
+    public update(id: string, device: Partial<DeviceSchema>): DeviceSchema | undefined {
         const database = Database.getInstance().readDatabase();
-        const oldDevice = this.findById(device.id);
+        const oldDevice = this.findById(id);
         if (!oldDevice) return undefined;
-
-        database.devices = database.devices.map((d: DeviceSchema) => d.id === device.id ? device : d);
+        const newDevice = { ...oldDevice, ...device };
+        database.devices = database.devices.map((d: DeviceSchema) => d.id === id ? newDevice : d);
         Database.getInstance().writeDatabase(database);
-        return oldDevice;
+
+        console.log('Old device: ', oldDevice);
+        console.log('New device: ', newDevice);
+
+        return newDevice;
     }
 
     public delete(id: string): DeviceSchema | undefined {

@@ -1,27 +1,59 @@
-import type { Server, ServerWebSocket } from "bun";
-import type {
-  WebSocketMessage,
-  WebSocketClient,
-  WebSocketHandler,
-} from "./types";
+import type { Server } from "bun";
 import {
   WEBSOCKET_CONFIG,
-  WEBSOCKET_ERRORS,
-  WEBSOCKET_ROUTES,
 } from "./constants/websocket.constants";
 import { readdirSync, statSync, watch } from "fs";
 import { join } from "path";
 import { EventEmitter } from "events";
+import { EventBus } from "../event-bus";
 
 export class WebService extends EventEmitter {
   // Servidor WebSocket
   private server: Server | undefined;
-  // Mapa de conexões
-  private connections = new Set<ServerWebSocket>();
   // Mapa de handlers de mensagens
-  private messageHandlers: Map<string, WebSocketHandler[]> = new Map();
   private routes: Map<string, any> = new Map();
   private routesWatcher: any;
+
+  public async initialize(): Promise<this> {
+    const routesDir = join(process.cwd(), "src/routes");
+    // Carrega as rotas
+    await this.loadRoutes(routesDir);
+    // Configura o watcher
+    this.setupRoutesWatcher(routesDir);
+
+    this.server = Bun.serve({
+      hostname: WEBSOCKET_CONFIG.HOST,
+      port: WEBSOCKET_CONFIG.PORT,
+      fetch: async (req, server) => {
+        if (req.method === "OPTIONS") {
+          return new Response(null, {
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+              "Access-Control-Allow-Headers": "Content-Type, Authorization",
+              "Access-Control-Max-Age": "86400",
+            },
+          });
+        }
+
+        // Adiciona headers CORS para todas as respostas
+        const response = await this.handleRoute(req);
+        const headers = new Headers(response.headers);
+        headers.set("Access-Control-Allow-Origin", "*");
+        headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+        return new Response(response.body, {
+          status: response.status,
+          statusText: response.statusText,
+          headers,
+        });
+      },
+      idleTimeout: 255,
+    });
+
+    return this;
+  }
 
   private async loadRoutes(directory: string, basePath: string = "") {
     const files = readdirSync(directory);
@@ -73,30 +105,30 @@ export class WebService extends EventEmitter {
     const path = url.pathname;
     const method = req.method;
 
-    console.log('req', req);
+    //console.log('req', req);
 
-    console.log(`🔍 Procurando rota: ${method} ${path}`);
+    //console.log(`🔍 Procurando rota: ${method} ${path}`);
 
     // Primeiro tenta encontrar uma rota exata
     let routeModule = this.routes.get(path);
     let params: Record<string, string> = {};
 
     if (routeModule) {
-      console.log(`✅ Rota exata encontrada: ${path}`);
+      //console.log(`✅ Rota exata encontrada: ${path}`);
     } else {
-      console.log(`🔍 Procurando rota dinâmica para: ${path}`);
+      //console.log(`🔍 Procurando rota dinâmica para: ${path}`);
 
       // Se não encontrar rota exata, procura por rotas dinâmicas
       for (const [routePath, module] of this.routes.entries()) {
         if (routePath.includes(':')) {
-          console.log(`🔍 Testando rota dinâmica: ${routePath}`);
+          //console.log(`🔍 Testando rota dinâmica: ${routePath}`);
 
           // Converte rota dinâmica em regex
           const regexPattern = routePath.replace(/:[^/]+/g, '([^/]+)');
           const regex = new RegExp(`^${regexPattern}$`);
 
           if (regex.test(path)) {
-            console.log(`✅ Rota dinâmica encontrada: ${routePath} → ${path}`);
+            //console.log(`✅ Rota dinâmica encontrada: ${routePath} → ${path}`);
 
             // Extrai os parâmetros
             const matches = path.match(regex);
@@ -109,7 +141,7 @@ export class WebService extends EventEmitter {
                 params[key] = matches[index + 1]; // +1 porque matches[0] é a string completa
               });
 
-              console.log(`📝 Parâmetros extraídos:`, params);
+              //console.log(`📝 Parâmetros extraídos:`, params);
 
               routeModule = module;
               break;
@@ -120,104 +152,23 @@ export class WebService extends EventEmitter {
     }
 
     if (!routeModule) {
-      console.log(`❌ Rota não encontrada: ${path}`);
-      console.log(`📋 Rotas disponíveis:`, Array.from(this.routes.keys()));
+      //console.log(`❌ Rota não encontrada: ${path}`);
+      //console.log(`📋 Rotas disponíveis:`, Array.from(this.routes.keys()));
       return new Response("Rota não encontrada", { status: 404 });
     }
 
     const handler = routeModule[method];
     if (!handler) {
-      console.log(`❌ Método ${method} não permitido para rota: ${path}`);
+      //console.log(`❌ Método ${method} não permitido para rota: ${path}`);
       return new Response("Método não permitido", { status: 405 });
     }
 
-    console.log(`✅ Executando handler: ${method} ${path}`);
+    //console.log(`✅ Executando handler: ${method} ${path}`);
 
     // Cria um objeto com os parâmetros extraídos para passar para o handler
     const enhancedReq = Object.assign(req, { params });
 
     return handler(enhancedReq);
-  }
-
-  public registerWebsocketHandler(handler: WebSocketHandler) {
-    const handlers = this.messageHandlers.get(handler.type) || [];
-    handlers.push(handler);
-    this.messageHandlers.set(handler.type, handlers);
-  }
-
-  public async initialize(): Promise<this> {
-    console.log("Iniciando WebSocketService...");
-
-    const routesDir = join(process.cwd(), "src/routes");
-
-    // Carrega as rotas
-    await this.loadRoutes(routesDir);
-
-    // Configura o watcher
-    this.setupRoutesWatcher(routesDir);
-
-    this.server = Bun.serve({
-      hostname: WEBSOCKET_CONFIG.HOST,
-      port: WEBSOCKET_CONFIG.PORT,
-      fetch: async (req, server) => {
-
-        if (req.method === "OPTIONS") {
-          return new Response(null, {
-            headers: {
-              "Access-Control-Allow-Origin": "*",
-              "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-              "Access-Control-Allow-Headers": "Content-Type, Authorization",
-              "Access-Control-Max-Age": "86400",
-            },
-          });
-        }
-
-        if (server.upgrade(req)) return new Response();
-
-        // Adiciona headers CORS para todas as respostas
-        const response = await this.handleRoute(req);
-        const headers = new Headers(response.headers);
-        headers.set("Access-Control-Allow-Origin", "*");
-        headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-        return new Response(response.body, {
-          status: response.status,
-          statusText: response.statusText,
-          headers,
-        });
-      },
-      websocket: {
-        open: (ws) => {
-          this.connections.add(ws as ServerWebSocket);
-          this.emit("open", ws);
-        },
-        close: (ws) => {
-          this.connections.delete(ws as ServerWebSocket);
-          this.emit("close", ws);
-        },
-        message: (ws, message) => {
-          this.emit("message", ws, message);
-        },
-      },
-    });
-
-    console.log(
-      `WebSocketService inicializado com sucesso! Servidor escutando http://localhost:${WEBSOCKET_CONFIG.PORT}`
-    );
-
-    return this;
-  }
-
-  public broadcast(data: WebSocketMessage) {
-    const message = JSON.stringify(data);
-    this.connections.forEach((client) => {
-      if (client.readyState === WebSocket.CLOSED) {
-        this.connections.delete(client);
-      } else {
-        client.send(message);
-      }
-    });
   }
 
   public async destroy(): Promise<void> {
@@ -226,7 +177,6 @@ export class WebService extends EventEmitter {
     }
     if (this.server) {
       this.server.stop();
-      this.connections.clear();
     }
   }
 }

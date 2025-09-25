@@ -1,7 +1,5 @@
 'use client';
 
-import { useWebSocket } from "@/ws/useWebSocket";
-
 export interface PumpType {
   id: string;
   name: string;
@@ -18,7 +16,9 @@ interface PumpControlProps {
 }
 
 export default function PumpControl({ pump }: PumpControlProps) {
-  const { sendMessage } = useWebSocket();
+  function sendMessage(message: string) {
+    console.log(message);
+  }
 
   const handleToggle = () => {
     sendMessage(JSON.stringify({

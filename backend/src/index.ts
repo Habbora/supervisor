@@ -30,4 +30,6 @@ console.log("ScheduleManager...");
 ScheduleManager.getInstance();
 
 console.log("Dashboard...");
-new Dashboard();
+Dashboard.getInstance();
+
+console.log("Dashboard initialized");

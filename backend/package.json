@@ -18,7 +18,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:seed": "bun run src/db/seed.ts",
-    "docker:build": "docker build -t supervisor-backend .",
+    "docker:build": "docker buildx build --platform linux/amd64,linux/arm64 -t harbor.habbora.com.br/supervisor/backend:latest --push .",
     "docker:run": "docker run --privileged -d -p 3000:3000 -v $(pwd)/data:/app/data supervisor-backend",
     "docker:stop": "docker stop $(docker ps -q --filter ancestor=supervisor-backend)",
     "docker:logs": "docker logs -f $(docker ps -q --filter ancestor=supervisor-backend)",

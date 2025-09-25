@@ -1,14 +1,11 @@
-version: '3.8'
-
 services:
-  # Backend - API do Supervisor
+  # Backend - API do Supervisor (usando imagem do Harbor)
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: harbor.habbora.com.br/supervisor/backend:latest
     container_name: supervisor-backend
+    pull_policy: always
     ports:
-      - "3000:3000"
+      - "4001:4001"
     volumes:
       - ./backend/data:/app/data
       - ./backend/database:/app/database
@@ -16,20 +13,20 @@ services:
       - NODE_ENV=production
     restart: unless-stopped
     privileged: true
+    user: "0:0"
     networks:
       - supervisor-network
 
-  # Frontend - Interface Web
+  # Frontend - Interface Web (opcional, se você tiver no Harbor também)
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: harbor.habbora.com.br/supervisor/frontend:latest
     container_name: supervisor-frontend
+    pull_policy: always
     ports:
-      - "3001:3000"
+      - "80:3000"
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://backend:3000
+      - NEXT_PUBLIC_API_URL=http://backend:4001
     depends_on:
       - backend
     restart: unless-stopped
@@ -43,4 +40,3 @@ networks:
 volumes:
   supervisor-data:
     driver: local
-

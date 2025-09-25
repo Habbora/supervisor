@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { DeviceType } from "../types";
+import { DeviceType, DeviceInput } from "../types";
+import DeviceInputTable from "../../../components/devices/DeviceInputTable";
 
 export interface DeviceFormProps {
     type: "add" | "edit";
@@ -23,6 +24,10 @@ export default function DeviceForm({
         }
     );
 
+    const [deviceInputs, setDeviceInputs] = useState<DeviceInput[]>(
+        device?.inputs ?? []
+    );
+
     const [isLoading, setIsLoading] = useState(false);
 
     const title = type === "add" ? "Adicionar Dispositivo" : "Editar Dispositivo";
@@ -34,7 +39,12 @@ export default function DeviceForm({
         setIsLoading(true);
 
         try {
-            onSubmit?.(formData as DeviceType);
+            const finalFormData = {
+                ...formData,
+                inputs: deviceInputs
+            } as DeviceType;
+            
+            onSubmit?.(finalFormData);
             onClose?.();
         } catch (error) {
             console.error(error);
@@ -49,6 +59,16 @@ export default function DeviceForm({
             ...prev,
             [name]: name === 'port' ? parseInt(value) || 0 : value,
         }));
+    };
+
+    const handleDeviceInputChange = (name: string, value: string | number | boolean) => {
+        setDeviceInputs(prev => 
+            prev.map(input => 
+                input.name === name 
+                    ? { ...input, value } 
+                    : input
+            )
+        );
     };
 
     const handleRemove = () => {
@@ -112,6 +132,13 @@ export default function DeviceForm({
                             required
                         />
                     </div>
+
+                    {/* Tabela de inputs dinâmicos do device */}
+                    <DeviceInputTable
+                        inputs={deviceInputs}
+                        onChange={handleDeviceInputChange}
+                        title="Configurações do Dispositivo"
+                    />
 
                     <div className="flex gap-3 pt-4">
                         <button

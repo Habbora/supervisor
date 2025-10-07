@@ -6,19 +6,49 @@
         },
         {
             "name": "Backend",
-            "path": "backend"
+            "path": "apps/backend"
         },
         {
             "name": "Frontend",
-            "path": "frontend"
+            "path": "apps/frontend"
+        },
+        {
+            "name": "Backend Drivers Demo",
+            "path": "apps/driver_demo"
         }
     ],
     "settings": {
         "typescript.tsdk": "Frontend\\node_modules\\typescript\\lib",
-        "piny.project_settings": {
-            "open-pages": [
-                "pinyfakepage.html"
-            ]
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": "always"
+        },
+        "files.exclude": {
+            "**/node_modules": true,
+            "**/dist": true
         }
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-vscode.vscode-typescript-next",
+            "bradlc.vscode-tailwindcss"
+        ]
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "Start Backend",
+                "type": "shell",
+                "command": "cd apps/backend && bun run dev",
+                "group": "build"
+            },
+            {
+                "label": "Start Frontend",
+                "type": "shell",
+                "command": "cd apps/frontend && npm run dev",
+                "group": "build"
+            }
+        ]
     }
-} 
+}

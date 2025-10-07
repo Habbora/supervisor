@@ -1,0 +1,6 @@
+[define]
+"process.env.NODE_ENV" = "'production'"
+
+# Carregar variáveis do .env.production automaticamente
+[env]
+load = [".env.production"]

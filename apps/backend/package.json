@@ -1,0 +1,55 @@
+{
+  "name": "supervisor-backend",
+  "version": "1.0.0",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run ./src/index.ts",
+    "dev": "bun run --watch src/index.ts",
+    "build": "bun run build.ts",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "compile:supervisor": "bun build --compile --target=bun-linux-x64 ./dist/index.js --outfile ./bin/supervisor",
+    "compile:workers": "bun build src/services/driver/drivers/modbus.ts --outfile bin/modbus.worker.js && bun build src/services/driver/drivers/exampleDriver.ts --outfile bin/example.worker.js",
+    "compile": "bun run compile:supervisor && bun run compile:workers",
+    "run:supervisor": "chmod +x ./bin/supervisor && ./bin/supervisor",
+    "run:dev": "bun run --watch src/index.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "bun run src/db/seed.ts",
+    "docker:build": "docker buildx build --platform linux/amd64,linux/arm64 -t harbor.habbora.com.br/supervisor/backend:latest --push .",
+    "docker:run": "docker run --privileged -d -p 3000:3000 -v $(pwd)/data:/app/data supervisor-backend",
+    "docker:stop": "docker stop $(docker ps -q --filter ancestor=supervisor-backend)",
+    "docker:logs": "docker logs -f $(docker ps -q --filter ancestor=supervisor-backend)",
+    "docker:clean": "docker system prune -f",
+    "docker:export": "mkdir -p images && docker save supervisor-backend -o images/supervisor-backend.tar",
+    "docker:import": "docker load -i images/supervisor-backend.tar"
+  },
+  "devDependencies": {
+    "@types/bun": "1.2.4",
+    "@types/chart.js": "^2.9.41",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^22.14.0",
+    "@types/prettier": "^3.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.1",
+    "prettier": "^3.5.3",
+    "react": "^19.0.0-rc.1",
+    "react-dom": "^19.0.0-rc.1"
+  },
+  "peerDependencies": {
+    "typescript": "5.8.2"
+  },
+  "dependencies": {
+    "jsmodbus": "^4.0.10",
+    "jsonwebtoken": "^9.0.2",
+    "shiki": "^3.2.1",
+    "zod": "^4.1.5"
+  },
+  "files": [
+    "./docs",
+    "./apps",
+    "./packages"
+  ]
+}

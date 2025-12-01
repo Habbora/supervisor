@@ -28,7 +28,7 @@ export default function DeviceEndpointTable({
             onChange(endpointName, '', '');
             return;
         }
-        
+
         onChange(endpointName, controllerId, endpoint.endpointName || '');
     };
 
@@ -78,7 +78,7 @@ export default function DeviceEndpointTable({
                         >
                             <option value="">Selecione um endpoint</option>
                             {selectedController?.endpoints?.map((endpoint: any) => (
-                                <option key={endpoint.id} value={endpoint.id}>
+                                <option key={`endpoint-${endpoint.name}`} value={endpoint.id}>
                                     {endpoint.name}
                                 </option>
                             ))}

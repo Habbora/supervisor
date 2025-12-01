@@ -1,28 +1,28 @@
 {
-    "name": "supervisor",
-    "version": "1.0.0",
-    "description": "Sistema de supervisão e controle predial",
-    "private": true,
-    "scripts": {
-      "dev": "concurrently \"bun run dev:backend\" \"bun run dev:frontend\"",
-      "dev:backend": "cd backend && bun run dev",
-      "dev:frontend": "cd frontend && bun run dev",
-      "build": "bun run build:backend && bun run build:frontend",
-      "build:backend": "cd backend && bun run build",
-      "build:frontend": "cd frontend && bun run build",
-      "start": "docker-compose up -d",
-      "stop": "docker-compose down",
-      "logs": "docker-compose logs -f",
-      "clean": "bun run clean:backend && bun run clean:frontend",
-      "clean:backend": "cd backend && rm -rf node_modules bun.lockb",
-      "clean:frontend": "cd frontend && rm -rf node_modules bun.lockb .next"
-    },
-    "devDependencies": {
-      "concurrently": "^8.2.2"
-    },
-    "workspaces": [
-      "backend",
-      "frontend",
-      "driver_demo"
-    ]
-  }
+  "name": "supervisor",
+  "version": "1.0.0",
+  "description": "Sistema de supervisão e controle predial",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"bun run dev:backend\" \"bun run dev:frontend\"",
+    "dev:backend": "cd apps/backend && bun run dev",
+    "dev:frontend": "cd apps/frontend && bun run dev",
+    "build": "bun run build:backend && bun run build:frontend",
+    "build:backend": "cd apps/backend && bun run build",
+    "build:frontend": "cd apps/frontend && bun run build",
+    "start": "docker-compose up -d ./.docker/docker-compose.yml",
+    "stop": "docker-compose down ./.docker/docker-compose.yml",
+    "logs": "docker-compose logs -f ./.docker/docker-compose.yml",
+    "clean": "bun run clean:backend && bun run clean:frontend",
+    "clean:backend": "cd apps/backend && rm -rf node_modules bun.lockb",
+    "clean:frontend": "cd apps/frontend && rm -rf node_modules bun.lockb .next"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "workspaces": [
+    "backend",
+    "frontend",
+    "driver_demo"
+  ]
+}

@@ -1,2 +1,3 @@
 export * from "./switch";
-export * from "./light";
+export * from "./LightComponent";
+export * from "./ModernLightCard";

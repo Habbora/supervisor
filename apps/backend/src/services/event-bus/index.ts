@@ -1,6 +1,6 @@
 export class EventBus {
     private static __instance: EventBus;
-    private subscribers: Map<string, ((data: any) => void)[]> = new Map();
+    private __subscribers: Map<string, ((data: any) => void)[]> = new Map();
 
     private constructor() { }
 
@@ -10,20 +10,19 @@ export class EventBus {
     }
 
     public subscribe(event: string, callback: (data: any) => void): this {
-        if (!this.subscribers.has(event)) this.subscribers.set(event, []);
-        this.subscribers.get(event)?.push(callback);
+        if (!this.__subscribers.has(event)) this.__subscribers.set(event, []);
+        this.__subscribers.get(event)?.push(callback);
         return this;
     }
 
     public unsubscribe(event: string, callback: (data: any) => void): this {
-        const callbacks = this.subscribers.get(event);
-        if (callbacks) this.subscribers.set(event, callbacks.filter(cb => cb !== callback));
+        const callbacks = this.__subscribers.get(event);
+        if (callbacks) this.__subscribers.set(event, callbacks.filter(cb => cb !== callback));
         return this;
     }
 
-    public async publish(event: string, data: any) {
-        const callbacks = this.subscribers.get(event);
-        if (callbacks) await Promise.all(callbacks.map(cb => cb(data)));
-        return this;
+    public async publish(event: string, data: any): Promise<void> {
+        const callbacks = this.__subscribers.get(event)
+        if (callbacks) await Promise.all(callbacks.map(cb => cb(data)))
     }
 }

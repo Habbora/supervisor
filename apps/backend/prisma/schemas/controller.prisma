@@ -1,0 +1,27 @@
+// ═══════════════════════════════════════════════════════════════════
+// CONTROLLER - Equipamento físico de controle (CLP, Arduino, etc)
+// ═══════════════════════════════════════════════════════════════════
+//
+// Representa um controlador físico que se conecta via algum protocolo
+// de comunicação (Modbus, MQTT, HTTP, etc).
+//
+// Exemplo: CLP Modbus no IP 192.168.1.100
+//
+// ═══════════════════════════════════════════════════════════════════
+
+model Controller {
+  id     String @id @default(uuid())
+  name   String @unique // Ex: "CLP Principal", "Arduino Estufa 1"
+  driver String // Ex: "modbus", "mqtt", "http", "websocket"
+
+  // Configs
+  configs Json?
+
+  // Tags
+  tags Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("controllers")
+}

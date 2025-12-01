@@ -18,7 +18,7 @@ export type UserResponse = z.infer<typeof UserResponse>;
 export const CreateUserDto = z.object({
     name: z.string().min(2).max(100),
     username: z.string().min(3).max(50),
-    email: z.email().optional(),
+    email: z.email().optional().or(z.literal('')),
     password: z.string().min(6),
     role: UserRoles.default('user'),
 });

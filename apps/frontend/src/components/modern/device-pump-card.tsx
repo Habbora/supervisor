@@ -6,10 +6,6 @@ export interface PumpType {
   value?: number;
   isOnline?: boolean;
   isAlert?: boolean;
-  specs?: {
-    power?: number;
-    flow?: number;
-  }
 }
 
 interface PumpControlProps {
@@ -18,26 +14,12 @@ interface PumpControlProps {
 }
 
 export default function PumpControl({ device: device, className }: PumpControlProps) {
-  
+
   function sendMessage(message: string) {
     console.log(message);
   }
 
-  const [messageError, setMessageError] = useState<string>("");
-
-  useEffect(() => {
-    //if (device.isOnline === true) setMessageError("");
-    //if (device.isOnline === false) setMessageError("Dispositivo offline");
-  }, [device.isOnline]);
-
-  useEffect(() => {
-    //if (device.isOnline === false) return;
-    //if (device.isAlert === false) setMessageError("");
-    //if (device.isAlert === true) setMessageError("Dispositivo com falha");
-  }, [device.isAlert]);
-
   const handleToggle = () => {
-    if (messageError) return;
     sendMessage(JSON.stringify({
       type: "pump",
       action: "toggle",
@@ -47,32 +29,24 @@ export default function PumpControl({ device: device, className }: PumpControlPr
 
   return (
     <div
-      className={`w-[200px] h-[200px] p-4 rounded-lg cursor-pointer select-none transition-colors duration-200 ${className} ${
-        messageError
-          ? "bg-red-100 hover:bg-red-200"
-          : device.value
-            ? "bg-green-100 hover:bg-green-200"
-            : "bg-gray-100 hover:bg-gray-200"
-      }`}
+      className={`w-[200px] h-[150px] p-4 rounded-lg cursor-pointer select-none transition-colors duration-200 ${className}
+        ${device.isAlert
+          ? "bg-red-200 hover:bg-red-300"
+          : "bg-green-200 hover:bg-green-300"
+        }`}
       onClick={handleToggle}
     >
-      <div className="flex flex-col gap-2">
+      <div className="h-full flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <span className="font-medium">{device.name}</span>
+          <span className="font-bold">{device.name}</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div
-            className={`w-3 h-3 rounded-full ${
-              messageError ? "bg-red-500" : device.value ? "bg-green-500" : "bg-gray-500"
-            }`}
-          />
-          <span className="text-sm text-gray-600">
-            {messageError ? messageError : device.value ? "Ligada" : "Desligada"}
+        <div className={`w-full h-full justify-center items-center flex rounded-lg ${device.isAlert ? "bg-red-500 text-white" : device.value
+          ? "bg-green-500 text-black"
+          : "bg-red-500 text-white"
+          }`}>
+          <span className="text-4xl font-bold leading-none">
+            {device.isAlert ? "FALHA" : device.value ? "ON" : "OFF"}
           </span>
-        </div>
-        <div className="text-xs text-gray-500 flex flex-col gap-1">
-          {device.specs?.power && <div>Potência: {device.specs.power} HP</div>}
-          {device.specs?.flow && <div>Vazão: {device.specs.flow} L/min</div>}
         </div>
       </div>
     </div>

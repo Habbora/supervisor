@@ -11,6 +11,7 @@ export type DeviceType = {
     name: string;
     type: string;
     isAlert: boolean;
+    isOnline?: boolean;
     endpoints: any[];
     value: number;
     actions?: any[];

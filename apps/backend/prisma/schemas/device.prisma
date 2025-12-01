@@ -1,0 +1,74 @@
+// ═══════════════════════════════════════════════════════════════════
+// DEVICE - Equipamento lógico com comportamento próprio
+// ═══════════════════════════════════════════════════════════════════
+//
+// Representa um equipamento com lógica de negócio (bomba, luz, sensor).
+// É a camada que adiciona semântica ao hardware.
+//
+// Um Device pode ter:
+// - 1 endpoint (bomba simples ligada em DO1)
+// - N endpoints (bomba com sensor: DO1 + AI1)
+// - 0 endpoints (device virtual/calculado)
+//
+// Tipos comuns:
+// - pump: Bomba ON/OFF
+// - dimmable_light: Luz com controle de intensidade
+// - sensor_temperature, sensor_ph, sensor_level: Sensores
+// - tank: Tanque com sensor de nível
+// - virtual: Device calculado (sem porta física)
+//
+// ═══════════════════════════════════════════════════════════════════
+
+model Device {
+  id   String @id @default(uuid())
+  name String // Ex: "Bomba Principal", "Luz Estufa 1", "Sensor pH"
+  type String // Ex: "pump", "dimmable_light", "sensor_ph", "tank", "virtual"
+
+  // Configurações específicas do tipo de device (JSON)
+  //
+  // Pump:
+  // { flowRate: 100, maxRunTime: 3600, minRestTime: 600 }
+  //
+  // Light:
+  // { maxPower: 200, warmupTime: 30, defaultIntensity: 80 }
+  //
+  // Sensor:
+  // { minValue: 0, maxValue: 14, alarmMin: 6.0, alarmMax: 8.0 }
+  config String?
+
+  // Estado atual do device (JSON) - cache do último valor lido
+  // Evita leituras desnecessárias do hardware
+  //
+  // Pump: { value: true, timestamp: "2025-01-17T10:30:00Z" }
+  // Light: { intensity: 75, isOn: true, timestamp: "..." }
+  // Sensor: { value: 6.8, unit: "pH", timestamp: "..." }
+  state String?
+
+  // Para devices complexos com múltiplos endpoints (JSON array)
+  //
+  // Bomba com sensor de vazão:
+  // [
+  //   { role: "flow_sensor", endpointId: "uuid-do-AI1" },
+  //   { role: "pressure_sensor", endpointId: "uuid-do-AI2" }
+  // ]
+  //
+  // Tanque com sensor e válvula:
+  // [
+  //   { role: "level_sensor", endpointId: "uuid-do-AI3" },
+  //   { role: "inlet_valve", endpointId: "uuid-do-DO5" }
+  // ]
+  additionalEndpoints String?
+
+  // Metadados
+  description String? // Descrição detalhada
+  location    String? // Ex: "Estufa 1 - Setor A"
+  isActive    Boolean @default(true) // Se está ativo/habilitado
+
+  // Relações
+  scheduleActions ScheduleAction[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("devices")
+}

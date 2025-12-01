@@ -11,10 +11,6 @@
         {
             "name": "Frontend",
             "path": "apps/frontend"
-        },
-        {
-            "name": "Backend Drivers Demo",
-            "path": "apps/driver_demo"
         }
     ],
     "settings": {

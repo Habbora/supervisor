@@ -1,9 +1,10 @@
 import LevelSensor from "@/components/modern/device-level-card";
 import PumpControl from "@/components/modern/device-pump-card";
 import { DeviceType } from "@/features/device/types";
-import LightCard from "../light";
-import SwitchCard from "../switch"; 
+import SwitchCard from "../switch";
 import OtherCard from "../other";
+import { LightComponent } from "../LightComponent";
+import type { Light } from "@/types/devices/light.type";
 
 export default function DeviceDisplayCard({ device, onClick }: { device: DeviceType, onClick?: () => void }) {
     switch (device.type) {
@@ -34,7 +35,7 @@ export default function DeviceDisplayCard({ device, onClick }: { device: DeviceT
         case "light":
             return (
                 <div onClick={onClick}>
-                    <LightCard device={device} />
+                    <LightComponent device={device as unknown as Light} />
                 </div>
             )
         default:

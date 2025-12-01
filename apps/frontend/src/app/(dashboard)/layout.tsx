@@ -1,86 +1,28 @@
-import ValidateAuth from '@/components/auth/ValidateAuth';
-
-import ModernSidebar from '@/components/modern/modern-sidebar';
-import '../../styles/scrollbar.css'
+import '@/styles/scrollbar.css'
 import { DashboardProvider } from '@/features/dashboard/provider/dashboardProvider';
-
-const mock = [
-    {
-        id: 0,
-        name: 'Navegação',
-        href: '/',
-        items: [
-            {
-                id: 0,
-                name: '🏠 Início',
-                href: '/',
-                items: [
-                ]
-            },
-            {
-                id: 1,
-                name: '⏰ Agendamentos',
-                href: '/schedules',
-                items: [
-                ]
-            },
-            {
-                id: 4,
-                name: '⚙️ Configurações',
-                href: '/settings',
-                items: [
-                    {
-                        id: 0,
-                        name: 'Geral',
-                        href: '/',
-                    },
-                    {
-                        id: 1,
-                        name: 'Controladores',
-                        href: '/controllers',
-                    },
-                    {
-                        id: 2,
-                        name: 'Dispositivos',
-                        href: '/devices',
-                    },
-                    {
-                        id: 3,
-                        name: 'Usuários',
-                        href: '/users',
-                    },
-                    {
-                        id: 4,
-                        name: 'Ambientes',
-                        href: '/environments',
-                    }
-                ]
-            }
-        ]
-    },
-]
+import { getServerAuth } from '@/lib/auth-server';
+import { redirect } from 'next/navigation';
+import DashboardSideBar from '@/components/DashboardSideBar';
 
 export default async function DashboardLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    const { user, token } = await getServerAuth();
 
-    // Buscar dados no server-side
-    const navigationData = mock;
+    if (!user || !token) {
+        redirect("/login");
+    }
 
     return (
-        <ValidateAuth>
-            <DashboardProvider>
-                <div className="h-dvh w-dvw p-2 flex flex-row">
-                    <aside className="w-max-60 h-full">
-                        <ModernSidebar navMain={navigationData} />
-                    </aside>
-                    <main className="w-full h-full ml-4 flex flex-col gap-2">
-                        {children}
-                    </main>
+        <DashboardProvider>
+            <main className="flex flex-row h-dvh w-dvw bg-gray-50">
+                <DashboardSideBar />
+                <div className="flex-1 h-full overflow-y-auto">
+                    {children}
                 </div>
-            </DashboardProvider>
-        </ValidateAuth>
+            </main>
+        </DashboardProvider>
     )
 }

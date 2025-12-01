@@ -1,11 +1,8 @@
 import { useCallback } from "react";
 import { usersService } from "@/services/api/users.service";
-import { useAuth } from "./useAuth";
-import { User, UserCreate } from "@/types/entities/User";
+import { UserCreate, UserUpdate } from "@/types/entities/User";
 
 export const useUsers = () => {
-    const { token } = useAuth();
-
     const createUser = useCallback(async (userData: UserCreate, currentToken: string) => {
         return await usersService.createUser(userData, currentToken);
     }, []);
@@ -18,7 +15,7 @@ export const useUsers = () => {
         return await usersService.getUserById(id, currentToken);
     }, []);
 
-    const updateUser = useCallback(async (id: string, user: User, currentToken: string) => {
+    const updateUser = useCallback(async (id: string, user: UserUpdate, currentToken: string) => {
         return await usersService.updateUser(id, user, currentToken);
     }, []);
 

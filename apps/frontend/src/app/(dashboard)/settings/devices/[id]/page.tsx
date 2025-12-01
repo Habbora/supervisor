@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import DeviceInputTable, { DeviceInput } from "@/components/devices/DeviceInputTable";
 
 // Icons
-import { Trash2 } from "lucide-react";
+import { Trash2, ArrowLeft } from "lucide-react";
 import InputText from "@/components/ui/form-v1/InputText";
 import InputSelect from "@/components/ui/form-v1/InputSelect";
 import Loading from "@/components/Loading";
@@ -111,50 +111,70 @@ export default function DeviceIdPage() {
         // Criando um dispositivo
         if (isNewDevice) {
             if (!newName || !newType) {
-                alert("Preencha todos os campos");
+                alert("Preencha todos os campos obrigatórios");
                 return;
             }
 
-            const device = await createDevice({
-                name: newName,
-                type: newType
-            });
+            try {
+                const device = await createDevice({
+                    name: newName,
+                    type: newType
+                });
 
-            if (device) {
-                router.push(`/settings/devices/${device.id}`);
-            }
-            else {
-                alert("Erro ao criar dispositivo");
+                if (device) {
+                    alert("Dispositivo criado com sucesso!");
+                    router.push(`/settings/devices/${device.id}`);
+                }
+            } catch (error) {
+                alert("Erro ao criar dispositivo. Tente novamente.");
+                console.error(error);
             }
 
             return;
         }
 
+        // Atualizando dispositivo existente
         if (device) {
-            const payload = {
-                ...device,
-                name: newName,
-                type: newType,
-                endpoints: deviceEndpoints,
-                inputs: deviceInputs
-            }
+            try {
+                const payload = {
+                    ...device,
+                    name: newName,
+                    type: newType,
+                    endpoints: deviceEndpoints,
+                    inputs: deviceInputs
+                }
 
-            const deviceUpdated = await updateDevice(device.id, payload);
-            console.log('Deviced: ', deviceUpdated);
-            setName(deviceUpdated.name);
-            setType(deviceUpdated.type);
-            setDeviceEndpoints(deviceUpdated.endpoints)
-            setOriginalInputs(deviceUpdated.inputs);
-            setIsChanged(false);
+                const deviceUpdated = await updateDevice(device.id, payload);
+                console.log('Device updated:', deviceUpdated);
+
+                setName(deviceUpdated.name);
+                setType(deviceUpdated.type);
+                setDeviceEndpoints(deviceUpdated.endpoints || []);
+                setOriginalEndpoints(deviceUpdated.endpoints || []);
+                setDeviceInputs(deviceUpdated.inputs || []);
+                setOriginalInputs(deviceUpdated.inputs || []);
+                setIsChanged(false);
+
+                alert("Dispositivo atualizado com sucesso!");
+            } catch (error) {
+                alert("Erro ao atualizar dispositivo. Tente novamente.");
+                console.error(error);
+            }
         }
     }
 
     const handleDelete = async () => {
-        const confirmation = confirm("Tem certeza que deseja remover este dispositivo?");
+        const confirmation = confirm("Tem certeza que deseja remover este dispositivo? Esta ação não pode ser desfeita.");
 
         if (confirmation && device) {
-            await deleteDevice(device);
-            router.push("/settings/devices");
+            try {
+                await deleteDevice(device);
+                alert("Dispositivo removido com sucesso!");
+                router.push("/settings/devices");
+            } catch (error) {
+                alert("Erro ao remover dispositivo. Tente novamente.");
+                console.error(error);
+            }
         }
     }
 
@@ -191,11 +211,22 @@ export default function DeviceIdPage() {
 
     return (
         <div className="flex flex-col gap-2">
-            <ModernHeader title="⚙️ Configurações" subtitle="Dispositivos" />
+            <div className="flex items-center gap-4">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => router.push("/settings/devices")}
+                    className="gap-2"
+                >
+                    <ArrowLeft className="w-4 h-4" />
+                    Voltar
+                </Button>
+                <ModernHeader title="⚙️ Configurações" subtitle="Dispositivos" />
+            </div>
 
             <Card>
                 <CardHeader className="flex flex-row justify-between items-center">
-                    <CardTitle>Configurações do Dispositivo</CardTitle>
+                    <CardTitle>{isNewDevice ? 'Novo Dispositivo' : 'Configurações do Dispositivo'}</CardTitle>
                     {!isNewDevice && (
                         <Button variant="destructive" className="text-white gap-2" onClick={handleDelete}>
                             <Trash2 className="w-4 h-4" />

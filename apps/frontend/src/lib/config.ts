@@ -1,16 +1,16 @@
 // Configurações do backend
 export const BACKEND_CONFIG = {
   // URL base do backend
-  BASE_URL: process.env.BACKEND_URL || 'http://localhost:4001',
-  
+  BASE_URL: process.env.BACKEND_URL || 'http://localhost:4000',
+
   // Timeout das requisições (em ms)
   TIMEOUT: 10000,
-  
+
   // Headers padrão
   DEFAULT_HEADERS: {
     'Content-Type': 'application/json',
   },
-  
+
   // Rotas específicas que precisam de tratamento especial
   SPECIAL_ROUTES: {
     // Rotas que não devem ir para o backend
@@ -18,7 +18,7 @@ export const BACKEND_CONFIG = {
       '/api/health',
       '/api/status'
     ] as string[],
-    
+
     // Rotas que precisam de transformação
     TRANSFORM: {
       '/api/controllers': '/api/v1/controllers'

@@ -1,100 +1,172 @@
-import { DeviceDatabase } from "../database/devices";
-import type { DeviceSchema } from "../database/devices/schema";
 import { EventBus } from "../event-bus";
-import { Device, type DeviceCreateDTO, type DeviceDTO, type DeviceUpdateDTO } from "./Device";
-import { DeviceLevel, type LevelDto } from "./Level";
-import { Light } from "./Light";
-import { Pulse } from "./Pulse";
-import { DevicePump, type PumpDto } from "./pump";
+import { Device } from "./Device";
+import type { CreateDeviceDTO, UpdateDeviceDTO, DeviceCommand } from "./types/device.types";
 
+/**
+ * DEVICE SERVICE SIMPLIFICADO
+ *
+ * - Gerencia Map de devices em memória
+ * - Escuta comandos via EventBus ('device_cmd')
+ * - Não precisa de DeviceFactory (todos devices são iguais)
+ * - Não precisa de DeviceDatabase JSON (vai usar SQLite no futuro)
+ */
 export class DeviceService {
     private static instance: DeviceService;
     private devices: Map<string, Device> = new Map();
+    private onDeviceCmdCallback: (data: any) => void;
 
     private constructor() {
-        this.initDatabase();
+        // Bind para poder fazer unsubscribe
+        this.onDeviceCmdCallback = this.handleDeviceCommand.bind(this);
 
-        EventBus.getInstance().subscribe('device_cmd', this.onEventBus)
+        // Escuta comandos enviados para devices
+        EventBus.getInstance().subscribe('device_cmd', this.onDeviceCmdCallback);
+
+        // TODO: Carregar devices do banco de dados
+        // this.loadFromDatabase();
     }
 
-    public static getInstance() {
-        if (!DeviceService.instance) DeviceService.instance = new DeviceService();
+    public static getInstance(): DeviceService {
+        if (!DeviceService.instance) {
+            DeviceService.instance = new DeviceService();
+        }
         return DeviceService.instance;
     }
 
-    private onEventBus(data: any) {
+    /**
+     * Trata comandos enviados via EventBus
+     * Formato esperado: { deviceId: string, command: DeviceCommand }
+     */
+    private async handleDeviceCommand(data: {
+        deviceId: string;
+        command: DeviceCommand;
+    }): Promise<void> {
+        const device = this.devices.get(data.deviceId);
 
-    }
+        if (!device) {
+            console.error(`[DeviceService] Device ${data.deviceId} não encontrado`);
+            return;
+        }
 
-    private initDatabase() {
-        DeviceDatabase
-            .getInstance()
-            .findAll()
-            .forEach((deviceDTO) => {
-                const device = this.createDevice(deviceDTO);
-                if (device) this.devices.set(device.id, device);
-            });
-    }
-
-    private createDevice(deviceDTO: DeviceSchema): Device {
-        switch (deviceDTO.type) {
-            case "light":
-                return new Light(deviceDTO.id, deviceDTO as any);
-            case "level":
-                return new DeviceLevel(deviceDTO.id, deviceDTO as LevelDto);
-            case "pump":
-                return new DevicePump(deviceDTO.id, deviceDTO as PumpDto);
-            case "pulse":
-                return new Pulse(deviceDTO.id, deviceDTO);
-            default:
-                return new Device(deviceDTO.id, deviceDTO);
+        try {
+            await device.executeCommand(data.command);
+            console.log(`[DeviceService] Comando executado: ${data.command.action} em ${device.name}`);
+        } catch (error) {
+            console.error(`[DeviceService] Erro ao executar comando:`, error);
         }
     }
 
+    /**
+     * Lista todos os devices
+     */
     public findAll(): Device[] {
         return Array.from(this.devices.values());
     }
 
+    /**
+     * Busca device por ID
+     */
     public findById(id: string): Device | undefined {
         return this.devices.get(id);
     }
 
-    public newDevice(deviceDTO: DeviceCreateDTO): Device | undefined {
-        if (!deviceDTO.name || !deviceDTO.type) return undefined;
+    /**
+     * Cria um novo device
+     */
+    public create(dto: CreateDeviceDTO): Device {
+        const device = Device.create(dto);
+        this.devices.set(device.id, device);
 
-        const newDeviceDto = DeviceDatabase.getInstance().create({
-            name: deviceDTO.name,
-            type: deviceDTO.type,
+        console.log(`[DeviceService] Device criado: ${device.name} (${device.id})`);
+
+        // TODO: Salvar no banco de dados
+        // await this.saveToDatabase(device);
+
+        return device;
+    }
+
+    /**
+     * Atualiza um device existente
+     */
+    public update(id: string, dto: UpdateDeviceDTO): Device | undefined {
+        const device = this.devices.get(id);
+
+        if (!device) {
+            return undefined;
+        }
+
+        device.update(dto);
+
+        console.log(`[DeviceService] Device atualizado: ${device.name} (${id})`);
+
+        // TODO: Atualizar no banco de dados
+        // await this.updateInDatabase(device);
+
+        return device;
+    }
+
+    /**
+     * Remove um device
+     */
+    public remove(id: string): boolean {
+        const device = this.devices.get(id);
+
+        if (!device) {
+            return false;
+        }
+
+        // Cleanup
+        device.destroy();
+        this.devices.delete(id);
+
+        console.log(`[DeviceService] Device removido: ${device.name} (${id})`);
+
+        // TODO: Remover do banco de dados
+        // await this.deleteFromDatabase(id);
+
+        return true;
+    }
+
+    /**
+     * Envia comando para um device
+     * (atalho para publicar no EventBus)
+     */
+    public async sendCommand(deviceId: string, command: DeviceCommand): Promise<void> {
+        await EventBus.getInstance().publish('device_cmd', {
+            deviceId,
+            command
         });
-
-        if (!newDeviceDto) return undefined;
-
-        const newDevice = this.createDevice(newDeviceDto);
-        this.devices.set(newDevice.id, newDevice);
-
-        return newDevice;
     }
 
-    public update(id: string, deviceDTO: DeviceUpdateDTO): Device | undefined {
-        const oldDevice = this.findById(id);
-        if (!oldDevice) return undefined;
-        const newDeviceDto = DeviceDatabase.getInstance().update(id, deviceDTO);
-        if (!newDeviceDto) return undefined;
-        const newDevice = this.createDevice(newDeviceDto);
-        newDevice.value = oldDevice.value;
-        this.devices.set(id, newDevice);
-        oldDevice.destroy();
-        return newDevice;
+    /**
+     * Cleanup - para testes
+     */
+    public destroy(): void {
+        // Remove todos os devices
+        for (const device of this.devices.values()) {
+            device.destroy();
+        }
+        this.devices.clear();
+
+        // Remove listener
+        EventBus.getInstance().unsubscribe('device_cmd', this.onDeviceCmdCallback);
     }
 
-    public remove(deviceId: string): Device | undefined {
-        const oldDevice = this.findById(deviceId);
-        if (!oldDevice) return undefined;
+    // ===== TODO: Métodos de persistência =====
 
-        oldDevice.destroy();
-        this.devices.delete(deviceId);
-        DeviceDatabase.getInstance().delete(oldDevice.id);
+    // private async loadFromDatabase(): Promise<void> {
+    //     // Carregar do SQLite
+    // }
 
-        return oldDevice;
-    }
+    // private async saveToDatabase(device: Device): Promise<void> {
+    //     // Salvar no SQLite
+    // }
+
+    // private async updateInDatabase(device: Device): Promise<void> {
+    //     // Atualizar no SQLite
+    // }
+
+    // private async deleteFromDatabase(id: string): Promise<void> {
+    //     // Deletar do SQLite
+    // }
 }

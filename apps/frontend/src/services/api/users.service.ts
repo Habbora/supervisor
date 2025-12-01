@@ -1,9 +1,9 @@
 // src/services/api/users.service.ts
-import { User, UserCreate } from "@/types/entities/User";
+import { User, UserCreate, UserUpdate } from "@/types/entities/User";
 
 class UsersService {
     private baseUrl = "/api/users";
-    
+
     async createUser(user: UserCreate, token: string): Promise<User> {
         const response = await fetch(this.baseUrl, {
             headers: {
@@ -35,7 +35,7 @@ class UsersService {
         return await response.json();
     }
 
-    async updateUser(id: string, user: User, token: string): Promise<User> {
+    async updateUser(id: string, user: UserUpdate, token: string): Promise<User> {
         const response = await fetch(`${this.baseUrl}/${id}`, {
             headers: {
                 "Content-Type": "application/json",
@@ -48,6 +48,7 @@ class UsersService {
     }
 
     async deleteUser(id: string, token: string): Promise<User> {
+        console.log('Fetch')
         const response = await fetch(`${this.baseUrl}/${id}`, {
             headers: {
                 "Authorization": `Bearer ${token}`,

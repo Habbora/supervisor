@@ -1,0 +1,83 @@
+// ═══════════════════════════════════════════════════════════════════
+// SCHEDULE - Agendamento de ações automáticas
+// ═══════════════════════════════════════════════════════════════════
+//
+// Representa um agendamento que executa uma ou mais ações em devices
+// em horários específicos.
+//
+// Tipos de recorrência:
+// - once: Executa uma única vez
+// - daily: Todos os dias no horário especificado
+// - weekly: Dias específicos da semana
+// - monthly: Dia específico do mês
+//
+// ═══════════════════════════════════════════════════════════════════
+
+model Schedule {
+  id   String @id @default(uuid())
+  name String // Ex: "Irrigação Manhã", "Acender Luzes 18h"
+
+  // Horário de execução (0-23h, 0-59min)
+  hour   Int
+  minute Int
+
+  isActive Boolean @default(true)
+
+  // Tipo de recorrência: "once", "daily", "weekly", "monthly"
+  recurrenceType String? @default("once")
+
+  // Configuração adicional de recorrência (JSON)
+  //
+  // Weekly: { weekdays: [1, 2, 3, 4, 5] } // Segunda a Sexta
+  // Monthly: { dayOfMonth: 15 } // Dia 15 de cada mês
+  recurrenceConfig String?
+
+  // Timestamps de execução
+  nextExecution DateTime? // Próxima execução calculada
+  lastExecution DateTime? // Última execução realizada
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Soft delete
+
+  // Relações
+  actions ScheduleAction[]
+
+  @@map("schedules")
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SCHEDULE ACTION - Ação a ser executada pelo schedule
+// ═══════════════════════════════════════════════════════════════════
+//
+// Representa uma ação específica a ser executada em um device.
+// Um schedule pode ter múltiplas ações.
+//
+// Tipos de ação:
+// - turn_on: Ligar device (value: 1)
+// - turn_off: Desligar device (value: 0)
+// - set_intensity: Definir intensidade luz (value: 0-100)
+// - set_value: Definir valor genérico
+//
+// ═══════════════════════════════════════════════════════════════════
+
+model ScheduleAction {
+  id         String @id @default(uuid())
+  scheduleId String
+  deviceId   String
+
+  // Tipo de ação: "turn_on", "turn_off", "set_intensity", "set_value"
+  action String
+
+  // Valor da ação
+  // turn_on: 1
+  // turn_off: 0
+  // set_intensity: 0-100 (percentual)
+  // set_value: valor arbitrário
+  value Float
+
+  schedule Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  device   Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@map("schedule_actions")
+}

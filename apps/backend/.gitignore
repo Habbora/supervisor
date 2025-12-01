@@ -184,3 +184,10 @@ bin
 
 .config/.bun/cache
 .config/.bun/install
+# Database files
+database/database.json
+*.db
+*.db-journal
+
+# Prisma
+/generated/prisma

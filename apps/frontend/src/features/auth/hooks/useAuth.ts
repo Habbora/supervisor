@@ -11,29 +11,30 @@ export const useAuth = () => {
     const [token, setToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        const loadAuthData = async () => {
-            try {
-                const storedToken = getTokenFromCookies();
-                if (!storedToken) {
-                    setIsLoading(false);
-                    logout();
-                    return;
-                }
-
-                const authResult = await validateToken(storedToken);
-                if (authResult && authResult.valid) {
-                    setUser(authResult.user);
-                    setToken(storedToken);
-                }
-
-            } catch (error) {
-                console.error("Error validating token", error);
-                logout();
-            } finally {
+    const loadAuthData = async () => {
+        try {
+            const storedToken = getTokenFromCookies();
+            if (!storedToken) {
                 setIsLoading(false);
+                logout();
+                return;
             }
+
+            const authResult = await validateToken(storedToken);
+            if (authResult && authResult.valid) {
+                setUser(authResult.user);
+                setToken(storedToken);
+            }
+
+        } catch (error) {
+            console.error("Error validating token", error);
+            logout();
+        } finally {
+            setIsLoading(false);
         }
+    }
+
+    useEffect(() => {
         loadAuthData();
     }, []);
 
@@ -54,11 +55,15 @@ export const useAuth = () => {
                 },
             });
 
+            console.log('Validando token response:', response);
+
             if (!response.ok) {
                 return null;
             }
 
             const data = await response.json();
+
+            console.log('Validando token:', data);
 
             return {
                 user: data.user,
@@ -71,47 +76,33 @@ export const useAuth = () => {
     }
 
     const login = async (username: string, password: string) => {
-        if (!username || !password) {
-            throw new Error("Username and password are required");
+        const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+        });
+
+        console.log(response.ok)
+
+        if (!response.ok) {
+            throw new Error('Erro ao fazer login.');
         }
 
-        setIsLoading(true);
+        const data = await response.json();
 
-        try {
-            const response = await fetch("/api/auth", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password }),
-            });
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || "Error logging in");
-            }
-
-            const data = await response.json();
-
-            if (!data.token || !data.user) {
-                throw new Error("Invalid login response");
-            }
-
-            document.cookie = `auth-token=${data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Strict`;
-
-            setToken(data.token);
-            setUser(data.user);
-
-            router.push("/");
-
-        } catch (error) {
-            console.error("Error logging in", error);
-            throw error;
-        } finally {
-            setIsLoading(false);
+        if (!data.token || !data.user) {
+            throw new Error('Erro ao fazer login.');
         }
+
+        document.cookie = `auth-token=${data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Strict`;
+
+        setToken(data.token);
+        setUser(data.user);
+
+        router.push("/");
     }
 
     const logout = async () => {
-        console.log('Teste de logout');
         setIsLoading(true);
 
         try {

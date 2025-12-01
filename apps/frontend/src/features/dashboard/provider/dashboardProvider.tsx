@@ -31,9 +31,9 @@ export const DashboardProvider = ({ children }: { children: React.ReactNode }) =
                 setDashboard(data);
                 setSync(data.sync);
 
-                fetchLoop(data.sync); // chama de novo já com sync atualizado
+                setTimeout(() => fetchLoop(data.sync), 5000);
             } catch {
-                setTimeout(() => fetchLoop(currentSync), 1000);
+                setTimeout(() => fetchLoop(currentSync), 5000);
             }
         }
 

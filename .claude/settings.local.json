@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun run dev:*)",
+      "Bash(node:*)",
+      "Bash(bun -e:*)",
+      "Bash(timeout 10 bun run dev:*)",
+      "Bash(timeout 20 bun run dev:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(bun add:*)",
+      "Bash(timeout 15 bun run dev:*)",
+      "Bash(curl:*)",
+      "Bash(bun run build:*)",
+      "Bash(netstat:*)",
+      "Bash(timeout 5 bun run:*)",
+      "Bash(mkdir:*)",
+      "Bash(cat:*)",
+      "Bash(rm:*)",
+      "Bash(bun run:*)",
+      "Bash(timeout 10 bun run:*)",
+      "Bash(timeout 3 bun run:*)",
+      "Bash(bun tsc:*)",
+      "Bash(findstr:*)",
+      "Bash(timeout 120 bun run build:*)",
+      "Bash(timeout 5 sleep:*)",
+      "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAxOWE3ZDdkLThkODAtNzAwMC1hYjBlLWZlY2RmMmFjNDQzMCIsImlhdCI6MTc2MzA1ODM5OH0.vdvwsaetlYWF1D4xFc83UsPpT2IKoHnbWcXoMq16a9Y\")",
+      "Bash(timeout 3 sleep:*)",
+      "Bash(tree:*)",
+      "Bash(timeout 20 bun run:*)",
+      "Bash(bun:*)",
+      "Bash(bunx prisma:*)",
+      "Bash(sqlite3:*)",
+      "Bash(PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"sim\" bunx prisma db push:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

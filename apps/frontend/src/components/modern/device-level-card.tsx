@@ -35,21 +35,22 @@ export default function LevelSensor({ device, className }: LevelSensorProps) {
 
   return (
     <div
-      className={`w-[200px] h-[200px] p-4 rounded-lg bg-gray-100 cursor-pointer hover:bg-gray-200 transition-colors ${className} ${device.value && device.value < 0
-        ? "bg-red-100 hover:bg-red-200"
-        : "bg-green-100 hover:bg-green-200"
-
+      className={`w-[200px] h-[200px] p-4 rounded-lg cursor-pointer select-none transition-colors duration-200 ${className} ${device.value && device.value < 15
+        ? "bg-red-100 hover:bg-red-300"
+        : "bg-green-200 hover:bg-green-300"
         }`}
     >
       <div className="flex flex-col items-center gap-2">
-        <h1 className="font-medium text-center">{device.name}</h1>
+        <h1 className="font-bold text-center">{device.name}</h1>
         <div className="w-full h-32 rounded-lg relative">
+          <div className="h-full absolute bottom-0 left-0 right-0 rounded-lg bg-gray-500 opacity-50" />
           <div
             className="absolute bottom-0 left-0 right-0 bg-blue-500 transition-all duration-500 rounded-lg"
             style={{ height: `${device.value && device.value > 100 ? 100 : device.value && device.value >= 0 ? device.value ?? 0 : 0}%` }}
           />
-          <div className="absolute inset-0 flex items-center justify-center text-lg font-bold">
-            {Math.round(device.value ?? 0)}%
+          <div className="h-full absolute bottom-0 left-0 right-0 border-black border-2 rounded-lg" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-black text-3xl font-bold">{Math.round(device.value ?? 0)}%</span>
           </div>
         </div>
       </div>

@@ -1,18 +1,15 @@
 import type { NextConfig } from "next";
 
-const API_URL = process.env.API_URL || 'http://localhost:4001';
+const API_URL = process.env.API_URL || 'http://localhost:4000';
+
+console.log('API_URL:', API_URL);
 
 const nextConfig: NextConfig = {
-    eslint: {
-        // Warning: This allows production builds to successfully complete even if
-        // your project has ESLint errors.
-        ignoreDuringBuilds: true,
-    },
     async rewrites() {
         return [
             {
                 source: '/api/:path*',
-                destination: `${API_URL}/api/v1/:path*`,
+                destination: `http://localhost:4000/api/v1/:path*`,
             },
         ];
     },

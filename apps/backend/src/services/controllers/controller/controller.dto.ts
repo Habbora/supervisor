@@ -24,15 +24,10 @@ export const controllerResponseDTO = z.object({
 
 export type ControllerResponseDTO = z.infer<typeof controllerResponseDTO>;
 
-export const createControllerDTO = z.object({
+export const CreateControllerInstace = z.object({
+    id: z.string(),
     name: z.string(),
-    type: z.string(),
-    configs: z.object({
-        network: z.object({
-            host: z.ipv4(),
-            port: z.number(),
-        }).optional(),
-    }).optional(),
+    driverId: z.string()
 });
 
-export type CreateControllerDTO = z.infer<typeof createControllerDTO>;
+export type CreateControllerInstace = z.infer<typeof CreateControllerInstace>;

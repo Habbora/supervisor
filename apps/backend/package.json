@@ -14,10 +14,11 @@
     "compile": "bun run compile:supervisor && bun run compile:workers",
     "run:supervisor": "chmod +x ./bin/supervisor && ./bin/supervisor",
     "run:dev": "bun run --watch src/index.ts",
-    "db:generate": "drizzle-kit generate",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio",
-    "db:seed": "bun run src/db/seed.ts",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:push": "prisma db push",
+    "db:seed": "bun run src/lib/seed.ts",
     "docker:build": "docker buildx build --platform linux/amd64,linux/arm64 -t harbor.habbora.com.br/supervisor/backend:latest --push .",
     "docker:run": "docker run --privileged -d -p 3000:3000 -v $(pwd)/data:/app/data supervisor-backend",
     "docker:stop": "docker stop $(docker ps -q --filter ancestor=supervisor-backend)",
@@ -27,7 +28,7 @@
     "docker:import": "docker load -i images/supervisor-backend.tar"
   },
   "devDependencies": {
-    "@types/bun": "1.2.4",
+    "@types/bun": "^1.3.2",
     "@types/chart.js": "^2.9.41",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.14.0",
@@ -35,6 +36,7 @@
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.1",
     "prettier": "^3.5.3",
+    "prisma": "^6.19.0",
     "react": "^19.0.0-rc.1",
     "react-dom": "^19.0.0-rc.1"
   },
@@ -42,14 +44,23 @@
     "typescript": "5.8.2"
   },
   "dependencies": {
+    "@elysiajs/cors": "^1.4.0",
+    "@elysiajs/jwt": "^1.4.0",
+    "@prisma/client": "^6.19.0",
+    "dotenv": "^17.2.3",
+    "elysia": "^1.4.15",
     "jsmodbus": "^4.0.10",
     "jsonwebtoken": "^9.0.2",
+    "modbus-serial": "^8.0.23",
     "shiki": "^3.2.1",
-    "zod": "^4.1.5"
+    "zod": "^4.1.12"
   },
   "files": [
     "./docs",
     "./apps",
     "./packages"
-  ]
+  ],
+  "prisma": {
+    "schema": "./prisma"
+  }
 }

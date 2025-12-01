@@ -1,7 +1,16 @@
-import { database } from "@/database";
-import type { Logger } from "@/database/types/logger";
+import { db, loggers } from "@/db";
 
 const LOG_LEVELS = process.env.LOG_LEVELS || 'INFO';
+
+export type Logger = {
+    id: string,
+    module: string,
+    level: string,
+    message: string,
+    timestamp: Date
+}
+
+type CreateLoggerDTO = Omit<Logger, 'id' | 'timestamp'>
 
 export class LoggerManager {
     private static instance: LoggerManager;
@@ -42,24 +51,24 @@ export class LoggerManager {
     }
 
     public async getAllLoggers(): Promise<Logger[]> {
-        return await database.loggerService.getAllLoggers();
+        return []
     }
 
     public async error(module: string, message: string) {
         if (this.logLevel > 1) return;
-        const log = await database.loggerService.createLogger({ module, message, level: 'ERROR' });
+        const log = { module, level: 'ERROR', message, timestamp: Date.now() }
         console.error(`${log.timestamp} [${log.module}] [${log.level}] [${log.message}]`);
     }
 
     public async warn(module: string, message: string) {
         if (this.logLevel > 2) return;
-        const log = await database.loggerService.createLogger({ module, message, level: 'WARN' });
+        const log = { module, level: 'WARN', message, timestamp: Date.now() }
         console.warn(`${log.timestamp} [${log.module}] [${log.level}] [${log.message}]`);
     }
 
     public async info(module: string, message: string, color?: string) {
         if (this.logLevel > 3) return;
-        const log = await database.loggerService.createLogger({ module, message, level: 'INFO' });
+        const log = { module, level: 'INFO', message, timestamp: Date.now() }
         console.log(`${log.timestamp} (${log.module}) [${log.level}] ${this.colorLog(log.message, color)}`);
     }
 }

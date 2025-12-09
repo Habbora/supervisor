@@ -1,17 +1,23 @@
+import { eventBus } from "@/shared/event_bus";
 import type { Driver } from "./drivers/driver.interface";
+
+export type Tag = {
+    key: string
+    value: string
+}
 
 export type CreateControllerInstanceProps = {
     id: string
     name: string
     driver: string
     config?: any
-    tags?: any
+    tags?: Tag[]
 }
 
 export class ControllerInstance {
     private readonly _id: string;
-    private _name: string;
-    private _driverName: string;
+    private readonly _name: string;
+    private readonly _driverName: string;
 
     private _driver: Driver<any> | undefined
     private _config: any
@@ -32,10 +38,12 @@ export class ControllerInstance {
 
         this._driver?.start()
 
-        this._driver?.on("connected", () => {
+        this._driver?.on("connected", async () => {
+            await eventBus.publish("controller.connected", this)
             this._isConnected = true
         })
-        this._driver?.on("disconnected", () => {
+        this._driver?.on("disconnected", async () => {
+            await eventBus.publish("controller.disconnected", this)
             this._isConnected = false
         })
     }

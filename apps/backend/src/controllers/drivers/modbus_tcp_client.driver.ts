@@ -7,15 +7,13 @@ type ModbusTCPClientDriverProps = {
     host?: string,
     port?: number,
     pollingTime?: number,
+    tags?: ModbusTag[]
 }
 
 type ModbusTag = {
-    id: number,
     name: string,
     address: number,
     slaveId: number,
-    type: string,
-    value: number
 }
 
 const ModbusTCPClientConfigSchema = z.object({
@@ -70,24 +68,19 @@ const ModbusTCPClientConfigSchema = z.object({
             placeholder: "Tipo",
             description: "Tipo da tag",
         })),
-        value: z.number().min(0).max(65535).describe(JSON.stringify({
-            mode: "input",
-            label: "Valor",
-            placeholder: "0",
-            description: "Valor da tag",
-        })),
     }))
 })
 
 export class ModbusTCPClientDriver extends EventEmitter implements Driver<ModbusTag> {
-    name = "Modbus TCP Client"
-    description = "Modbus TCP Client"
-    version = 1
+    readonly name = "Modbus TCP Client"
+    readonly description = "Modbus TCP Client"
+    readonly version = 1
 
     client: ModbusTCPClient | null = null
     isConnected: boolean = false
 
     tags: Map<number, ModbusTag> = new Map()
+    values: Map<number, number> = new Map()
 
     private pollingInterval?: NodeJS.Timeout
     private pollingTime: number
@@ -117,42 +110,11 @@ export class ModbusTCPClientDriver extends EventEmitter implements Driver<Modbus
             this.isConnected = false
             this.stopPolling()
         })
-    }
 
-    private startPolling() {
-        if (!this.client) return
-        if (this.pollingInterval) return
-
-        this.pollingInterval = setInterval(() => {
-            const {
-                coilsReadRequests,
-                discreteInputsReadRequests,
-                holdingRegistersReadRequests,
-                inputRegistersReadRequests
-            } = this.optimizeReadRequests()
-
-            holdingRegistersReadRequests.forEach(request => {
-                this.client?.readHoldingRegisters(request.startAddress, request.quantity)
-                    .then(data => {
-                        data.forEach((value, index) => {
-                            const tag = this.tags.get(0x4000 + index)
-                            if (!tag) return
-                            if (tag.value === value) return
-                            tag.value = value
-                            this.tags.set(0x4000 + index, tag)
-                            this.emit("tagUpdated", tag)
-                        })
-                    })
-                    .catch(error => {
-                    })
+        if (props.tags) {
+            props.tags.forEach(tag => {
+                this.tags.set(tag.address, tag)
             })
-        }, this.pollingTime)
-    }
-
-    private stopPolling() {
-        if (this.pollingInterval) {
-            clearInterval(this.pollingInterval);
-            this.pollingInterval = undefined;
         }
     }
 
@@ -164,19 +126,14 @@ export class ModbusTCPClientDriver extends EventEmitter implements Driver<Modbus
 
         // Mapeia as tags por tipo
         this.tags.forEach(tag => {
-            switch (tag.type) {
-                case "coils":
-                    coils.push(tag.address)
-                    break
-                case "discreteInputs":
-                    discreteInputs.push(tag.address)
-                    break
-                case "holdingRegisters":
-                    holdingRegisters.push(tag.address)
-                    break
-                case "inputRegisters":
-                    inputRegisters.push(tag.address)
-                    break
+            if (tag.address > 40000) {
+                holdingRegisters.push(tag.address)
+            } else if (tag.address > 30000) {
+                inputRegisters.push(tag.address)
+            } else if (tag.address > 10000) {
+                discreteInputs.push(tag.address)
+            } else if (tag.address > 0) {
+                coils.push(tag.address)
             }
         })
 
@@ -275,6 +232,44 @@ export class ModbusTCPClientDriver extends EventEmitter implements Driver<Modbus
             discreteInputsReadRequests,
             holdingRegistersReadRequests,
             inputRegistersReadRequests,
+        }
+    }
+
+    private startPolling() {
+        if (!this.client) return
+        if (this.pollingInterval)
+            this.stopPolling()
+
+        const {
+            coilsReadRequests,
+            discreteInputsReadRequests,
+            holdingRegistersReadRequests,
+            inputRegistersReadRequests
+        } = this.optimizeReadRequests()
+
+        this.pollingInterval = setInterval(() => {
+            holdingRegistersReadRequests.forEach(request => {
+                this.client?.readHoldingRegisters(request.startAddress, request.quantity)
+                    .then(data => {
+                        data.forEach((value, index) => {
+                            const tag = this.tags.get(value.)
+                            if (!tag) return
+                            if (tag.value === value) return
+                            tag.value = value
+                            this.tags.set(0x4000 + index, tag)
+                            this.emit("tagUpdated", tag)
+                        })
+                    })
+                    .catch(error => {
+                    })
+            })
+        }, this.pollingTime)
+    }
+
+    private stopPolling() {
+        if (this.pollingInterval) {
+            clearInterval(this.pollingInterval);
+            this.pollingInterval = undefined;
         }
     }
 

@@ -46,8 +46,6 @@ export const controllerRoutes = new Elysia({ prefix: '/api/v1/controllers' })
         body: t.Object({
             name: t.String(),
             driver: t.String(),
-            configs: t.Optional(t.Record(t.String(), t.Any())),
-            tags: t.Optional(t.Any())
         })
     })
 
@@ -86,12 +84,12 @@ export const controllerRoutes = new Elysia({ prefix: '/api/v1/controllers' })
         try {
             const controller = await ControllerService
                 .getInstance()
-                .update(id, body);
+                .update(id, body)
 
             return {
                 success: true,
                 message: 'Controller updated successfully',
-                data: controller
+                data: controller,
             };
         } catch (error) {
             if (error instanceof ControllerNotFoundError) {
@@ -121,7 +119,7 @@ export const controllerRoutes = new Elysia({ prefix: '/api/v1/controllers' })
         body: t.Object({
             name: t.Optional(t.String({ minLength: 1 })),
             configs: t.Optional(t.Record(t.String(), t.Any())),
-            tags: t.Optional(t.Any())
+            tags: t.Optional(t.Any()),
         })
     })
 

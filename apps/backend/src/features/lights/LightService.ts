@@ -1,4 +1,4 @@
-import { EventBus } from "../../shared/event-bus";
+import { EventBus } from "../../shared/event_bus";
 import { LightDevice } from "./Light";
 import type { LightCommand, CreateLightDTO } from "./light.types";
 import { db, lights } from "@/db"
